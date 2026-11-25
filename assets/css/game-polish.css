@@ -1,0 +1,234 @@
+/* ============================================================
+   MaktabaPlay — Per-game visual polish
+   لمسات بصرية خاصة بكل ساحة لعب مع الحفاظ على شخصية كل لعبة.
+   تُفعّل عبر body[data-mp-game="..."] الذي يضعه Game Shell.
+   ============================================================ */
+
+/* ══════════════════ محقق MARC21 ══════════════════ */
+body[data-mp-game="detective"] {
+  background:
+    radial-gradient(900px 420px at 50% -8%, rgba(6, 182, 212, .12), transparent 65%),
+    radial-gradient(700px 380px at 100% 100%, rgba(232, 192, 106, .06), transparent 70%),
+    #0a0f19;
+}
+body[data-mp-game="detective"] .card {
+  background: linear-gradient(165deg, #101c2f, #0b1422);
+  border-color: #223550;
+  box-shadow: 0 16px 40px rgba(2, 6, 16, .35);
+}
+body[data-mp-game="detective"] .card h3 { letter-spacing: .2px; }
+body[data-mp-game="detective"] .marc-field {
+  border: 1px solid rgba(148, 163, 184, .1);
+  border-right: 3px solid transparent;
+  animation: mp-rise .3s ease both;
+}
+body[data-mp-game="detective"] .marc-field:nth-child(1) { animation-delay: .02s; }
+body[data-mp-game="detective"] .marc-field:nth-child(2) { animation-delay: .06s; }
+body[data-mp-game="detective"] .marc-field:nth-child(3) { animation-delay: .1s; }
+body[data-mp-game="detective"] .marc-field:nth-child(4) { animation-delay: .14s; }
+body[data-mp-game="detective"] .marc-field:nth-child(5) { animation-delay: .18s; }
+body[data-mp-game="detective"] .marc-field.bad {
+  animation: det-bad 1.5s ease-in-out infinite;
+}
+@keyframes det-bad {
+  0%, 100% { background: rgba(239, 68, 68, .07); }
+  50% { background: rgba(239, 68, 68, .15); }
+}
+body[data-mp-game="detective"] .marc-field.fixed-field {
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(34, 197, 94, .18);
+}
+body[data-mp-game="detective"] .marc-field.fixed-field::after {
+  content: 'تم التصحيح ✓';
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, .5);
+  border-radius: 999px;
+  padding: 1px 7px;
+  margin-inline-start: auto;
+  transform: rotate(-3deg);
+  white-space: nowrap;
+}
+body[data-mp-game="detective"] .q-title {
+  padding-inline-start: 12px;
+  border-inline-start: 3px solid var(--mp-cyan);
+}
+body[data-mp-game="detective"] .choice {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+}
+body[data-mp-game="detective"] .choice::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 40%, rgba(6, 182, 212, .07), transparent 60%);
+  transform: translateX(-120%);
+  transition: transform .6s;
+}
+body[data-mp-game="detective"] .choice:hover::after { transform: translateX(120%); }
+body[data-mp-game="detective"] #evidence span {
+  animation: mp-pop .25s ease both;
+}
+body[data-mp-game="detective"] .result {
+  background: linear-gradient(165deg, #132138, #0a1424);
+  border-color: #2a3e58;
+  box-shadow: var(--mp-shadow);
+}
+body[data-mp-game="detective"] .topbar {
+  background: linear-gradient(120deg, rgba(16, 28, 47, .94), rgba(10, 19, 33, .94));
+  border-color: #223550;
+  box-shadow: 0 10px 28px rgba(2, 6, 16, .3);
+}
+
+/* ══════════════════ السلم والثعبان ══════════════════ */
+body[data-mp-game="ladder"] {
+  background: radial-gradient(800px 400px at 20% 0%, rgba(34, 197, 94, .08), transparent 60%), #0a1018;
+}
+body[data-mp-game="ladder"] .board-container {
+  box-shadow: 0 26px 60px rgba(2, 6, 16, .55), 0 0 0 1px rgba(6, 182, 212, .18);
+  border-radius: 20px;
+}
+body[data-mp-game="ladder"] .dice-face {
+  border-radius: 18px;
+  background: linear-gradient(160deg, #182a44, #0d182a);
+  border: 1px solid rgba(6, 182, 212, .3);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .08), 0 10px 24px rgba(2, 6, 16, .45);
+}
+body[data-mp-game="ladder"] .dice-face.rolling { animation: dice-roll .55s ease-in-out; }
+@keyframes dice-roll {
+  0% { transform: rotate(0) scale(1); }
+  35% { transform: rotate(-18deg) scale(1.12); }
+  70% { transform: rotate(14deg) scale(.96); }
+  100% { transform: rotate(0) scale(1); }
+}
+body[data-mp-game="ladder"] .panel {
+  background: linear-gradient(165deg, #101c2e, #0a1320);
+  border-color: #223550;
+}
+body[data-mp-game="ladder"] .q-panel.show { animation: mp-pop .28s ease both; }
+
+/* ══════════════════ رتّب الرف ══════════════════ */
+body[data-mp-game="sorter"] { background: radial-gradient(900px 450px at 50% 0%, rgba(232, 192, 106, .07), transparent 65%), #090f18; }
+body[data-mp-game="sorter"] .shelves-grid { perspective: 1200px; }
+body[data-mp-game="sorter"] .shelf-unit,
+body[data-mp-game="sorter"] .shelf {
+  transform: rotateX(4deg);
+  transform-origin: top center;
+  box-shadow: 0 24px 40px rgba(2, 6, 16, .45);
+}
+body[data-mp-game="sorter"] .book-card,
+body[data-mp-game="sorter"] .incoming-book {
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+body[data-mp-game="sorter"] .book-card:hover,
+body[data-mp-game="sorter"] .incoming-book:hover {
+  transform: translateY(-5px) rotate(-1deg);
+  box-shadow: 0 16px 30px rgba(2, 6, 16, .5);
+}
+body[data-mp-game="sorter"] .conveyor-belt {
+  background: linear-gradient(180deg, #1a2739, #101a29);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, .05), 0 18px 36px rgba(2, 6, 16, .35);
+}
+
+/* ══════════════════ الفهرس الشجري ══════════════════ */
+body[data-mp-game="tree"] { background: radial-gradient(800px 420px at 80% -10%, rgba(34, 197, 94, .09), transparent 65%), #080f16; }
+body[data-mp-game="tree"] .tree-panel {
+  background: radial-gradient(300px 220px at 50% 30%, rgba(139, 92, 246, .12), transparent 70%), #0b1522;
+  border: 1px solid rgba(139, 92, 246, .25);
+  box-shadow: 0 18px 40px rgba(2, 6, 16, .4);
+}
+body[data-mp-game="tree"] .game-panel {
+  background: linear-gradient(170deg, #101d30, #0a1421);
+  border-color: #23364f;
+}
+body[data-mp-game="tree"] .dropzone {
+  border: 1.5px dashed rgba(6, 182, 212, .38);
+  background: rgba(6, 182, 212, .04);
+  transition: .2s;
+}
+body[data-mp-game="tree"] .dropzone:hover { background: rgba(6, 182, 212, .08); }
+
+/* ══════════════════ موجه المستفيدين ══════════════════ */
+body[data-mp-game="traffic"] { background: radial-gradient(900px 480px at 50% 0%, rgba(6, 182, 212, .08), transparent 65%), #060d18; }
+body[data-mp-game="traffic"] .canvas-wrap {
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(6, 182, 212, .22);
+  box-shadow: 0 28px 70px rgba(2, 6, 16, .6), inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+body[data-mp-game="traffic"] .hud-box {
+  background: linear-gradient(160deg, #101d30, #0a1421);
+  border-color: #23364f;
+}
+body[data-mp-game="traffic"] .legend-item { background: rgba(255, 255, 255, .025); padding: 6px 12px; border-radius: 999px; }
+body[data-mp-game="traffic"] .overlay {
+  background: linear-gradient(180deg, rgba(6, 13, 26, .82), rgba(6, 13, 26, .94));
+  backdrop-filter: blur(6px);
+}
+
+/* ══════════════════ هانج مان ══════════════════ */
+body[data-mp-game="hangman"] { background: radial-gradient(800px 420px at 50% 0%, rgba(232, 192, 106, .07), transparent 65%), #0a0f17; }
+body[data-mp-game="hangman"] .hangman-drawing-area {
+  border-radius: 20px;
+  background:
+    radial-gradient(280px 200px at 50% 45%, rgba(6, 182, 212, .08), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .02) 0 1px, transparent 1px 26px);
+  border: 1px solid rgba(6, 182, 212, .16);
+  box-shadow: inset 0 0 40px rgba(2, 6, 16, .5);
+}
+body[data-mp-game="hangman"] #hangmanSVG line,
+body[data-mp-game="hangman"] #hangmanSVG circle {
+  filter: drop-shadow(0 0 4px rgba(6, 182, 212, .45));
+  transition: opacity .3s, stroke .3s;
+}
+body[data-mp-game="hangman"] .hangman-letter-btn {
+  border-radius: 12px;
+  transition: transform .12s, background .12s, border-color .12s;
+}
+body[data-mp-game="hangman"] .hangman-letter-btn:not(:disabled):hover { transform: translateY(-3px) scale(1.04); }
+body[data-mp-game="hangman"] .hangman-letter-btn.correct { animation: mp-pop .3s ease; }
+body[data-mp-game="hangman"] .word-letter.revealed { animation: mp-pop .35s ease; color: #86efac; }
+body[data-mp-game="hangman"] .hangman-main,
+body[data-mp-game="hangman"] .hangman-sidebar {
+  background: linear-gradient(170deg, #101c2e, #0a1321);
+  border-color: #223550;
+}
+
+/* ══════════════════ سباق التصنيف ══════════════════ */
+body[data-mp-game="race"] { background: radial-gradient(900px 450px at 50% 0%, rgba(139, 92, 246, .09), transparent 65%), #080e18; }
+body[data-mp-game="race"] #gr {
+  border: 1px solid rgba(6, 182, 212, .25);
+  box-shadow: 0 26px 70px rgba(2, 6, 16, .6);
+}
+body[data-mp-game="race"] .cb {
+  border-radius: 14px;
+  transition: transform .14s, border-color .14s, background .14s;
+}
+body[data-mp-game="race"] .cb:hover:not(:disabled) { transform: translateY(-3px); border-color: rgba(34, 197, 94, .5); }
+body[data-mp-game="race"] .cb.correct { animation: mp-pop .3s ease; }
+body[data-mp-game="race"] .cb.wrong { animation: mp-shake .35s ease; }
+body[data-mp-game="race"] #rs { backdrop-filter: blur(4px); }
+
+/* ══════════════════ التدريب السريع ══════════════════ */
+body[data-mp-game="minigames"] { background: radial-gradient(800px 400px at 50% 0%, rgba(232, 192, 106, .06), transparent 65%), #090f18; }
+body[data-mp-game="minigames"] .game-panel { border: 1px solid #223550; border-radius: 22px; background: linear-gradient(170deg, #101c2e, #0a1321); }
+body[data-mp-game="minigames"] .cards-grid { perspective: 1000px; }
+body[data-mp-game="minigames"] .memory-card { transition: transform .35s cubic-bezier(.2, .8, .25, 1); }
+body[data-mp-game="minigames"] .match-item { transition: transform .15s, background .15s, border-color .15s; }
+body[data-mp-game="minigames"] .match-item:hover:not(.matched) { transform: translateX(-4px); }
+body[data-mp-game="minigames"] .match-item.matched { animation: mp-pop .3s ease; }
+
+/* ══════════════════ مهندس المكتبة ══════════════════ */
+body[data-mp-game="tycoon"] #site-header {
+  background: linear-gradient(120deg, #101d30, #0a1421) !important;
+  border-bottom: 1px solid #223550 !important;
+}
+body[data-mp-game="tycoon"] .map-cell { transition: transform .15s, box-shadow .15s; }
+body[data-mp-game="tycoon"] .map-cell:hover { transform: translateY(-3px); box-shadow: 0 14px 28px rgba(2, 6, 16, .45); }
+body[data-mp-game="tycoon"] .stat-card,
+body[data-mp-game="tycoon"] .panel {
+  background: linear-gradient(165deg, #101c2e, #0a1320) !important;
+  border-color: #223550 !important;
+}

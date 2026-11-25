@@ -2,583 +2,1417 @@
 <html lang="ar" dir="rtl">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>السلم والتصنيف – MaktabaPlay (محسّن)</title>
-    <!-- الخطوط -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
-    <!-- ملف التنسيق الموحد (افتراضي) -->
-    <link rel="stylesheet" href="assets/style.css">
-    <style>
-        /* تنسيقات إضافية للعبة (محسّنة) */
-        .snl-board {
-            width: min(78vmin, 760px);
-            height: min(78vmin, 760px);
-            margin: 0 auto;
-            position: relative;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>السلم والثعبان – MaktabaPlay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/game-header.css">
+  <link rel="stylesheet" href="assets/css/game-shell.css">
+  <link rel="stylesheet" href="assets/css/game-components.css">
+  <link rel="stylesheet" href="assets/css/game-polish.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --card-bg: #111827;
+      --muted: #6b7280;
+      --text: #e5e7eb;
+      --brand: #22c55e;
+      --brand-2: #06b6d4;
+      --border: #1f2937;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --accent: #a78bfa;
+    }
 
-        .snl-board-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 18px;
-            display: block;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        .snl-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            border-radius: 18px;
-        }
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: linear-gradient(180deg, #0b0f17, #0f172a);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-        .snl-player {
-            position: absolute;
-            width: calc(min(78vmin, 760px) / 10 * 0.78);
-            height: calc(min(78vmin, 760px) / 10 * 0.78);
-            font-size: clamp(18px, 2.2vmin, 28px);
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(4px);
-            box-shadow: 0 6px 18px rgba(2, 6, 23, 0.8);
-            transform: translate(-50%, -50%);
-            transition: left 0.35s ease, top 0.35s ease;
-            z-index: 20;
-            pointer-events: none;
-            color: #ffd966;
-            font-weight: 800;
-            text-shadow: 0 2px 5px black;
-        }
+    /* NAV */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+      background: rgba(11, 15, 23, 0.85);
+      border-bottom: 1px solid var(--border);
+    }
 
-        .snl-dice {
-            font-size: 32px;
-            padding: 15px;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            color: var(--brand-2);
-            font-weight: 800;
-        }
+    .nav-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
 
-        .snl-question-panel {
-            background: #0b1220;
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
-        }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 19px;
+      color: white;
+    }
 
-        .snl-answer-btn {
-            width: 100%;
-            padding: 12px;
-            margin: 6px 0;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: var(--text);
-            cursor: pointer;
-            transition: 0.2s;
-            text-align: right;
-            font-size: 16px;
-        }
+    .brand-badge {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #041014;
+      font-weight: 800;
+    }
 
-        .snl-answer-btn:hover:not(:disabled) {
-            background: rgba(6, 182, 212, 0.1);
-            border-color: var(--brand-2);
-        }
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
 
-        .snl-answer-btn.correct {
-            background: rgba(34, 197, 94, 0.1);
-            border-color: var(--success);
-            color: var(--success);
-        }
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      transition: .2s;
+      padding: 5px 10px;
+      border-radius: 20px;
+    }
 
-        .snl-answer-btn.wrong {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: var(--danger);
-            color: var(--danger);
-        }
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: rgba(6, 182, 212, 0.1);
+      color: var(--brand-2);
+    }
 
-        .snl-answer-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+    /* LAYOUT */
+    .game-wrap {
+      max-width: 1280px;
+      margin: 20px auto;
+      padding: 16px;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      gap: 22px;
+      align-items: flex-start;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
 
-        .snl-timer {
-            color: var(--muted);
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            align-items: center;
-            font-weight: 600;
-            margin-top: 15px;
-        }
+    /* BOARD */
+    .board-container {
+      position: relative;
+      flex-shrink: 0;
+    }
 
-        .snl-log {
-            max-height: 200px;
-            overflow-y: auto;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            padding: 10px;
-            font-size: 13px;
-            color: #94a3b8;
-        }
+    #gameBoard {
+      display: block;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+      cursor: default;
+    }
 
-        .snl-log div {
-            padding: 6px 8px;
-            border-bottom: 1px solid var(--border);
-        }
+    /* PLAYER TOKEN */
+    .player-token {
+      position: absolute;
+      pointer-events: none;
+      transition: left .4s cubic-bezier(.34, 1.56, .64, 1), top .4s cubic-bezier(.34, 1.56, .64, 1);
+      transform: translate(-50%, -50%);
+      z-index: 30;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
+    }
 
-        .control-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+    .player-token span {
+      display: block;
+      font-size: clamp(18px, 3.5vmin, 34px);
+      animation: tokenFloat 2s ease-in-out infinite;
+    }
 
-        .btn {
-            flex: 1 1 auto;
-        }
+    @keyframes tokenFloat {
 
-        @media (max-width: 768px) {
-            .snl-game-container {
-                flex-direction: column;
-                align-items: center;
-            }
+      0%,
+      100% {
+        transform: translateY(0);
+      }
 
-            .snl-controls {
-                width: 100%;
-            }
-        }
-    </style>
+      50% {
+        transform: translateY(-4px);
+      }
+    }
+
+    /* CONTROLS PANEL */
+    .controls {
+      width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .panel {
+      background: linear-gradient(160deg, #0e1626, #0b1220);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .panel-title {
+      color: var(--brand-2);
+      font-weight: 800;
+      font-size: 15px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* STATUS ROW */
+    .status-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .stat-box {
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      text-align: center;
+    }
+
+    .stat-lbl {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .stat-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--brand-2);
+    }
+
+    /* DICE */
+    .dice-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dice-face {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #1a2540, #0f1a30);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      transition: all .3s;
+      flex-shrink: 0;
+    }
+
+    .dice-face.rolling {
+      animation: diceRoll .4s ease;
+    }
+
+    @keyframes diceRoll {
+      0% {
+        transform: rotate(0) scale(1);
+      }
+
+      25% {
+        transform: rotate(-15deg) scale(1.2);
+      }
+
+      50% {
+        transform: rotate(10deg) scale(.9);
+      }
+
+      75% {
+        transform: rotate(-5deg) scale(1.1);
+      }
+
+      100% {
+        transform: rotate(0) scale(1);
+      }
+    }
+
+    .dice-info {
+      flex: 1;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* BUTTONS */
+    .btn {
+      padding: 11px 20px;
+      border: none;
+      border-radius: 30px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: 'Tajawal', sans-serif;
+      font-size: .95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #041014;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* QUESTION PANEL */
+    .q-panel {
+      display: none;
+    }
+
+    .q-panel.show {
+      display: block;
+      animation: fadeSlide .3s ease;
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .q-text {
+      font-weight: 700;
+      font-size: 15px;
+      color: white;
+      margin-bottom: 12px;
+      line-height: 1.7;
+    }
+
+    .q-diff {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .q-diff.easy {
+      background: rgba(34, 197, 94, .15);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .q-diff.medium {
+      background: rgba(245, 158, 11, .15);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    .q-diff.hard {
+      background: rgba(239, 68, 68, .15);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+
+    .ans-btn {
+      width: 100%;
+      padding: 10px 14px;
+      margin: 5px 0;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      cursor: pointer;
+      transition: all .2s;
+      text-align: right;
+      font-size: 14px;
+      font-family: 'Tajawal', sans-serif;
+      font-weight: 600;
+    }
+
+    .ans-btn:hover:not(:disabled) {
+      background: rgba(6, 182, 212, 0.08);
+      border-color: var(--brand-2);
+      transform: translateX(-3px);
+    }
+
+    .ans-btn.correct {
+      background: rgba(34, 197, 94, .12);
+      border-color: var(--success);
+      color: var(--success);
+      animation: ansCorrect .4s ease;
+    }
+
+    .ans-btn.wrong {
+      background: rgba(239, 68, 68, .1);
+      border-color: var(--danger);
+      color: var(--danger);
+      animation: ansWrong .4s ease;
+    }
+
+    .ans-btn:disabled {
+      cursor: not-allowed;
+    }
+
+    @keyframes ansCorrect {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.03);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes ansWrong {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-6px);
+      }
+
+      75% {
+        transform: translateX(6px);
+      }
+    }
+
+    .q-cat {
+      display: inline-block;
+      font-size: 11px;
+      color: #a5f3fc;
+      background: rgba(6, 182, 212, .1);
+      border: 1px solid rgba(6, 182, 212, .35);
+      border-radius: 999px;
+      padding: 2px 10px;
+      margin-bottom: 8px;
+      margin-inline-start: 6px;
+    }
+
+    .q-explain {
+      display: none;
+      margin-top: 12px;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.85;
+    }
+
+    .q-explain.show {
+      display: block;
+    }
+
+    .q-explain.ok {
+      background: rgba(34, 197, 94, .1);
+      border: 1px solid var(--success);
+    }
+
+    .q-explain.no {
+      background: rgba(239, 68, 68, .1);
+      border: 1px solid var(--danger);
+    }
+
+    .q-explain .qe-verdict {
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .q-explain.ok .qe-verdict {
+      color: #4ade80;
+    }
+
+    .q-explain.no .qe-verdict {
+      color: #f87171;
+    }
+
+    .q-explain .qe-src {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 11.5px;
+    }
+
+    /* TIMER BAR */
+    .timer-wrap {
+      margin-top: 10px;
+    }
+
+    .timer-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .timer-track {
+      width: 100%;
+      height: 5px;
+      background: #1a2540;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .timer-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+      border-radius: 3px;
+      transition: width 1s linear, background .5s;
+    }
+
+    .timer-fill.warn {
+      background: linear-gradient(90deg, var(--warning), #d97706);
+    }
+
+    .timer-fill.danger {
+      background: linear-gradient(90deg, var(--danger), #b91c1c);
+    }
+
+    /* LOG */
+    .log-area {
+      max-height: 180px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .log-entry {
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, .02);
+      border-right: 2px solid var(--border);
+      animation: fadeSlide .3s ease;
+    }
+
+    .log-entry.good {
+      border-right-color: var(--success);
+      color: #86efac;
+    }
+
+    .log-entry.bad {
+      border-right-color: var(--danger);
+      color: #fca5a5;
+    }
+
+    .log-entry.info {
+      border-right-color: var(--brand-2);
+      color: #a5f3fc;
+    }
+
+    .log-entry.event {
+      border-right-color: var(--warning);
+      color: #fcd34d;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0e1626;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 24px;
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+      z-index: 999;
+      transition: transform .4s cubic-bezier(.34, 1.56, .64, 1), opacity .4s;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.snake {
+      border-color: var(--danger);
+      color: #fca5a5;
+    }
+
+    .toast.ladder {
+      border-color: var(--success);
+      color: #86efac;
+    }
+
+    .toast.win {
+      border-color: var(--warning);
+      color: #fcd34d;
+      font-size: 18px;
+    }
+
+    /* CONFETTI */
+    .confetti-p {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      border-radius: 2px;
+      animation: confettiFall linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(0) rotate(0);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    /* FOOTER */
+    footer {
+      background: linear-gradient(90deg, #0e1626, #0b1220);
+      border-top: 1px solid var(--border);
+      padding: 18px 0;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    footer a {
+      color: var(--brand-2);
+      text-decoration: none;
+    }
+
+    @media(max-width:900px) {
+      .game-wrap {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .controls {
+        width: 100%;
+        max-width: 600px;
+      }
+    }
+  </style>
 </head>
 
-<body class="snl-page">
-    <!-- شريط التنقل الموحد -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="brand">
-                <div class="brand-badge">مـ</div>
-                <span>MaktabaPlay</span>
-            </div>
-            <div class="nav-links">
-                <a href="index.html">الرئيسية</a>
-                <a href="hangman.html">هانج مان المخطوط</a>
-                <a href="ladder-classification.html" class="active">السلم والتصنيف</a>
-                <a href="book-detective.html">محقق الكتب</a>
-                <a href="about.html">من نحن</a>
-                <a href="contact.html">تواصل</a>
-                <a href="partners.html">شركاء</a>
-            </div>
+<body>
+
+  <div class="game-wrap">
+    <!-- BOARD -->
+    <div class="board-container" id="boardContainer">
+      <canvas id="gameBoard"></canvas>
+      <div class="player-token" id="playerToken"><span>🎓</span></div>
+    </div>
+
+    <!-- CONTROLS -->
+    <aside class="controls">
+      <!-- STATUS -->
+      <div class="panel">
+        <div class="panel-title">📊 حالة اللعبة</div>
+        <div class="status-row">
+          <div class="stat-box">
+            <div class="stat-lbl">المربع الحالي</div>
+            <div class="stat-val" id="posDisp">1</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-lbl">الدورات</div>
+            <div class="stat-val" id="turnsDisp">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-lbl">سلالم</div>
+            <div class="stat-val" style="color:var(--success)" id="laddersDisp">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-lbl">ثعابين</div>
+            <div class="stat-val" style="color:var(--danger)" id="snakesDisp">0</div>
+          </div>
         </div>
-    </nav>
+      </div>
 
-    <!-- المحتوى الرئيسي -->
-    <section class="container">
-        <div class="snl-game-container"
-            style="display: flex; gap: 24px; align-items: flex-start; justify-content: center; flex-wrap: wrap;">
-            <!-- لوحة اللعبة -->
-            <div class="snl-board" id="board">
-                <img class="snl-board-image" id="boardImage" src="snake.jpg" alt="لوحة اللعبة">
-                <canvas id="overlayCanvas" class="snl-overlay"></canvas>
-                <div id="player" class="snl-player">🎓</div>
-            </div>
-
-            <!-- لوحة التحكم -->
-            <aside class="snl-controls" style="width: 360px; display: flex; flex-direction: column; gap: 16px;">
-                <div class="snl-panel" style="display: flex; justify-content: space-between;">
-                    <div>المربع: <strong id="pos">1</strong></div>
-                    <div>الحالة: <strong id="state">جاهز</strong></div>
-                </div>
-
-                <div class="control-buttons">
-                    <button id="rollBtn" class="btn">🎲 رمية النرد</button>
-                    <button id="resetBtn" class="btn">🔄 إعادة بدء</button>
-                </div>
-                <div class="snl-dice" id="diceResult">-</div>
-
-                <div id="questionPanel" class="snl-question-panel" hidden>
-                    <div id="questionText" class="snl-question-text" style="font-weight:600; margin-bottom:12px;"></div>
-                    <div id="answers" class="snl-answers"></div>
-                    <div class="snl-timer">الوقت: <span id="qTimer">30</span> ث</div>
-                </div>
-
-                <div class="snl-log" id="log"></div>
-            </aside>
+      <!-- DICE -->
+      <div class="panel">
+        <div class="panel-title">🎲 النرد</div>
+        <div class="dice-area">
+          <div class="dice-face" id="diceFace">🎲</div>
+          <div class="dice-info" id="diceInfo">اضغط "رمية النرد" للبدء</div>
         </div>
-    </section>
-
-    <!-- الفوتر الموحد -->
-    <footer>
-        <div class="footer-inner">
-            <div>© 2026 MaktabaPlay – منصة ألعاب مكتبية عربية</div>
-            <div><a href="contact.html">اتصل بنا</a> · <a href="partners.html">شراكات</a></div>
+        <div style="margin-top:12px;" class="btn-row">
+          <button class="btn btn-primary" id="rollBtn">🎲 رمية النرد</button>
+          <button class="btn btn-secondary" id="resetBtn">🔄 إعادة</button>
+          <button class="btn btn-secondary" id="modeToggle">📖 تدريب بلا مؤقت</button>
         </div>
-    </footer>
+      </div>
 
-    <script>
-        // ===== إعدادات اللعبة المحسّنة (بدون رسومات إضافية) =====
-        const COLS = 10, ROWS = 10, N = COLS * ROWS;
-        const QUESTION_TIME = 30;
+      <!-- QUESTION -->
+      <div class="panel q-panel" id="qPanel">
+        <div class="panel-title">❓ سؤال</div>
+        <span class="q-diff" id="qDiff"></span>
+        <span class="q-cat" id="qCat"></span>
+        <div class="q-text" id="qText"></div>
+        <div id="qAnswers"></div>
+        <div class="q-explain" id="qExplain"></div>
+        <div class="btn-row" id="qNextRow" style="display:none;margin-top:10px">
+          <button class="btn btn-primary" id="qNextBtn">متابعة ←</button>
+        </div>
+        <div class="timer-wrap">
+          <div class="timer-label"><span>الوقت المتبقي</span><span id="qTimerLbl">30 ث</span></div>
+          <div class="timer-track">
+            <div class="timer-fill" id="qTimerBar" style="width:100%"></div>
+          </div>
+        </div>
+      </div>
 
-        // عناصر DOM
-        const boardEl = document.getElementById('board');
-        const overlayCanvas = document.getElementById('overlayCanvas');
-        const boardImage = document.getElementById('boardImage');
-        const playerEl = document.getElementById('player');
-        const rollBtn = document.getElementById('rollBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const diceResult = document.getElementById('diceResult');
-        const questionPanel = document.getElementById('questionPanel');
-        const questionText = document.getElementById('questionText');
-        const answersEl = document.getElementById('answers');
-        const qTimerEl = document.getElementById('qTimer');
-        const posEl = document.getElementById('pos');
-        const stateEl = document.getElementById('state');
-        const logEl = document.getElementById('log');
+      <!-- LOG -->
+      <div class="panel">
+        <div class="panel-title">📋 سجل الأحداث</div>
+        <div class="log-area" id="logArea"></div>
+      </div>
+    </aside>
+  </div>
 
-        // بيانات الخريطة (سلالم وثعابين) مع عقوبات
-        const mapData = {
-            grid: { cols: COLS, rows: ROWS, serpentine: true },
-            cells: [],
-            ladders: { "4": 14, "9": 31, "20": 38, "28": 84, "40": 59, "51": 67, "63": 81, "71": 91 },
-            snakes: { "17": 7, "54": 34, "62": 19, "64": 60, "87": 24, "93": 73, "95": 75, "99": 78 },
-            penaltySquares: { "14": { type: "loseTurn" }, "55": { type: "backSteps", steps: 3 }, "77": { type: "loseTurn" } }
-        };
+  <div class="toast" id="toast"></div>
 
-        // بنك الأسئلة (نظام ديوي) - موسع قليلاً
-        const questionBank = {
-            easy: [
-                { q: 'ما هدف نظام ديوي العشري؟', options: ['ترقيم الدوريات فقط', 'تصنيف الكتب حسب الموضوع برموز عددية', 'ترتيب الكتب أبجدياً', 'إحصاء الكتب بالمكتبة'], a: 1 },
-                { q: 'كم خانة رئيسية في ديوي؟', options: ['5', '10', '100', '3'], a: 1 },
-                { q: 'أي نطاق يخص الأدب في ديوي؟', options: ['700', '800', '900', '600'], a: 1 },
-                { q: 'أي نطاق يخص العلوم الاجتماعية؟', options: ['300', '200', '100', '400'], a: 0 },
-                { q: 'ما رقم ديوي للفلسفة؟', options: ['100', '200', '300', '400'], a: 0 },
-                { q: 'أي نطاق يخص التاريخ والجغرافيا؟', options: ['900', '800', '700', '600'], a: 0 },
-                { q: 'الرقم 600 في ديوي يغطي؟', options: ['العلوم التطبيقية', 'الفنون', 'الأدب', 'التاريخ'], a: 0 },
-                { q: 'الرقم 800 يغطي؟', options: ['الأدب', 'العلوم', 'التكنولوجيا', 'الفلسفة'], a: 0 },
-                { q: 'ديوي يستخدم؟', options: ['رموز رقمية', 'حروف', 'صور', 'ألوان'], a: 0 },
-                { q: 'الرقم 000 يغطي؟', options: ['المعارف العامة', 'الفلسفة', 'الدين', 'الاجتماعيات'], a: 0 }
-            ],
-            medium: [
-                { q: 'أي نطاق للعلوم التطبيقية والهندسة؟', options: ['600-699', '500-599', '700-799', '800-899'], a: 0 },
-                { q: 'الرقم 520 يرمز إلى؟', options: ['الفلك', 'الكيمياء', 'الفيزياء', 'الأحياء'], a: 0 },
-                { q: 'الرقم 330 يغطي؟', options: ['الاقتصاد', 'القانون', 'التربية', 'الجغرافيا'], a: 0 },
-                { q: 'الرقم 940 يغطي؟', options: ['تاريخ أوروبا', 'تاريخ آسيا', 'تاريخ إفريقيا', 'تاريخ أمريكا'], a: 0 },
-                { q: 'الرقم 370 يغطي؟', options: ['التربية', 'الفلسفة', 'الدين', 'الاجتماع'], a: 0 },
-                { q: 'الرقم 641.5 يغطي؟', options: ['كتب الطبخ', 'الهندسة', 'الطب', 'الزراعة'], a: 0 },
-                { q: 'أين توضع كتب عن علم النفس؟', options: ['150', '170', '190', '130'], a: 0 },
-                { q: 'الرقم 910 يغطي؟', options: ['الجغرافيا', 'التاريخ', 'السفر', 'الجيولوجيا'], a: 0 },
-                { q: 'الرقم 530 يغطي؟', options: ['الفيزياء', 'الكيمياء', 'الفلك', 'الأحياء'], a: 0 },
-                { q: 'الرقم 340 يغطي؟', options: ['القانون', 'الاقتصاد', 'السياسة', 'الاجتماع'], a: 0 }
-            ],
-            hard: [
-                { q: 'الفرق بين 641 و 642؟', options: ['641 للطهي، 642 للمنسوجات', '641 للرياضة، 642 للموسيقى', 'لا فرق', '641 للتاريخ، 642 للجغرافيا'], a: 0 },
-                { q: 'الرقم 398 يشير إلى؟', options: ['الأساطير', 'الفلسفة', 'الدين', 'اللغة'], a: 0 },
-                { q: 'الرقم 371.9 يغطي؟', options: ['التعليم الخاص', 'الهندسة', 'الطب', 'الفنون'], a: 0 },
-                { q: 'الرقم 333 يغطي؟', options: ['الاقتصاد الزراعي', 'الرياضيات', 'التاريخ', 'الطب'], a: 0 },
-                { q: 'الرقم 597.7 يشير إلى؟', options: ['الأسماك', 'الطيور', 'الثدييات', 'الزواحف'], a: 0 },
-                { q: 'الرقم 941 يخص؟', options: ['تاريخ بريطانيا', 'تاريخ فرنسا', 'تاريخ ألمانيا', 'تاريخ إيطاليا'], a: 0 },
-                { q: 'الرقم 030 يغطي؟', options: ['الموسوعات العامة', 'الفلسفة', 'الدين', 'اللغة'], a: 0 },
-                { q: 'الرقم 362 يغطي؟', options: ['القانون الجنائي', 'الطب', 'الاقتصاد', 'الفنون'], a: 0 },
-                { q: 'الرقم 808 يشير إلى؟', options: ['الخطابة', 'الهندسة', 'التاريخ', 'الطب'], a: 0 },
-                { q: 'الرقم 150.2 في ديوي؟', options: ['نظريات علم النفس', 'البصريات', 'الطب', 'الهندسة'], a: 0 }
-            ]
-        };
+  <footer>
+    <div style="max-width:1300px;margin:0 auto;padding:0 20px;">
+      <div>© 2026 MaktabaPlay – منصة ألعاب مكتبية عربية</div>
+      <div><a href="contact.html">اتصل بنا</a> · <a href="partners.html">شراكات</a></div>
+    </div>
+  </footer>
 
-        // حالة اللعبة
-        let position = 1;
-        let currentDice = 0;
-        let questionTimer = null;
-        let qTimeRemaining = QUESTION_TIME;
-        let gameOver = false;
-        let skipTurn = false; // لعقوبة فقدان الدور
-        let recentQuestions = { easy: [], medium: [], hard: [] }; // لتجنب التكرار
+  <script src="assets/library-terms.js"></script>
+  <script src="assets/learning.js"></script>
+  <script src="assets/ladder-questions.js"></script>
+  <script src="assets/js/game-settings.js"></script>
+  <script src="assets/js/game-modal.js"></script>
+  <script src="assets/js/game-header.js"></script>
+  <script src="assets/js/game-shell.js"></script>
+  <script>
+    // =====================================================
+    //  BOARD DATA — matching the real snake.jpg layout
+    // =====================================================
+    const COLS = 10, ROWS = 10, N = 100;
+    const QUESTION_TIME = 30;
 
-        // تهيئة اللوحة بعد تحميل الصورة
-        function initGame() {
-            if (boardImage.complete && boardImage.naturalWidth !== 0) {
-                resizeCanvasAndRedraw();
-            } else {
-                boardImage.addEventListener('load', () => {
-                    resizeCanvasAndRedraw();
-                });
-            }
+    // Ladders: foot -> head (go UP)
+    const LADDERS = {
+      4: 14, 9: 31, 20: 38, 28: 84,
+      40: 59, 51: 67, 63: 81, 71: 91
+    };
+    // Snakes: head -> tail (go DOWN)
+    const SNAKES = {
+      17: 7, 54: 34, 62: 19, 64: 60,
+      87: 24, 93: 73, 95: 75, 99: 78
+    };
+
+    // BOARD COLORS — 10×10 grid, row 0=bottom
+    // Colors from the real board image: red, green, yellow, blue, white
+    const CELL_COLORS = [
+      // row 0 (squares 1-10, bottom)
+      ['#d32f2f', '#fff', '#388e3c', '#1565c0', '#fff', '#388e3c', '#fff', '#fbc02d', '#388e3c', '#1565c0'],
+      // row 1 (squares 11-20)
+      ['#1565c0', '#fff', '#fbc02d', '#fff', '#d32f2f', '#fbc02d', '#388e3c', '#fff', '#d32f2f', '#fff'],
+      // row 2 (squares 21-30)
+      ['#388e3c', '#d32f2f', '#fff', '#fbc02d', '#fff', '#1565c0', '#fbc02d', '#d32f2f', '#fff', '#1565c0'],
+      // row 3 (squares 31-40)
+      ['#fff', '#1565c0', '#d32f2f', '#fbc02d', '#fff', '#d32f2f', '#388e3c', '#1565c0', '#fbc02d', '#388e3c'],
+      // row 4 (squares 41-50)
+      ['#1565c0', '#d32f2f', '#fbc02d', '#fff', '#388e3c', '#fff', '#d32f2f', '#1565c0', '#fbc02d', '#388e3c'],
+      // row 5 (squares 51-60)
+      ['#388e3c', '#1565c0', '#d32f2f', '#fbc02d', '#fff', '#d32f2f', '#388e3c', '#1565c0', '#fbc02d', '#fff'],
+      // row 6 (squares 61-70)
+      ['#d32f2f', '#388e3c', '#1565c0', '#fbc02d', '#fff', '#1565c0', '#fbc02d', '#388e3c', '#fff', '#d32f2f'],
+      // row 7 (squares 71-80)
+      ['#fbc02d', '#d32f2f', '#388e3c', '#fff', '#1565c0', '#fbc02d', '#d32f2f', '#388e3c', '#1565c0', '#fff'],
+      // row 8 (squares 81-90)
+      ['#1565c0', '#fbc02d', '#d32f2f', '#388e3c', '#fff', '#d32f2f', '#fbc02d', '#1565c0', '#388e3c', '#fff'],
+      // row 9 (squares 91-100, top)
+      ['#fff', '#d32f2f', '#388e3c', '#1565c0', '#fbc02d', '#d32f2f', '#388e3c', '#fff', '#1565c0', '#388e3c']
+    ];
+
+    // بنك الأسئلة المصنّف والمفسَّر (assets/ladder-questions.js)
+    const QUESTIONS = window.LADDER_BANK;
+    const CAT_NAMES = window.LADDER_CATS || {};
+
+    // =====================================================
+    //  CANVAS BOARD RENDERER
+    // =====================================================
+    const canvas = document.getElementById('gameBoard');
+    const ctx = canvas.getContext('2d');
+    let BOARD_SIZE = 0, CELL = 0;
+
+    function getSquareCoords(sq) {
+      // sq: 1-100
+      const idx = sq - 1;
+      const rowFromBottom = Math.floor(idx / COLS);
+      const rowFromTop = ROWS - 1 - rowFromBottom;
+      let col = idx % COLS;
+      if (rowFromBottom % 2 === 1) col = COLS - 1 - col; // serpentine right-to-left on odd rows from bottom
+      // In LTR canvas: col 0 = left
+      // But board is displayed RTL-ish in the image (100 is top-left)
+      // Mirror col for RTL: col 0 becomes rightmost
+      const canvasCol = COLS - 1 - col;
+      const cx = (canvasCol + 0.5) * CELL;
+      const cy = (rowFromTop + 0.5) * CELL;
+      return { cx, cy, col: canvasCol, row: rowFromTop };
+    }
+
+    function drawBoard() {
+      ctx.clearRect(0, 0, BOARD_SIZE, BOARD_SIZE);
+
+      // Draw cells
+      for (let sq = 1; sq <= N; sq++) {
+        const idx = sq - 1;
+        const rowFromBottom = Math.floor(idx / COLS);
+        const rowFromTop = ROWS - 1 - rowFromBottom;
+        let col = idx % COLS;
+        if (rowFromBottom % 2 === 1) col = COLS - 1 - col;
+        const canvasCol = COLS - 1 - col;
+        const x = canvasCol * CELL, y = rowFromTop * CELL;
+        const colorRow = rowFromBottom; // use rowFromBottom as row index into CELL_COLORS
+        const colorCol = col; // original col before mirror
+        const cellColor = CELL_COLORS[colorRow % 10][colorCol % 10];
+        ctx.fillStyle = cellColor;
+        ctx.fillRect(x, y, CELL, CELL);
+        // Cell border
+        ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, CELL, CELL);
+        // Special squares highlights
+        if (LADDERS[sq]) {
+          ctx.fillStyle = 'rgba(34,197,94,0.18)';
+          ctx.fillRect(x + 2, y + 2, CELL - 4, CELL - 4);
+        }
+        if (SNAKES[sq]) {
+          ctx.fillStyle = 'rgba(239,68,68,0.18)';
+          ctx.fillRect(x + 2, y + 2, CELL - 4, CELL - 4);
+        }
+        // Square number
+        ctx.font = `bold ${CELL * 0.22}px Tajawal,sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        // number color: white on dark, dark on light
+        const isDark = (cellColor === '#d32f2f' || cellColor === '#388e3c' || cellColor === '#1565c0');
+        ctx.fillStyle = isDark ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.75)';
+        // number in top-right of cell
+        ctx.font = `bold ${Math.max(10, CELL * 0.2)}px Tajawal,sans-serif`;
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'top';
+        ctx.fillText(sq, x + CELL - 4, y + 3);
+      }
+
+      // FINISH label on sq 100
+      {
+        const { cx, cy } = getSquareCoords(100);
+        ctx.font = `bold ${CELL * 0.18}px Tajawal,sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#ffd700';
+        ctx.fillText('FINISH', cx, cy + CELL * 0.12);
+      }
+
+      // Draw LADDERS
+      drawLadders();
+      // Draw SNAKES
+      drawSnakes();
+    }
+
+    function drawLadders() {
+      Object.entries(LADDERS).forEach(([from, to]) => {
+        const a = getSquareCoords(parseInt(from));
+        const b = getSquareCoords(parseInt(to));
+        const dx = b.cx - a.cx, dy = b.cy - a.cy;
+        const len = Math.sqrt(dx * dx + dy * dy);
+        const nx = -dy / len * CELL * 0.1, ny = dx / len * CELL * 0.1;
+
+        // Ladder rails
+        ctx.strokeStyle = '#8B6914';
+        ctx.lineWidth = CELL * 0.07;
+        ctx.lineCap = 'round';
+        // Left rail
+        ctx.beginPath(); ctx.moveTo(a.cx + nx, a.cy + ny); ctx.lineTo(b.cx + nx, b.cy + ny); ctx.stroke();
+        // Right rail
+        ctx.beginPath(); ctx.moveTo(a.cx - nx, a.cy - ny); ctx.lineTo(b.cx - nx, b.cy - ny); ctx.stroke();
+
+        // Rungs
+        ctx.strokeStyle = '#c8960c';
+        ctx.lineWidth = CELL * 0.045;
+        const rungs = Math.max(3, Math.round(len / CELL));
+        for (let i = 0; i <= rungs; i++) {
+          const t = i / rungs;
+          const rx = a.cx + dx * t, ry = a.cy + dy * t;
+          ctx.beginPath(); ctx.moveTo(rx + nx, ry + ny); ctx.lineTo(rx - nx, ry - ny); ctx.stroke();
         }
 
-        function resizeCanvasAndRedraw() {
-            overlayCanvas.width = boardImage.clientWidth;
-            overlayCanvas.height = boardImage.clientHeight;
-            generateCells();
-            drawOverlay(); // الآن لا ترسم شيئاً
-            updatePositionUI();
-            log('تم تهيئة اللوحة');
+        // Glow at base
+        ctx.beginPath();
+        ctx.arc(a.cx, a.cy, CELL * 0.14, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(34,197,94,0.35)';
+        ctx.fill();
+      });
+    }
+
+    function drawSnakes() {
+      const snakeColors = [
+        { body: '#c62828', belly: '#ef9a9a' },
+        { body: '#2e7d32', belly: '#a5d6a7' },
+        { body: '#f57f17', belly: '#fff176' },
+        { body: '#1565c0', belly: '#90caf9' },
+        { body: '#6a1b9a', belly: '#ce93d8' },
+        { body: '#00695c', belly: '#80cbc4' },
+        { body: '#4e342e', belly: '#d7ccc8' },
+        { body: '#37474f', belly: '#b0bec5' },
+      ];
+      let colorIdx = 0;
+      Object.entries(SNAKES).forEach(([from, to]) => {
+        const head = getSquareCoords(parseInt(from));
+        const tail = getSquareCoords(parseInt(to));
+        const sc = snakeColors[colorIdx % snakeColors.length];
+        colorIdx++;
+        drawSingleSnake(head, tail, sc);
+      });
+    }
+
+    function drawSingleSnake(head, tail, sc) {
+      const dx = tail.cx - head.cx, dy = tail.cy - head.cy;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      // Build a curved path with control points
+      const cpx1 = head.cx + dy * 0.4, cpy1 = head.cy - dx * 0.4;
+      const cpx2 = tail.cx + dy * 0.3, cpy2 = tail.cy - dx * 0.3;
+
+      // Body (thick)
+      ctx.strokeStyle = sc.body;
+      ctx.lineWidth = CELL * 0.16;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(tail.cx, tail.cy);
+      ctx.bezierCurveTo(cpx2, cpy2, cpx1, cpy1, head.cx, head.cy);
+      ctx.stroke();
+
+      // Belly highlight (thinner, lighter)
+      ctx.strokeStyle = sc.belly;
+      ctx.lineWidth = CELL * 0.07;
+      ctx.beginPath();
+      ctx.moveTo(tail.cx, tail.cy);
+      ctx.bezierCurveTo(cpx2, cpy2, cpx1, cpy1, head.cx, head.cy);
+      ctx.stroke();
+
+      // HEAD circle
+      ctx.beginPath();
+      ctx.arc(head.cx, head.cy, CELL * 0.15, 0, Math.PI * 2);
+      ctx.fillStyle = sc.body;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Eyes
+      const eyeAngle = Math.atan2(dy, dx);
+      const e1x = head.cx + Math.cos(eyeAngle + 1.1) * CELL * 0.1;
+      const e1y = head.cy + Math.sin(eyeAngle + 1.1) * CELL * 0.1;
+      const e2x = head.cx + Math.cos(eyeAngle - 1.1) * CELL * 0.1;
+      const e2y = head.cy + Math.sin(eyeAngle - 1.1) * CELL * 0.1;
+      ctx.fillStyle = 'white';
+      ctx.beginPath(); ctx.arc(e1x, e1y, CELL * 0.04, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(e2x, e2y, CELL * 0.04, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#111';
+      ctx.beginPath(); ctx.arc(e1x, e1y, CELL * 0.02, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(e2x, e2y, CELL * 0.02, 0, Math.PI * 2); ctx.fill();
+
+      // Tongue
+      const tx = head.cx + Math.cos(eyeAngle) * CELL * 0.18;
+      const ty = head.cy + Math.sin(eyeAngle) * CELL * 0.18;
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = CELL * 0.025;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(head.cx + Math.cos(eyeAngle) * CELL * 0.14, head.cy + Math.sin(eyeAngle) * CELL * 0.14);
+      ctx.lineTo(tx, ty);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(tx + Math.cos(eyeAngle + 0.5) * CELL * 0.07, ty + Math.sin(eyeAngle + 0.5) * CELL * 0.07);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(tx + Math.cos(eyeAngle - 0.5) * CELL * 0.07, ty + Math.sin(eyeAngle - 0.5) * CELL * 0.07);
+      ctx.stroke();
+    }
+
+    function resizeBoard() {
+      const maxSize = Math.min(window.innerWidth - 380, window.innerHeight - 100, 700);
+      BOARD_SIZE = Math.max(320, maxSize);
+      CELL = BOARD_SIZE / COLS;
+      canvas.width = BOARD_SIZE;
+      canvas.height = BOARD_SIZE;
+      canvas.style.width = BOARD_SIZE + 'px';
+      canvas.style.height = BOARD_SIZE + 'px';
+      drawBoard();
+      updateTokenPosition();
+    }
+
+    // =====================================================
+    //  GAME STATE
+    // =====================================================
+    let position = 1, turns = 0, laddersCount = 0, snakesCount = 0;
+    let gameOver = false, skipTurn = false;
+    let questionTimer = null, qTimeLeft = 0;
+    let currentDice = 0;
+    let recentQ = { easy: [], medium: [], hard: [] };
+
+    function cellPixel(sq) {
+      const { cx, cy } = getSquareCoords(sq);
+      const ratio = BOARD_SIZE / canvas.width;
+      const boardRect = document.getElementById('boardContainer').getBoundingClientRect();
+      // Position relative to container
+      return { left: cx + 'px', top: cy + 'px' };
+    }
+
+    function updateTokenPosition() {
+      const { cx, cy } = getSquareCoords(position);
+      const tok = document.getElementById('playerToken');
+      tok.style.left = cx + 'px';
+      tok.style.top = cy + 'px';
+    }
+
+    function updateStats() {
+      document.getElementById('posDisp').textContent = position;
+      document.getElementById('turnsDisp').textContent = turns;
+      document.getElementById('laddersDisp').textContent = laddersCount;
+      document.getElementById('snakesDisp').textContent = snakesCount;
+    }
+
+    // =====================================================
+    //  LOG
+    // =====================================================
+    function addLog(text, type = '') {
+      const el = document.createElement('div');
+      el.className = 'log-entry ' + (type || '');
+      el.textContent = text;
+      const log = document.getElementById('logArea');
+      log.prepend(el);
+      while (log.children.length > 8) log.removeChild(log.lastChild);
+    }
+
+    // =====================================================
+    //  TOAST
+    // =====================================================
+    let toastTimer = null;
+    function showToast(msg, type = '') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast ' + (type || '');
+      void t.offsetWidth;
+      t.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // =====================================================
+    //  MOVEMENT
+    // =====================================================
+    function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    async function animateMoveStepByStep(target) {
+      const step = target > position ? 1 : -1;
+      while (position !== target) {
+        position += step;
+        updateTokenPosition();
+        updateStats();
+        await wait(300);
+      }
+    }
+
+    async function movePlayerTo(target) {
+      if (target < 1) target = 1;
+      if (target > N) target = N;
+      await animateMoveStepByStep(target);
+
+      // Check special squares
+      if (LADDERS[position]) {
+        const dest = LADDERS[position];
+        addLog(`🪜 سلم! من ${position} إلى ${dest}`, 'good');
+        showToast(`🪜 سلم! صعود إلى ${dest}`, 'ladder');
+        laddersCount++;
+        updateStats();
+        await wait(600);
+        await movePlayerTo(dest);
+        return;
+      }
+      if (SNAKES[position]) {
+        const dest = SNAKES[position];
+        addLog(`🐍 ثعبان! من ${position} إلى ${dest}`, 'bad');
+        showToast(`🐍 ثعبان! هبوط إلى ${dest}`, 'snake');
+        snakesCount++;
+        // shake token
+        const tok = document.getElementById('playerToken');
+        tok.style.transform = 'translate(-50%,-50%) rotate(15deg) scale(1.3)';
+        await wait(200);
+        tok.style.transform = 'translate(-50%,-50%) rotate(-10deg)';
+        await wait(200);
+        tok.style.transform = 'translate(-50%,-50%)';
+        updateStats();
+        await wait(400);
+        await movePlayerTo(dest);
+        return;
+      }
+    }
+
+    // =====================================================
+    //  QUESTION ENGINE
+    // =====================================================
+    function pickQ(dice) {
+      let bucket = dice <= 2 ? 'easy' : dice <= 4 ? 'medium' : 'hard';
+      const arr = QUESTIONS[bucket];
+      const recent = recentQ[bucket] || [];
+      const avail = arr.map((_, i) => i).filter(i => !recent.includes(i));
+      let idx;
+      if (!avail.length) { idx = Math.floor(Math.random() * arr.length); recentQ[bucket] = [idx]; }
+      else {
+        idx = avail[Math.floor(Math.random() * avail.length)];
+        recentQ[bucket].push(idx);
+        if (recentQ[bucket].length > 4) recentQ[bucket].shift();
+      }
+      return { q: arr[idx], bucket };
+    }
+
+    let currentQ = null;
+    let currentCorrect = 0;
+    let trainMode = false;
+
+    function shuffleOpts(a) {
+      const b = a.slice();
+      for (let i = b.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [b[i], b[j]] = [b[j], b[i]];
+      }
+      return b;
+    }
+
+    function showQuestion(dice) {
+      const { q, bucket } = pickQ(dice);
+      const diffText = { easy: 'سهل', medium: 'متوسط', hard: 'صعب' }[bucket];
+      const diffEl = document.getElementById('qDiff');
+      diffEl.textContent = diffText;
+      diffEl.className = 'q-diff ' + bucket;
+      document.getElementById('qCat').textContent = '📚 ' + (CAT_NAMES[q.cat] || '');
+      document.getElementById('qText').textContent = q.q;
+      currentQ = q;
+      currentCorrect = 0;
+      const answersDiv = document.getElementById('qAnswers');
+      answersDiv.innerHTML = '';
+      const opts = shuffleOpts(q.o);
+      const correct = opts.indexOf(q.ans);
+      currentCorrect = correct;
+      opts.forEach((opt, i) => {
+        const b = document.createElement('button');
+        b.className = 'ans-btn';
+        b.textContent = opt;
+        b.onclick = () => onAnswer(i, correct, dice);
+        answersDiv.appendChild(b);
+      });
+      const ex = document.getElementById('qExplain');
+      ex.className = 'q-explain';
+      ex.innerHTML = '';
+      document.getElementById('qNextRow').style.display = 'none';
+      document.getElementById('qPanel').classList.add('show');
+      if (trainMode) {
+        const bar = document.getElementById('qTimerBar');
+        bar.style.width = '100%';
+        bar.className = 'timer-fill';
+        document.getElementById('qTimerLbl').textContent = 'وضع تدريب — بلا مؤقت';
+      } else {
+        startQTimer(dice);
+      }
+    }
+
+    function startQTimer(dice) {
+      qTimeLeft = QUESTION_TIME;
+      if (questionTimer) clearInterval(questionTimer);
+      updateTimerUI();
+      questionTimer = setInterval(() => {
+        qTimeLeft--;
+        updateTimerUI();
+        if (qTimeLeft <= 0) {
+          clearInterval(questionTimer); questionTimer = null;
+          addLog('⌛ انتهى الوقت!', 'bad');
+          onAnswer(-1, currentCorrect, dice);
         }
+      }, 1000);
+    }
 
-        // إعادة توليد إحداثيات الخلايا بناءً على حجم اللوحة الحالي (نسب مئوية)
-        function generateCells() {
-            mapData.cells = [];
-            const w = overlayCanvas.width;
-            const h = overlayCanvas.height;
-            for (let i = 0; i < N; i++) {
-                const idx = i + 1;
-                const rowFromBottom = Math.floor(i / COLS); // 0 للأسفل، 1 للأعلى، ...
-                const row = ROWS - 1 - rowFromBottom; // 0 للأعلى؟ لكننا نحتاج النسبة من الأعلى، لذا نستخدم rowFromBottom للاتجاه
-                let col = i % COLS;
-                // الاتجاه المتعرج: الصفوف الزوجية من الأسفل تبدأ من اليمين (col عادي)، الفردية معكوسة
-                const isReverse = mapData.grid.serpentine && ((rowFromBottom % 2) === 1);
-                if (isReverse) col = COLS - 1 - col;
-                // left نسبة مئوية من اليسار (لأن dir rtl سنعكس؟ لكن canvas بالإحداثيات المطلقة، left نسبة من اليسار)
-                const leftPct = ((col + 0.5) / COLS) * 100;
-                // top نسبة من الأعلى (rowFromBottom: 0 هو الأسفل، لذا نحتاج تحويله إلى top)
-                // بما أن rowFromBottom = 0 في الأسفل، top يكون 100% - (0.5/ROWS)*100 ؟
-                // الأسهل: row = ROWS - 1 - rowFromBottom (الآن row=0 للأعلى)
-                // ثم topPct = ((row + 0.5) / ROWS) * 100
-                const topRow = ROWS - 1 - rowFromBottom; // 9 للأعلى, 0 للأسفل
-                const topPct = ((topRow + 0.5) / ROWS) * 100;
-                mapData.cells.push({ index: idx, left: leftPct + '%', top: topPct + '%' });
-            }
+    function updateTimerUI() {
+      const pct = (qTimeLeft / QUESTION_TIME) * 100;
+      const bar = document.getElementById('qTimerBar');
+      document.getElementById('qTimerLbl').textContent = qTimeLeft + ' ث';
+      bar.style.width = pct + '%';
+      bar.className = 'timer-fill' + (pct < 30 ? ' danger' : pct < 60 ? ' warn' : '');
+    }
+
+    function onAnswer(idx, correct, dice) {
+      if (questionTimer) { clearInterval(questionTimer); questionTimer = null; }
+      const q = currentQ;
+      const isCorrect = (idx >= 0 && idx === correct);
+      document.querySelectorAll('.ans-btn').forEach((b, i) => {
+        b.disabled = true;
+        if (i === correct) b.classList.add('correct');
+        else if (i === idx && idx >= 0) b.classList.add('wrong');
+      });
+      const box = document.getElementById('qExplain');
+      box.className = 'q-explain show ' + (isCorrect ? 'ok' : 'no');
+      box.innerHTML = `<div class="qe-verdict">${isCorrect ? '✅ إجابة صحيحة' : (idx < 0 ? '⏰ انتهى الوقت' : '❌ إجابة خاطئة')}</div>
+        <div>${q.exp}</div>
+        <div class="qe-src">📚 ${q.src} · الإجابة الصحيحة: <strong style="color:#e2e8f0">${q.ans}</strong></div>`;
+      addLog(isCorrect ? '✅ إجابة صحيحة' : '❌ ' + (idx < 0 ? 'انتهى الوقت' : 'إجابة خاطئة'), isCorrect ? 'good' : 'bad');
+      if (!isCorrect && window.ML) {
+        ML.review.add('ladder', { key: q.q, concept: (CAT_NAMES[q.cat] || '') + ' — ' + q.q, why: 'الصواب: ' + q.ans });
+      }
+      const nextRow = document.getElementById('qNextRow');
+      nextRow.style.display = 'flex';
+      document.getElementById('qNextBtn').onclick = () => {
+        document.getElementById('qPanel').classList.remove('show');
+        nextRow.style.display = 'none';
+        if (isCorrect) onCorrect(dice); else onWrong(dice);
+      };
+    }
+
+    async function onCorrect(dice) {
+      document.getElementById('rollBtn').disabled = true;
+      const target = Math.min(N, position + dice);
+      await movePlayerTo(target);
+      if (position >= N) { gameOver = true; showWin(); }
+      else { document.getElementById('rollBtn').disabled = false; }
+    }
+
+    async function onWrong(dice) {
+      document.getElementById('rollBtn').disabled = true;
+      if (trainMode) {
+        addLog('📖 وضع تدريب: لا رجوع للخلف', 'info');
+        document.getElementById('rollBtn').disabled = false;
+        return;
+      }
+      const target = Math.max(1, position - dice);
+      await movePlayerTo(target);
+      document.getElementById('rollBtn').disabled = false;
+    }
+
+    function showWin() {
+      showToast('🎉 مبروك! وصلت للنهاية!', 'win');
+      confetti();
+      document.getElementById('rollBtn').disabled = true;
+      let score = Math.max(0, 1000 - (turns * 10));
+      if (window.ML) ML.progress.record('ladder', { score: score, correct: turns - snakesCount, total: turns, level: trainMode ? 1 : 2 });
+      if (window.maktabaAuth) {
+          window.maktabaAuth.updateScore('ladder', score);
+      }
+      MPGame.results({
+        score: score,
+        correct: Math.max(0, turns - snakesCount),
+        total: turns,
+        level: trainMode ? 1 : 2,
+        title: 'وصلت إلى المربع ١٠٠! 🏆',
+        note: 'أتممت الرحلة في ' + turns + ' رمية — السلالم رفعتك والثعابين علّمتك.',
+        next: false
+      });
+    }
+
+    // =====================================================
+    //  DICE FACES
+    // =====================================================
+    const DICE_EMOJI = ['🎲', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+    function rollDice() {
+      if (gameOver) { showToast('اللعبة انتهت! أعد البدء'); return; }
+      if (document.getElementById('qPanel').classList.contains('show')) return;
+      if (skipTurn) { addLog('⚡ خسارة الدور', 'event'); skipTurn = false; showToast('⚡ خسارة الدور هذا!'); return; }
+      turns++;
+      updateStats();
+      // Animate dice
+      const face = document.getElementById('diceFace');
+      face.classList.remove('rolling');
+      void face.offsetWidth;
+      face.classList.add('rolling');
+      // Random roll with animation frames
+      let count = 0;
+      const anim = setInterval(() => {
+        const r = Math.floor(Math.random() * 6) + 1;
+        face.textContent = DICE_EMOJI[r];
+        count++;
+        if (count >= 8) {
+          clearInterval(anim);
+          currentDice = r;
+          face.textContent = DICE_EMOJI[r];
+          document.getElementById('diceInfo').textContent = `رميت ${r} — أجب على السؤال`;
+          addLog(`🎲 نتيجة النرد: ${r}`, 'info');
+          showQuestion(currentDice);
         }
+      }, 60);
+    }
 
-        // دالة الرسم: الآن فارغة تماماً لإخفاء جميع الخطوط والرسومات
-        function drawOverlay() {
-            const ctx = overlayCanvas.getContext('2d');
-            ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-            // لا نرسم أي شيء – نعتمد فقط على الصورة الخلفية
+    // =====================================================
+    //  CONFETTI
+    // =====================================================
+    function confetti() {
+      const colors = ['#22c55e', '#06b6d4', '#f59e0b', '#a78bfa', '#fb7185', '#ffd700'];
+      for (let i = 0; i < 80; i++) {
+        const el = document.createElement('div');
+        el.className = 'confetti-p';
+        const size = 6 + Math.random() * 10;
+        el.style.cssText = `left:${Math.random() * 100}vw;width:${size}px;height:${size}px;background:${colors[~~(Math.random() * colors.length)]};border-radius:${Math.random() > .5 ? '50%' : '2px'};animation-duration:${1.5 + Math.random() * 2}s;animation-delay:${Math.random() * .8}s;`;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 4000);
+      }
+    }
+
+    // =====================================================
+    //  RESET
+    // =====================================================
+    function resetGame() {
+      if (questionTimer) { clearInterval(questionTimer); questionTimer = null; }
+      position = 1; turns = 0; laddersCount = 0; snakesCount = 0;
+      currentDice = 0; gameOver = false; skipTurn = false;
+      recentQ = { easy: [], medium: [], hard: [] };
+      document.getElementById('rollBtn').disabled = false;
+      document.getElementById('qPanel').classList.remove('show');
+      document.getElementById('diceFace').textContent = '🎲';
+      document.getElementById('diceInfo').textContent = 'اضغط "رمية النرد" للبدء';
+      updateTokenPosition();
+      updateStats();
+      addLog('🔄 بدأت لعبة جديدة', 'info');
+    }
+
+    // =====================================================
+    //  INIT
+    // =====================================================
+    document.getElementById('rollBtn').addEventListener('click', rollDice);
+    document.getElementById('resetBtn').addEventListener('click', resetGame);
+    document.getElementById('modeToggle').addEventListener('click', function () {
+      trainMode = !trainMode;
+      this.textContent = trainMode ? '⚔️ وضع المنافسة' : '📖 تدريب بلا مؤقت';
+      if (window.ML) ML.toast(trainMode ? 'وضع التدريب: بلا مؤقت وبلا رجوع للخلف' : 'وضع المنافسة: مؤقت ورجوع عند الخطأ');
+    });
+    window.addEventListener('resize', () => { resizeBoard(); });
+    resizeBoard();
+    updateStats();
+    addLog('👋 مرحباً! اضغط النرد للبدء', 'info');
+
+    MPGame.init({
+      id: 'ladder',
+      title: 'السلم والتصنيف',
+      icon: '🪜',
+      field: 'التصنيف والخدمات',
+      tagline: 'ارمِ النرد، أجب، واصعد السلم قبل أن يبتلعك ثعبان.',
+      intro: 'لعبة السلم والثعبان بأسئلة مكتبية مصنّفة: تصنيف، فهرسة، تكشيف، مخطوطات وخدمات. كل إجابة صحيحة تحرّكك، وكل خطأ يعلّمك.',
+      defaultLevel: 2,
+      levels: [
+        { id: 1, label: 'تدريب', desc: 'بلا مؤقت وبلا رجوع للخلف' },
+        { id: 2, label: 'منافسة', desc: 'مؤقت ورجوع عند الخطأ' }
+      ],
+      getStatus: () => [
+        { label: 'المربع', value: position },
+        { label: 'الرميات', value: turns },
+        { label: 'السلالم', value: laddersCount }
+      ],
+      onPlay: function (opts) {
+        trainMode = !!(opts && (opts.noTimer || opts.level === 1));
+        document.getElementById('modeToggle').textContent = trainMode ? '⚔️ وضع المنافسة' : '📖 تدريب بلا مؤقت';
+        resetGame();
+      },
+      onRestart: function () { resetGame(); }
+    });
+
+    if (window.ML) {
+      ML.tutorial({
+        game: 'ladder',
+        title: '🎲 السلم والثعبان — تصنيف ومعرفة مكتبية',
+        subtitle: 'كل سؤال مصنّف بمجاله ومفسَّر بمرجعه العلمي',
+        goal: 'الوصول إلى المربع 100 عبر الإجابة عن أسئلة في التصنيف والفهرسة والتكشيف والمخطوطات وخدمات المكتبات.',
+        rules: [
+          'ارمِ النرد ثم أجب عن السؤال؛ الإجابة الصحيحة تحرّكك للأمام.',
+          'الإجابة الخاطئة أو انتهاء الوقت تُعيدك خطوات للخلف في وضع المنافسة.',
+          'بعد كل إجابة يظهر تفسير علمي ومرجع (DDC 23 / MARC 21 / ODLIS).',
+          'السلم يصعدك والثعبان يُنزلك — والمهم أن تفهم سبب الإجابة.',
+          'وضع التدريب بلا مؤقت وبلا رجوع للخلف للمتعلمين الجدد.'
+        ],
+        controls: 'زر «رمية النرد» ثم اختيار الإجابة بالفأرة أو اللمس.',
+        concepts: Object.values(window.LADDER_CATS || {}),
+        onStart: function (opts) {
+          trainMode = !!(opts && opts.noTimer);
+          document.getElementById('modeToggle').textContent = trainMode ? '⚔️ وضع المنافسة' : '📖 تدريب بلا مؤقت';
         }
-
-        // تحديث موقع اللاعب على الشاشة
-        function updatePositionUI() {
-            posEl.textContent = position;
-            const p = mapData.cells.find(x => x.index === position);
-            if (p) {
-                playerEl.style.left = p.left;
-                playerEl.style.top = p.top;
-            }
-        }
-
-        // إضافة سجل
-        function log(text) {
-            const d = document.createElement('div');
-            d.textContent = `${new Date().toLocaleTimeString('ar-EG')} — ${text}`;
-            logEl.prepend(d);
-            if (logEl.children.length > 6) logEl.removeChild(logEl.lastChild);
-            stateEl.textContent = text.split(' ')[0] || 'جارٍ';
-        }
-
-        // تأخير للحركة
-        function wait(ms) { return new Promise(res => setTimeout(res, ms)); }
-
-        // حركة تدريجية إلى المربع المستهدف
-        async function movePlayerTo(target) {
-            if (target < 1) target = 1;
-            if (target > N) target = N;
-            const step = target > position ? 1 : -1;
-            while (position !== target) {
-                position += step;
-                updatePositionUI();
-                await wait(280); // سرعة حركة مناسبة
-            }
-            await handleSpecialSquare(); // تفعيل أي مربع خاص بعد الوصول
-        }
-
-        // معالجة المربعات الخاصة (سلم، ثعبان، عقوبة)
-        async function handleSpecialSquare() {
-            if (mapData.ladders[position]) {
-                const dest = mapData.ladders[position];
-                log(`سلم! صعود إلى ${dest}`);
-                await wait(200);
-                await movePlayerTo(dest);
-                return;
-            }
-            if (mapData.snakes[position]) {
-                const dest = mapData.snakes[position];
-                log(`ثعبان! هبوط إلى ${dest}`);
-                await wait(200);
-                await movePlayerTo(dest);
-                return;
-            }
-            if (mapData.penaltySquares[position]) {
-                const p = mapData.penaltySquares[position];
-                if (p.type === 'loseTurn') {
-                    log('مربع عقاب: خسارة الدور القادم');
-                    skipTurn = true;
-                } else if (p.type === 'backSteps') {
-                    const newPos = Math.max(1, position - p.steps);
-                    log(`مربع عقاب: الرجوع ${p.steps} خطوات إلى ${newPos}`);
-                    await movePlayerTo(newPos);
-                }
-            }
-        }
-
-        // اختيار سؤال غير متكرر حسب الصعوبة
-        function getRandomQuestion(difficulty) {
-            const arr = questionBank[difficulty];
-            if (!arr.length) return null;
-            // فلترة الأسئلة التي لم تستخدم مؤخرًا (آخر 3)
-            const recent = recentQuestions[difficulty] || [];
-            const available = arr.filter((_, idx) => !recent.includes(idx));
-            let selectedIdx;
-            if (available.length === 0) {
-                // إذا تكررت كلها، نستخدم أي سؤال و نُعيد ضبط القائمة
-                selectedIdx = Math.floor(Math.random() * arr.length);
-                recentQuestions[difficulty] = [selectedIdx];
-            } else {
-                const availableIndices = available.map(q => arr.indexOf(q));
-                selectedIdx = availableIndices[Math.floor(Math.random() * availableIndices.length)];
-                // تحديث قائمة الحديثة
-                recentQuestions[difficulty].push(selectedIdx);
-                if (recentQuestions[difficulty].length > 3) recentQuestions[difficulty].shift();
-            }
-            return { q: arr[selectedIdx], difficulty };
-        }
-
-        function pickQuestionByDice(d) {
-            let bucket = 'easy';
-            if (d <= 2) bucket = 'easy';
-            else if (d <= 4) bucket = 'medium';
-            else bucket = 'hard';
-            return getRandomQuestion(bucket);
-        }
-
-        // عرض السؤال
-        function presentQuestion(dice) {
-            const pick = pickQuestionByDice(dice);
-            if (!pick) {
-                log('خطأ في بنك الأسئلة');
-                return;
-            }
-            const diffText = { easy: 'سهل', medium: 'متوسط', hard: 'صعب' }[pick.difficulty];
-            questionText.textContent = `[${diffText}] ${pick.q.q}`;
-            answersEl.innerHTML = '';
-            pick.q.options.forEach((opt, idx) => {
-                const b = document.createElement('button');
-                b.className = 'snl-answer-btn';
-                b.textContent = opt;
-                b.onclick = () => answerSelected(idx, pick.q.a, dice);
-                answersEl.appendChild(b);
-            });
-            questionPanel.hidden = false;
-            startQuestionTimer(dice);
-        }
-
-        function startQuestionTimer(dice) {
-            qTimeRemaining = QUESTION_TIME;
-            qTimerEl.textContent = qTimeRemaining;
-            if (questionTimer) clearInterval(questionTimer);
-            questionTimer = setInterval(() => {
-                qTimeRemaining--;
-                qTimerEl.textContent = qTimeRemaining;
-                if (qTimeRemaining <= 0) {
-                    clearInterval(questionTimer);
-                    questionTimer = null;
-                    questionPanel.hidden = true;
-                    log('⌛ انتهى الوقت! إجابة خاطئة');
-                    onWrongAnswer(dice);
-                }
-            }, 1000);
-        }
-
-        function answerSelected(idx, correctIdx, dice) {
-            if (questionTimer) { clearInterval(questionTimer); questionTimer = null; }
-            // تعطيل الأزرار بعد الإجابة
-            document.querySelectorAll('.snl-answer-btn').forEach(btn => btn.disabled = true);
-            if (idx === correctIdx) {
-                log('✅ إجابة صحيحة');
-                onCorrectAnswer(dice);
-            } else {
-                log('❌ إجابة خاطئة');
-                onWrongAnswer(dice);
-            }
-            // إخفاء اللوحة بعد ثانية
-            setTimeout(() => { questionPanel.hidden = true; }, 1000);
-        }
-
-        async function onCorrectAnswer(dice) {
-            const target = Math.min(N, position + dice);
-            await movePlayerTo(target);
-            if (position === N) {
-                gameOver = true;
-                rollBtn.disabled = true;
-                log('🏆 انتصرت! وصلت للنهاية!');
-            }
-        }
-
-        async function onWrongAnswer(dice) {
-            // التحرك للخلف بعدد خطوات النرد
-            const target = Math.max(1, position - dice);
-            await movePlayerTo(target);
-            if (position === N) { // احتمال يصل للبداية؟ لا، لكن لو وصل 100 بالخطأ
-                gameOver = true;
-                rollBtn.disabled = true;
-                log('🏆 انتصرت? بطريقة ما وصلت للنهاية!');
-            }
-        }
-
-        // إعادة تعيين اللعبة
-        function resetGame() {
-            gameOver = false;
-            skipTurn = false;
-            position = 1;
-            currentDice = 0;
-            diceResult.textContent = '-';
-            updatePositionUI();
-            log('تم إعادة بدء اللعبة');
-            rollBtn.disabled = false;
-            questionPanel.hidden = true;
-            if (questionTimer) clearInterval(questionTimer);
-            questionTimer = null;
-            // إعادة رسم اللوحة
-            if (boardImage.complete) {
-                resizeCanvasAndRedraw();
-            }
-        }
-
-        // حدث النرد
-        rollBtn.addEventListener('click', () => {
-            if (gameOver) {
-                log('اللعبة انتهت، أعد البدء');
-                return;
-            }
-            if (!questionPanel.hidden) return;
-            if (skipTurn) {
-                log('⚡ خسارة الدور (مربع عقاب)');
-                skipTurn = false;
-                return;
-            }
-            currentDice = Math.floor(Math.random() * 6) + 1;
-            diceResult.textContent = currentDice;
-            log(`🎲 رمية النرد: ${currentDice}`);
-            presentQuestion(currentDice);
-        });
-
-        // إعادة التعيين
-        resetBtn.addEventListener('click', resetGame);
-
-        // التكيف مع تغيير حجم النافذة
-        window.addEventListener('resize', () => {
-            if (boardImage.complete) {
-                resizeCanvasAndRedraw();
-            }
-        });
-
-        // بدء اللعبة
-        initGame();
-
-        // إذا كانت الصورة محملة مسبقاً
-        if (boardImage.complete && boardImage.naturalWidth !== 0) {
-            resizeCanvasAndRedraw();
-        }
-    </script>
+      });
+      trainMode = ML.prefersNoTimer();
+      document.getElementById('modeToggle').textContent = trainMode ? '⚔️ وضع المنافسة' : '📖 تدريب بلا مؤقت';
+    }
+  </script>
+  <script src="assets/auth.js"></script>
 </body>
 
 </html>

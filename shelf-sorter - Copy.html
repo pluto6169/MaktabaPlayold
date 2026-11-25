@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رتّب الرف – MaktabaPlay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+    <style>
+        /* ===== GAME LAYOUT ===== */
+        .game-container {
+            max-width: 960px;
+            margin: 30px auto;
+            background: linear-gradient(145deg, #0f1a2f, #0b1220);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 28px 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle grid overlay for atmosphere */
+        .game-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+            border-radius: 24px;
+            pointer-events: none;
+        }
+
+        .level-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        /* ===== TIMER BAR ===== */
+        .timer-bar-wrap {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 99px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }
+
+        .timer-bar {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(to left, #22c55e, #f59e0b, #ef4444);
+            transition: width 1s linear, background-color 0.5s;
+            width: 100%;
+        }
+
+        /* ===== CONVEYOR BELT AREA ===== */
+        .conveyor-section {
+            position: relative;
+            background: linear-gradient(180deg, #0d1626 0%, #111e36 100%);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 14px 10px 10px;
+            margin-bottom: 22px;
+            min-height: 140px;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .conveyor-label {
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Belt visual */
+        .conveyor-belt {
+            position: relative;
+            height: 100px;
+            background: #1a1a2e;
+            border-radius: 10px;
+            border: 2px solid #2a2a4e;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 14px;
+        }
+
+        /* Animated belt stripes */
+        .conveyor-belt::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(90deg,
+                    transparent 0px,
+                    transparent 28px,
+                    rgba(255, 255, 255, 0.03) 28px,
+                    rgba(255, 255, 255, 0.03) 32px);
+            animation: beltMove 1.2s linear infinite;
+        }
+
+        @keyframes beltMove {
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: -32px 0;
+            }
+        }
+
+        /* Belt roller ends */
+        .belt-roller {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            background: linear-gradient(to bottom, #2a2a4e, #1a1a2e, #2a2a4e);
+            border: 1px solid #3a3a6e;
+            z-index: 1;
+        }
+
+        .belt-roller.left {
+            left: 0;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .belt-roller.right {
+            right: 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        /* ===== INCOMING BOOK (on belt) ===== */
+        .incoming-book {
+            position: relative;
+            z-index: 10;
+            width: 72px;
+            height: 80px;
+            border-radius: 5px 10px 10px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            color: white;
+            font-weight: bold;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6), -2px 0 6px rgba(0, 0, 0, 0.3);
+            border-left: 3px solid rgba(255, 255, 255, 0.25);
+            flex-shrink: 0;
+            user-select: none;
+            transition: transform 0.15s, box-shadow 0.15s;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(60px) scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .incoming-book:active {
+            cursor: grabbing;
+        }
+
+        .incoming-book.dragging {
+            opacity: 0.55;
+            transform: scale(1.08) rotate(3deg);
+            cursor: grabbing;
+            z-index: 999;
+        }
+
+        .book-mini-title {
+            font-size: 10px;
+            text-align: center;
+            padding: 0 4px;
+            max-height: 42px;
+            overflow: hidden;
+            line-height: 1.3;
+        }
+
+        .book-mini-dewey {
+            background: white;
+            color: #111;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+
+        /* Chaos shaking when pile is full */
+        @keyframes chaosShake {
+
+            0%,
+            100% {
+                transform: translateX(0) rotate(0deg);
+            }
+
+            20% {
+                transform: translateX(-4px) rotate(-2deg);
+            }
+
+            40% {
+                transform: translateX(4px) rotate(2deg);
+            }
+
+            60% {
+                transform: translateX(-3px) rotate(-1deg);
+            }
+
+            80% {
+                transform: translateX(3px) rotate(1deg);
+            }
+        }
+
+        .belt-overflow .incoming-book {
+            animation: chaosShake 0.4s ease-in-out;
+        }
+
+        /* ===== SHELVES SECTION ===== */
+        .shelves-section {
+            position: relative;
+            z-index: 2;
+        }
+
+        .shelves-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .shelf-slot {
+            background: #2a1610;
+            border-radius: 8px 8px 4px 4px;
+            border-bottom: 10px solid #1a0d0a;
+            min-height: 130px;
+            padding: 8px 6px 6px;
+            position: relative;
+            cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.2s;
+            overflow: hidden;
+        }
+
+        .shelf-slot::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.04), transparent);
+            pointer-events: none;
+        }
+
+        .shelf-slot.drag-over {
+            box-shadow: 0 0 0 2px var(--brand-2), 0 0 20px rgba(0, 200, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        .shelf-slot.correct-flash {
+            animation: correctFlash 0.5s ease-out;
+        }
+
+        .shelf-slot.wrong-flash {
+            animation: wrongFlash 0.5s ease-out;
+        }
+
+        @keyframes correctFlash {
+            0% {
+                box-shadow: 0 0 0 3px #22c55e, 0 0 30px rgba(34, 197, 94, 0.4);
+            }
+
+            100% {
+                box-shadow: none;
+            }
+        }
+
+        @keyframes wrongFlash {
+
+            0%,
+            20%,
+            40%,
+            60%,
+            80% {
+                box-shadow: 0 0 0 3px #ef4444, 0 0 25px rgba(239, 68, 68, 0.4);
+                transform: translateX(-4px);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(4px);
+            }
+
+            100% {
+                box-shadow: none;
+                transform: translateX(0);
+            }
+        }
+
+        .shelf-label {
+            font-size: 10px;
+            color: rgba(255, 220, 150, 0.9);
+            font-weight: 800;
+            margin-bottom: 6px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .shelf-range {
+            font-size: 9px;
+            color: rgba(255, 200, 100, 0.5);
+            font-family: monospace;
+            display: block;
+        }
+
+        /* Books placed on shelves - tiny spine view */
+        .shelf-books {
+            display: flex;
+            gap: 3px;
+            justify-content: center;
+            flex-wrap: wrap;
+            min-height: 60px;
+            align-items: flex-end;
+            padding-top: 4px;
+        }
+
+        .shelf-book-placed {
+            width: 16px;
+            height: 58px;
+            border-radius: 2px 4px 4px 2px;
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            animation: placeBook 0.3s ease-out;
+        }
+
+        @keyframes placeBook {
+            from {
+                transform: translateY(-20px) scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* ===== COMBO & MESSAGES ===== */
+        .combo-display {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            font-weight: 800;
+            color: #f59e0b;
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.8);
+            pointer-events: none;
+            z-index: 100;
+            animation: comboPop 0.6s ease-out forwards;
+        }
+
+        @keyframes comboPop {
+            0% {
+                transform: translateX(-50%) scale(0.5) translateY(0);
+                opacity: 1;
+            }
+
+            60% {
+                transform: translateX(-50%) scale(1.3) translateY(-10px);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateX(-50%) scale(1) translateY(-30px);
+                opacity: 0;
+            }
+        }
+
+        .float-score {
+            position: fixed;
+            font-size: 20px;
+            font-weight: 800;
+            pointer-events: none;
+            z-index: 9999;
+            animation: floatUp 0.9s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-60px) scale(1.4);
+            }
+        }
+
+        /* ===== BOOK COLORS ===== */
+        .book-color-1 {
+            background: linear-gradient(135deg, #b91c1c, #dc2626);
+        }
+
+        .book-color-2 {
+            background: linear-gradient(135deg, #0369a1, #0ea5e9);
+        }
+
+        .book-color-3 {
+            background: linear-gradient(135deg, #15803d, #22c55e);
+        }
+
+        .book-color-4 {
+            background: linear-gradient(135deg, #b45309, #f59e0b);
+        }
+
+        .book-color-5 {
+            background: linear-gradient(135deg, #4c1d95, #8b5cf6);
+        }
+
+        .book-color-6 {
+            background: linear-gradient(135deg, #0f766e, #14b8a6);
+        }
+
+        .book-color-7 {
+            background: linear-gradient(135deg, #9d174d, #ec4899);
+        }
+
+        /* ===== WARNING OVERLAY when belt near full ===== */
+        .danger-warning {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: #ef4444;
+            letter-spacing: 2px;
+            padding: 4px;
+            background: rgba(239, 68, 68, 0.12);
+            border-radius: 16px 16px 0 0;
+            animation: blink 0.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ===== GAME OVER / WIN SCREEN ===== */
+        .end-screen {
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .end-title {
+            font-size: 36px;
+            font-weight: 800;
+        }
+
+        .end-score {
+            font-size: 18px;
+            color: var(--muted);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 640px) {
+            .shelves-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 5px;
+            }
+
+            .shelf-slot {
+                min-height: 100px;
+                padding: 5px 3px;
+            }
+
+            .shelf-label {
+                font-size: 8px;
+            }
+
+            .game-container {
+                padding: 16px;
+            }
+        }
+
+        /* Intro / instruction overlay */
+        .intro-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 16, 30, 0.96);
+            border-radius: 24px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            gap: 14px;
+        }
+
+        .intro-overlay h2 {
+            color: white;
+            font-size: 26px;
+            margin: 0;
+        }
+
+        .intro-overlay p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+            max-width: 480px;
+        }
+
+        .how-to-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 4px;
+        }
+
+        .how-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: right;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+        }
+
+        .how-card .icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-badge">مـ</div>
+                <span>MaktabaPlay</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">الرئيسية</a>
+            </div>
+            <div id="authLinks" style="display: flex; gap: 10px; align-items: center;"></div>
+        </div>
+    </nav>
+
+    <!-- INTRO OVERLAY -->
+    <div class="intro-overlay" id="introOverlay">
+        <h2>📚 مدير المكتبة السريع</h2>
+        <p>الكتب تتراكم على طاولة الاستقبال! اسحب كل كتاب وضعه في الرف الصح حسب رقم ديوي قبل ما الفوضى تسود!</p>
+        <div class="how-to-grid">
+            <div class="how-card">
+                <div class="icon">📖</div>كل كتاب له رقم ديوي — ضعه في الرف المقابل
+            </div>
+            <div class="how-card">
+                <div class="icon">⚡</div>كل كتاب صح = +10 نقطة + مضاعف كومبو
+            </div>
+            <div class="how-card">
+                <div class="icon">❌</div>كتاب غلط = خسارة 5 ثواني + كسر الكومبو
+            </div>
+            <div class="how-card">
+                <div class="icon">🌊</div>لو امتلأت الطاولة = خسارة 10 ثواني
+            </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:10px; font-size:16px; padding: 12px 32px;"
+            onclick="startGame()">ابدأ اللعب! 🚀</button>
+    </div>
+
+    <!-- HUD -->
+    <div class="level-info">
+        <div class="stat-item">
+            <span class="stat-label">النقاط</span>
+            <span class="stat-value" id="scoreSpan" style="color: var(--accent2);">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">الكومبو</span>
+            <span class="stat-value" id="comboSpan" style="color: #f59e0b;">x1</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">صح / كل</span>
+            <span class="stat-value" id="correctSpan" style="color: #22c55e;">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">الوقت</span>
+            <span class="stat-value" id="timeSpan" style="color: #f87171;">90</span>
+        </div>
+    </div>
+
+    <!-- Timer Bar -->
+    <div class="timer-bar-wrap">
+        <div class="timer-bar" id="timerBar"></div>
+    </div>
+
+    <!-- CONVEYOR / RECEPTION DESK -->
+    <div class="conveyor-section" id="conveyorSection">
+        <div class="conveyor-label">📦 طاولة الاستقبال — اسحب الكتب للأرفف!</div>
+        <div class="conveyor-belt" id="conveyorBelt">
+            <div class="belt-roller left"></div>
+            <div class="belt-roller right"></div>
+            <!-- Books generated here -->
+        </div>
+    </div>
+
+    <!-- SHELVES -->
+    <div class="shelves-section">
+        <div class="shelves-grid" id="shelvesGrid">
+            <!-- Shelves generated by JS -->
+        </div>
+    </div>
+
+    </div>
+
+    <div class="shelf" id="shelf">
+        <!-- Books will be generated here -->
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-primary" id="checkBtn" onclick="checkOrder()">تحقق من الترتيب ✅</button>
+    </div>
+    </div>
+
+    <script src="assets/auth.js"></script>
+    <script>
+        // =============================================
+        //  DEWEY SHELVES CONFIG
+        // =============================================
+        const SHELVES = [
+            { id: 'shelf-000', label: 'معلومات عامة', range: '000–099', min: 0, max: 99.999, color: '#64748b' },
+            { id: 'shelf-100', label: 'فلسفة ونفس', range: '100–199', min: 100, max: 199.999, color: '#8b5cf6' },
+            { id: 'shelf-200', label: 'دين', range: '200–299', min: 200, max: 299.999, color: '#f59e0b' },
+            { id: 'shelf-300', label: 'علوم اجتماعية', range: '300–399', min: 300, max: 399.999, color: '#0ea5e9' },
+            { id: 'shelf-400', label: 'لغة وأدب', range: '400–499', min: 400, max: 499.999, color: '#22d3ee' },
+            { id: 'shelf-500', label: 'علوم طبيعية', range: '500–599', min: 500, max: 599.999, color: '#22c55e' },
+            { id: 'shelf-600', label: 'تكنولوجيا', range: '600–699', min: 600, max: 699.999, color: '#f97316' },
+            { id: 'shelf-700', label: 'الفنون', range: '700–799', min: 700, max: 799.999, color: '#ec4899' },
+            { id: 'shelf-800', label: 'أدب', range: '800–899', min: 800, max: 899.999, color: '#a78bfa' },
+            { id: 'shelf-900', label: 'تاريخ وجغرافيا', range: '900–999', min: 900, max: 999.999, color: '#f87171' },
+        ];
+
+        // =============================================
+        //  BOOK POOL — enough variety across all shelves
+        // =============================================
+        const BOOK_POOL = [
+            // 000s
+            { title: "موسوعة عامة", dewey: "030", color: 1 },
+            { title: "علم المكتبات", dewey: "020", color: 2 },
+            { title: "الحاسوب والمجتمع", dewey: "004", color: 3 },
+            // 100s
+            { title: "مقدمة في الفلسفة", dewey: "100", color: 5 },
+            { title: "مقدمة في علم النفس", dewey: "150", color: 1 },
+            { title: "الأخلاق الفلسفية", dewey: "170", color: 2 },
+            { title: "الفلسفة اليونانية", dewey: "180", color: 5 },
+            // 200s
+            { title: "تفسير القرآن الكريم", dewey: "297.1", color: 4 },
+            { title: "الفقه الإسلامي", dewey: "297.3", color: 3 },
+            { title: "علم الأديان المقارن", dewey: "210", color: 7 },
+            // 300s
+            { title: "مبادئ الاقتصاد", dewey: "330", color: 2 },
+            { title: "علم الاجتماع", dewey: "301", color: 6 },
+            { title: "القانون الدولي", dewey: "341", color: 3 },
+            { title: "علم السياسة", dewey: "320", color: 1 },
+            // 400s
+            { title: "قواعد اللغة العربية", dewey: "410", color: 1 },
+            { title: "المعجم الوجيز", dewey: "413", color: 4 },
+            { title: "اللغويات التطبيقية", dewey: "418", color: 2 },
+            // 500s
+            { title: "الفيزياء الحديثة", dewey: "530", color: 3 },
+            { title: "الكيمياء العضوية", dewey: "547", color: 6 },
+            { title: "موسوعة الحيوان", dewey: "590", color: 5 },
+            { title: "الرياضيات التطبيقية", dewey: "510", color: 4 },
+            { title: "علم الفلك", dewey: "520", color: 7 },
+            // 600s
+            { title: "هندسة البرمجيات", dewey: "005.1", color: 4 },
+            { title: "الذكاء الاصطناعي", dewey: "006.3", color: 5 },
+            { title: "أمراض القلب", dewey: "616.1", color: 1 },
+            { title: "التشريح", dewey: "611", color: 7 },
+            { title: "الجراحة العامة", dewey: "617", color: 3 },
+            { title: "الهندسة المدنية", dewey: "624", color: 2 },
+            { title: "الطاقة المتجددة", dewey: "621.042", color: 6 },
+            // 700s
+            { title: "الفن الإسلامي", dewey: "709.17", color: 3 },
+            { title: "الموسيقى العربية", dewey: "780", color: 5 },
+            { title: "فن التصوير", dewey: "770", color: 7 },
+            // 800s
+            { title: "الأدب الإنجليزي", dewey: "820", color: 4 },
+            { title: "الشعر العربي", dewey: "892.7", color: 1 },
+            { title: "الرواية العربية", dewey: "892.73", color: 2 },
+            // 900s
+            { title: "تاريخ مصر", dewey: "962", color: 2 },
+            { title: "تاريخ أوروبا", dewey: "940", color: 5 },
+            { title: "جغرافيا آسيا", dewey: "915", color: 3 },
+            { title: "التاريخ الإسلامي", dewey: "297.09", color: 4 }, // intentionally edge
+        ];
+
+        // =============================================
+        //  GAME STATE
+        // =============================================
+        let score = 0;
+        let combo = 1;
+        let correctCount = 0;
+        let totalCount = 0;
+        let timeLeft = 90;
+        let maxTime = 90;
+        let timer = null;
+        let gameActive = false;
+        let beltQueue = [];       // books waiting to appear
+        let beltBooks = [];       // books currently on belt (max 5 visible)
+        const MAX_BELT = 5;
+        let spawnInterval = null;
+        let draggedBookData = null; // { dewey, color, title, element }
+
+        // =============================================
+        //  BUILD SHELVES
+        // =============================================
+        function buildShelves() {
+            const grid = document.getElementById('shelvesGrid');
+            grid.innerHTML = '';
+            SHELVES.forEach(shelf => {
+                const el = document.createElement('div');
+                el.className = 'shelf-slot';
+                el.id = shelf.id;
+                el.dataset.min = shelf.min;
+                el.dataset.max = shelf.max;
+                el.innerHTML = `
+                <div class="shelf-label">
+                    ${shelf.label}
+                    <span class="shelf-range">${shelf.range}</span>
+                </div>
+                <div class="shelf-books" id="books-${shelf.id}"></div>
+            `;
+
+                // Drag & drop events
+                el.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    el.classList.add('drag-over');
+                });
+                el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+                el.addEventListener('drop', e => {
+                    e.preventDefault();
+                    el.classList.remove('drag-over');
+                    handleDrop(shelf, el);
+                });
+
+                // Touch drop support
+                el.addEventListener('touchend', e => {
+                    if (!draggedBookData) return;
+                    handleDrop(shelf, el);
+                });
+
+                grid.appendChild(el);
+            });
+        }
+
+        // =============================================
+        //  POPULATE BELT
+        // =============================================
+        function prepareBeltQueue() {
+            // Shuffle book pool and repeat to fill queue
+            let pool = [...BOOK_POOL];
+            pool = pool.sort(() => Math.random() - 0.5);
+            // Repeat for long games
+            beltQueue = [...pool, ...pool.sort(() => Math.random() - 0.5)];
+        }
+
+        function spawnBook() {
+            if (!gameActive) return;
+            const belt = document.getElementById('conveyorBelt');
+            const currentBooks = belt.querySelectorAll('.incoming-book').length;
+
+            if (currentBooks >= MAX_BELT) {
+                // Belt overflow! Penalty
+                triggerBeltOverflow();
+                return;
+            }
+
+            if (beltQueue.length === 0) return;
+            const book = beltQueue.shift();
+
+            const el = document.createElement('div');
+            el.className = `incoming-book book-color-${book.color}`;
+            el.draggable = true;
+            el.dataset.dewey = book.dewey;
+            el.dataset.title = book.title;
+            el.dataset.color = book.color;
+            el.innerHTML = `
+            <div class="book-mini-title">${book.title}</div>
+            <div class="book-mini-dewey">${book.dewey}</div>
+        `;
+
+            // Desktop drag
+            el.addEventListener('dragstart', e => {
+                draggedBookData = { dewey: book.dewey, title: book.title, color: book.color, element: el };
+                el.classList.add('dragging');
+            });
+            el.addEventListener('dragend', () => {
+                el.classList.remove('dragging');
+            });
+
+            // Touch drag
+            let touchStartX, touchStartY;
+            let ghost = null;
+
+            el.addEventListener('touchstart', e => {
+                const t = e.touches[0];
+                touchStartX = t.clientX;
+                touchStartY = t.clientY;
+                draggedBookData = { dewey: book.dewey, title: book.title, color: book.color, element: el };
+
+                // create ghost
+                ghost = el.cloneNode(true);
+                ghost.style.cssText = `position:fixed; opacity:0.8; pointer-events:none; z-index:9999;
+                width:72px; height:80px; transform:translate(-50%,-50%); top:${t.clientY}px; left:${t.clientX}px;`;
+                document.body.appendChild(ghost);
+                el.style.opacity = '0.3';
+            }, { passive: true });
+
+            el.addEventListener('touchmove', e => {
+                e.preventDefault();
+                const t = e.touches[0];
+                if (ghost) {
+                    ghost.style.top = t.clientY + 'px';
+                    ghost.style.left = t.clientX + 'px';
+                }
+                // Highlight shelf under finger
+                document.querySelectorAll('.shelf-slot').forEach(s => s.classList.remove('drag-over'));
+                const under = document.elementFromPoint(t.clientX, t.clientY);
+                const shelf = under?.closest('.shelf-slot');
+                if (shelf) shelf.classList.add('drag-over');
+            }, { passive: false });
+
+            el.addEventListener('touchend', e => {
+                const t = e.changedTouches[0];
+                if (ghost) { ghost.remove(); ghost = null; }
+                el.style.opacity = '';
+
+                const under = document.elementFromPoint(t.clientX, t.clientY);
+                const shelfEl = under?.closest('.shelf-slot');
+                document.querySelectorAll('.shelf-slot').forEach(s => s.classList.remove('drag-over'));
+
+                if (shelfEl && draggedBookData) {
+                    const shelfData = SHELVES.find(s => s.id === shelfEl.id);
+                    if (shelfData) handleDrop(shelfData, shelfEl);
+                }
+                draggedBookData = null;
+            });
+
+            belt.appendChild(el);
+        }
+
+        function triggerBeltOverflow() {
+            const section = document.getElementById('conveyorSection');
+            // Visual chaos shake
+            section.classList.add('belt-overflow');
+            setTimeout(() => section.classList.remove('belt-overflow'), 500);
+
+            // Penalty
+            timeLeft = Math.max(5, timeLeft - 10);
+            updateTimerDisplay();
+            showFloatingText('⚠️ فوضى! -10ث', '#ef4444', document.getElementById('conveyorSection'));
+
+            // Remove oldest book from belt as penalty
+            const belt = document.getElementById('conveyorBelt');
+            const first = belt.querySelector('.incoming-book');
+            if (first) {
+                first.style.animation = 'slideIn 0.3s reverse forwards';
+                setTimeout(() => first.remove(), 300);
+            }
+        }
+
+        // =============================================
+        //  HANDLE DROP
+        // =============================================
+        function handleDrop(shelfData, shelfEl) {
+            if (!draggedBookData || !gameActive) return;
+
+            const dewey = parseFloat(draggedBookData.dewey);
+            const isCorrect = dewey >= shelfData.min && dewey <= shelfData.max;
+            totalCount++;
+
+            if (isCorrect) {
+                // Remove from belt
+                draggedBookData.element.remove();
+                draggedBookData = null;
+
+                // Update combo
+                combo = Math.min(combo + 1, 8);
+                const pts = 10 * combo;
+                score += pts;
+                correctCount++;
+
+                // Add tiny book spine to shelf
+                const booksContainer = document.getElementById(`books-${shelfData.id}`);
+                const spine = document.createElement('div');
+                spine.className = 'shelf-book-placed';
+                spine.style.background = getBookColorCSS(combo % 7 + 1);
+                booksContainer.appendChild(spine);
+
+                // Visual feedback
+                shelfEl.classList.add('correct-flash');
+                setTimeout(() => shelfEl.classList.remove('correct-flash'), 600);
+
+                showFloatingText(`+${pts} ${combo > 2 ? '🔥'.repeat(Math.min(combo - 1, 4)) : '✅'}`, '#22c55e', shelfEl);
+                if (combo >= 3) showComboPopup(`كومبو x${combo}!`);
+
+                updateHUD();
+            } else {
+                // Wrong shelf
+                draggedBookData.element.style.animation = 'none';
+                setTimeout(() => draggedBookData.element.style.animation = '', 50);
+                draggedBookData = null;
+
+                combo = 1;
+                timeLeft = Math.max(5, timeLeft - 5);
+
+                shelfEl.classList.add('wrong-flash');
+                setTimeout(() => shelfEl.classList.remove('wrong-flash'), 600);
+
+                showFloatingText('❌ خطأ! -5ث', '#ef4444', shelfEl);
+                updateHUD();
+            }
+        }
+
+        function getBookColorCSS(n) {
+            const colors = {
+                1: 'linear-gradient(to bottom, #dc2626, #b91c1c)',
+                2: 'linear-gradient(to bottom, #0ea5e9, #0369a1)',
+                3: 'linear-gradient(to bottom, #22c55e, #15803d)',
+                4: 'linear-gradient(to bottom, #f59e0b, #b45309)',
+                5: 'linear-gradient(to bottom, #8b5cf6, #4c1d95)',
+                6: 'linear-gradient(to bottom, #14b8a6, #0f766e)',
+                7: 'linear-gradient(to bottom, #ec4899, #9d174d)',
+            };
+            return colors[n] || colors[1];
+        }
+
+        // =============================================
+        //  FLOATING UI FEEDBACK
+        // =============================================
+        function showFloatingText(text, color, anchorEl) {
+            const rect = anchorEl.getBoundingClientRect();
+            const el = document.createElement('div');
+            el.className = 'float-score';
+            el.style.color = color;
+            el.style.left = (rect.left + rect.width / 2 - 30) + 'px';
+            el.style.top = (rect.top - 10) + 'px';
+            el.style.fontFamily = 'Tajawal, sans-serif';
+            el.style.textShadow = `0 0 10px ${color}`;
+            el.innerText = text;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 900);
+        }
+
+        function showComboPopup(text) {
+            const container = document.getElementById('gameContainer');
+            const el = document.createElement('div');
+            el.className = 'combo-display';
+            el.innerText = text;
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 700);
+        }
+
+        // =============================================
+        //  HUD & TIMER
+        // =============================================
+        function updateHUD() {
+            document.getElementById('scoreSpan').innerText = score;
+            document.getElementById('comboSpan').innerText = `x${combo}`;
+            document.getElementById('correctSpan').innerText = `${correctCount}`;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timeSpan').innerText = timeLeft;
+            const pct = (timeLeft / maxTime) * 100;
+            document.getElementById('timerBar').style.width = pct + '%';
+
+            // Color shift as time runs low
+            const bar = document.getElementById('timerBar');
+            if (pct > 50) {
+                bar.style.background = 'linear-gradient(to left, #22c55e, #a3e635)';
+            } else if (pct > 25) {
+                bar.style.background = 'linear-gradient(to left, #f59e0b, #fde68a)';
+            } else {
+                bar.style.background = 'linear-gradient(to left, #ef4444, #fca5a5)';
+            }
+        }
+
+        // =============================================
+        //  GAME FLOW
+        // =============================================
+        function startGame() {
+            document.getElementById('introOverlay').style.display = 'none';
+
+            score = 0;
+            combo = 1;
+            correctCount = 0;
+            totalCount = 0;
+            timeLeft = 90;
+            maxTime = 90;
+            gameActive = true;
+
+            buildShelves();
+            prepareBeltQueue();
+            updateHUD();
+
+            // Spawn first 2 books immediately
+            spawnBook();
+            setTimeout(spawnBook, 500);
+
+            // Then spawn one every 3.5 seconds (speeds up)
+            let spawnDelay = 3500;
+            function scheduleNext() {
+                if (!gameActive) return;
+                spawnInterval = setTimeout(() => {
+                    spawnBook();
+                    spawnDelay = Math.max(1800, spawnDelay - 80); // gradually faster
+                    scheduleNext();
+                }, spawnDelay);
+            }
+            scheduleNext();
+
+            // Countdown
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) endGame();
+            }, 1000);
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(timer);
+            clearTimeout(spawnInterval);
+
+            const belt = document.getElementById('conveyorBelt');
+            belt.innerHTML = '<div class="belt-roller left"></div><div class="belt-roller right"></div>';
+
+            const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+            const won = correctCount >= 10;
+
+            const container = document.getElementById('gameContainer');
+
+            // Try to save score
+            try { window.maktabaAuth.updateScore('sorter', score); } catch (e) { }
+
+            // Show end screen inside game container
+            const endDiv = document.createElement('div');
+            endDiv.className = 'end-screen';
+            endDiv.innerHTML = `
+            <div class="end-title" style="color: ${won ? '#22c55e' : '#f87171'}">
+                ${won ? '🎉 أحسنت يا مدير!' : '⏰ انتهى الوقت!'}
+            </div>
+            <div style="font-size: 48px; font-weight: 800; color: #f59e0b; text-shadow: 0 0 20px rgba(245,158,11,0.5);">
+                ${score} نقطة
+            </div>
+            <div class="end-score">
+                ✅ كتب صحيحة: ${correctCount} &nbsp;|&nbsp; 🎯 الدقة: ${accuracy}%
+            </div>
+            <button class="btn btn-primary" style="margin-top:10px; font-size:15px; padding:12px 30px;"
+                onclick="restartGame()">🔄 العب مرة أخرى</button>
+        `;
+
+            const conveyorSection = document.getElementById('conveyorSection');
+            conveyorSection.after(endDiv);
+        }
+
+        function restartGame() {
+            // Remove end screen if present
+            const endDiv = document.querySelector('.end-screen');
+            if (endDiv) endDiv.remove();
+
+            // Clear shelves
+            buildShelves();
+
+            // Reset belt
+            const belt = document.getElementById('conveyorBelt');
+            belt.querySelectorAll('.incoming-book').forEach(b => b.remove());
+
+            startGame();
+        }
+
+    </script>
+</body>
+
+</html>

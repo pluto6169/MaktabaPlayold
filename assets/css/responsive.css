@@ -1,0 +1,63 @@
+/* ============================================================
+   MaktabaPlay — Responsive (الموبايل واللمس والشاشات الصغيرة)
+   ============================================================ */
+
+/* المساحة تحت الهيدر الثابت */
+body.mp-has-header > .wrap,
+body.mp-has-header > .game-wrap,
+body.mp-has-header > .game-container,
+body.mp-has-header > .game-page,
+body.mp-has-header > .hangman-container,
+body.mp-has-header > .minigames-wrapper,
+body.mp-has-header > .match-container {
+  margin-top: 18px;
+}
+
+/* لا تعرض الهيدر القديم لو بقي في صفحة */
+body[data-mp-game] .navbar { display: none !important; }
+
+/* أزرار اللمس */
+@media (pointer: coarse) {
+  button, .choice, .lvl-btn, .mode-btn, .tab-btn { touch-action: manipulation; }
+  .mp-nav a, .mp-header a { -webkit-tap-highlight-color: transparent; }
+}
+
+/* شاشات متوسطة */
+@media (max-width: 900px) {
+  body.mp-has-header > .wrap,
+  body.mp-has-header > .hangman-container,
+  body.mp-has-header > .minigames-wrapper { padding-inline: 12px; }
+}
+
+/* موبايل */
+@media (max-width: 640px) {
+  :root { --mp-header-h: 58px; }
+  .mp-hud-pill { padding: 6px 10px; font-size: 11.5px; }
+  .mp-hud-pill b { font-size: 14px; }
+  .mp-card { border-radius: 16px; padding: 14px; }
+  .mp-stage { border-radius: 16px; }
+  .mp-modal, .ml-modal { border-radius: 18px; }
+}
+
+/* هاتف أفقي قصير */
+@media (max-height: 520px) and (orientation: landscape) {
+  .mp-start { grid-template-columns: 260px 1fr; }
+  .mp-start__art { min-height: 0; padding: 14px; }
+  .mp-start__icon { width: 62px; height: 62px; font-size: 28px; }
+  .mp-overlay { align-items: flex-start; }
+}
+
+/* تقليل الحركة */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* الطباعة: بلا هيدر أو أزرار */
+@media print {
+  .mp-header, .mp-overlay, .mp-pause-fab, footer { display: none !important; }
+}

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وصّل المفاهيم – MaktabaPlay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+    <style>
+        .match-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: linear-gradient(145deg, #0f1a2f, #0b1220);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .columns-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 50px;
+            position: relative;
+        }
+
+        .column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 2;
+        }
+
+        .match-item {
+            background: rgba(15, 26, 47, 0.8);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            font-weight: 600;
+            color: white;
+            user-select: none;
+        }
+
+        .match-item:hover {
+            border-color: var(--brand-2);
+            background: rgba(6, 182, 212, 0.1);
+        }
+
+        .match-item.selected {
+            border-color: var(--brand);
+            background: rgba(34, 197, 94, 0.1);
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .match-item.matched {
+            border-color: var(--success);
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success);
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .match-item.wrong {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.2);
+            animation: shake 0.4s ease;
+        }
+
+        /* Dots for drawing lines visually (simulated) */
+        .term-item::after {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: var(--brand-2);
+            border-radius: 50%;
+        }
+
+        .def-item::before {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: var(--brand);
+            border-radius: 50%;
+        }
+
+        .term-item.matched::after, .def-item.matched::before {
+            background: var(--success);
+        }
+
+        /* Canvas for drawing lines */
+        #linesCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .result-screen {
+            text-align: center;
+            display: none;
+            padding: 40px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 768px) {
+            .columns-container { flex-direction: column; }
+            .term-item::after, .def-item::before { display: none; }
+            #linesCanvas { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-badge">مـ</div>
+                <span>MaktabaPlay</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">الرئيسية</a>
+            </div>
+            <div id="authLinks" style="display: flex; gap: 10px; align-items: center;"></div>
+        </div>
+    </nav>
+
+    <div class="match-container">
+        <div id="gameScreen">
+            <div class="header-info">
+                <div>المستوى: <span id="levelSpan" style="color: white; font-weight: bold;">1</span> / 3</div>
+                <div>النقاط: <span id="scoreSpan" style="color: var(--accent2); font-weight: bold;">0</span></div>
+                <div style="font-size: 20px; font-weight: bold; color: var(--brand-2);">⏱️ <span id="timeSpan">60</span></div>
+            </div>
+
+            <div class="columns-container" id="columnsContainer">
+                <canvas id="linesCanvas"></canvas>
+                <div class="column" id="termsCol">
+                    <!-- Terms -->
+                </div>
+                <div class="column" id="defsCol">
+                    <!-- Definitions -->
+                </div>
+            </div>
+        </div>
+
+        <div id="resultScreen" class="result-screen">
+            <h2 style="color: white; font-size: 32px; margin-bottom: 20px;" id="resultTitle">انتهت اللعبة!</h2>
+            <div style="font-size: 64px; font-weight: 800; color: var(--brand); margin-bottom: 30px;" id="finalScore">0</div>
+            <button class="btn btn-primary" onclick="initGame()">🔄 العب مرة أخرى</button>
+        </div>
+    </div>
+
+    <script src="assets/auth.js"></script>
+    <script>
+        const allConcepts = [
+            // Level 1
+            [
+                { id: 1, term: "تصنيف ديوي العشري", def: "نظام لترتيب الكتب حسب الموضوع" },
+                { id: 2, term: "الفهرس", def: "قائمة بالمواد المكتبية المتوفرة" },
+                { id: 3, term: "ISBN", def: "الرقم الدولي المعياري للكتاب" },
+                { id: 4, term: "الإعارة", def: "إتاحة الكتب للمستفيدين مؤقتاً" }
+            ],
+            // Level 2
+            [
+                { id: 5, term: "MARC", def: "الفهرسة المقروءة آلياً" },
+                { id: 6, term: "الببليوغرافيا", def: "قائمة بالمصادر والمراجع حول موضوع" },
+                { id: 7, term: "التكشيف", def: "استخراج المصطلحات الدالة من الوثيقة" },
+                { id: 8, term: "الكشاف", def: "دليل يرشد للمواضع الواردة في الوثيقة" },
+                { id: 9, term: "الاستخلاص", def: "إعداد ملخص موجز للوثيقة" }
+            ],
+            // Level 3
+            [
+                { id: 10, term: "OPAC", def: "فهرس الاتصال المباشر للجمهور" },
+                { id: 11, term: "الثيسوروس", def: "أداة ضبط استخدام المصطلحات" },
+                { id: 12, term: "المخطوط", def: "كتاب مكتوب بخط اليد قبل الطباعة" },
+                { id: 13, term: "الكولوفون", def: "معلومات في نهاية المخطوط عن الناسخ" },
+                { id: 14, term: "الوراقة", def: "حرفة النسخ والتصحيح قديماً" },
+                { id: 15, term: "الرقمنة", def: "تحويل المواد الورقية لصيغة إلكترونية" }
+            ]
+        ];
+
+        let currentLevel = 0;
+        let score = 0;
+        let timeLeft = 60;
+        let timer;
+        let selectedTerm = null;
+        let selectedDef = null;
+        let matchedPairs = 0;
+        let lines = []; // Store correct connections to draw
+
+        const termsCol = document.getElementById('termsCol');
+        const defsCol = document.getElementById('defsCol');
+        const canvas = document.getElementById('linesCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function shuffle(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function resizeCanvas() {
+            const container = document.getElementById('columnsContainer');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            drawLines();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function initGame() {
+            currentLevel = 0;
+            score = 0;
+            document.getElementById('scoreSpan').innerText = score;
+            document.getElementById('gameScreen').style.display = 'block';
+            document.getElementById('resultScreen').style.display = 'none';
+            loadLevel();
+        }
+
+        function loadLevel() {
+            if (currentLevel >= allConcepts.length) {
+                endGame(true);
+                return;
+            }
+
+            document.getElementById('levelSpan').innerText = currentLevel + 1;
+            timeLeft = 60 + (currentLevel * 20);
+            document.getElementById('timeSpan').innerText = timeLeft;
+            clearInterval(timer);
+            startTimer();
+
+            const concepts = allConcepts[currentLevel];
+            matchedPairs = 0;
+            selectedTerm = null;
+            selectedDef = null;
+            lines = [];
+            
+            termsCol.innerHTML = '';
+            defsCol.innerHTML = '';
+
+            let terms = concepts.map(c => ({ id: c.id, text: c.term }));
+            let defs = concepts.map(c => ({ id: c.id, text: c.def }));
+
+            terms = shuffle(terms);
+            defs = shuffle(defs);
+
+            terms.forEach(t => {
+                const el = document.createElement('div');
+                el.className = 'match-item term-item';
+                el.innerText = t.text;
+                el.dataset.id = t.id;
+                el.onclick = () => handleSelect('term', el);
+                termsCol.appendChild(el);
+            });
+
+            defs.forEach(d => {
+                const el = document.createElement('div');
+                el.className = 'match-item def-item';
+                el.innerText = d.text;
+                el.dataset.id = d.id;
+                el.onclick = () => handleSelect('def', el);
+                defsCol.appendChild(el);
+            });
+
+            // Need small delay for canvas to get correct dimensions
+            setTimeout(resizeCanvas, 100);
+        }
+
+        function handleSelect(type, el) {
+            if (el.classList.contains('matched')) return;
+
+            // Deselect previous of same type
+            if (type === 'term') {
+                if (selectedTerm) selectedTerm.classList.remove('selected');
+                selectedTerm = el;
+            } else {
+                if (selectedDef) selectedDef.classList.remove('selected');
+                selectedDef = el;
+            }
+
+            el.classList.add('selected');
+
+            if (selectedTerm && selectedDef) {
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const id1 = selectedTerm.dataset.id;
+            const id2 = selectedDef.dataset.id;
+
+            if (id1 === id2) {
+                // Correct match
+                selectedTerm.classList.remove('selected');
+                selectedDef.classList.remove('selected');
+                selectedTerm.classList.add('matched');
+                selectedDef.classList.add('matched');
+
+                // Save line coordinates
+                lines.push({ termEl: selectedTerm, defEl: selectedDef });
+                drawLines();
+
+                score += 100;
+                document.getElementById('scoreSpan').innerText = score;
+                matchedPairs++;
+
+                selectedTerm = null;
+                selectedDef = null;
+
+                if (matchedPairs === allConcepts[currentLevel].length) {
+                    clearInterval(timer);
+                    score += timeLeft * 5; // Time bonus
+                    currentLevel++;
+                    setTimeout(loadLevel, 1500);
+                }
+            } else {
+                // Wrong match
+                selectedTerm.classList.add('wrong');
+                selectedDef.classList.add('wrong');
+                
+                let t = selectedTerm;
+                let d = selectedDef;
+                
+                setTimeout(() => {
+                    t.classList.remove('selected', 'wrong');
+                    d.classList.remove('selected', 'wrong');
+                }, 500);
+
+                score = Math.max(0, score - 20);
+                document.getElementById('scoreSpan').innerText = score;
+                
+                selectedTerm = null;
+                selectedDef = null;
+            }
+        }
+
+        function drawLines() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#22c55e';
+            ctx.lineWidth = 3;
+
+            const containerRect = document.getElementById('columnsContainer').getBoundingClientRect();
+
+            lines.forEach(line => {
+                const termRect = line.termEl.getBoundingClientRect();
+                const defRect = line.defEl.getBoundingClientRect();
+
+                // Calculate relative positions
+                const startX = termRect.left - containerRect.left; // Left side of right column (RTL)
+                const startY = termRect.top - containerRect.top + (termRect.height / 2);
+                
+                const endX = defRect.right - containerRect.left; // Right side of left column (RTL)
+                const endY = defRect.top - containerRect.top + (defRect.height / 2);
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            });
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timeSpan').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame(false);
+                }
+            }, 1000);
+        }
+
+        function endGame(completed) {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'block';
+            document.getElementById('finalScore').innerText = score;
+            
+            if (completed) {
+                document.getElementById('resultTitle').innerText = '🎉 مبروك! أتممت جميع المستويات';
+                document.getElementById('resultTitle').style.color = 'var(--success)';
+            } else {
+                document.getElementById('resultTitle').innerText = '⏰ انتهى الوقت!';
+                document.getElementById('resultTitle').style.color = 'var(--danger)';
+            }
+
+            window.maktabaAuth.updateScore('match', score);
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+</html>

@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>موجّه المستفيدين – MaktabaPlay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/game-header.css">
+  <link rel="stylesheet" href="assets/css/game-shell.css">
+  <link rel="stylesheet" href="assets/css/game-components.css">
+  <link rel="stylesheet" href="assets/css/game-polish.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <style>
+    :root {
+      --brand: #22c55e;
+      --brand-2: #06b6d4;
+      --accent2: #f59e0b;
+      --danger: #ef4444;
+      --muted: #94a3b8;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: #060d1a;
+      color: white;
+      min-height: 100vh;
+    }
+
+    /* ── Navbar ── */
+    .navbar {
+      background: rgba(6, 13, 26, 0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .brand-badge {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #000;
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover {
+      color: white;
+    }
+
+    /* ── Page ── */
+    .game-page {
+      max-width: 1060px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    /* ── HUD ── */
+    .hud {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .hud-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hud-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hud-val {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .anger-wrap {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .anger-bar-bg {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      height: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .anger-bar-fill {
+      height: 100%;
+      border-radius: 8px;
+      transition: width .3s;
+      background: linear-gradient(90deg, #f59e0b, #ef4444);
+    }
+
+    /* ── Canvas ── */
+    .canvas-wrap {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 220, 120, 0.2);
+      box-shadow: 0 0 80px rgba(255, 180, 60, 0.07), 0 20px 60px rgba(0, 0, 0, 0.5);
+      user-select: none;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100%;
+    }
+
+    /* ── Overlays ── */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(4, 8, 16, 0.88);
+      backdrop-filter: blur(10px);
+      z-index: 20;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    .overlay h2 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .overlay p {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 400px;
+      line-height: 1.8;
+      margin-bottom: 22px;
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      border: none;
+      border-radius: 14px;
+      padding: 13px 38px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: #000;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 4px 24px rgba(34, 197, 94, 0.35);
+    }
+
+    .btn-start:hover {
+      transform: scale(1.04);
+    }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 10px;
+      padding: 9px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none;
+      z-index: 200;
+      border: 1px solid var(--brand);
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--brand);
+    }
+
+    #toast.show {
+      opacity: 1;
+    }
+
+    @keyframes scorePop {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.4);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .pop {
+      animation: scorePop .28s ease;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <div class="game-page">
+    <div class="hud">
+      <div class="hud-box">
+        <span class="hud-label">النقاط</span>
+        <span class="hud-val" id="hudScore" style="color:var(--brand)">0</span>
+      </div>
+      <div class="hud-box">
+        <span class="hud-label">⏱ الوقت</span>
+        <span class="hud-val" id="hudTime" style="color:var(--brand-2)">90</span>
+      </div>
+      <div class="hud-box">
+        <span class="hud-label">✅ موجَّهون</span>
+        <span class="hud-val" id="hudRouted" style="color:var(--accent2)">0</span>
+      </div>
+      <div class="hud-box anger-wrap">
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="color:var(--muted);font-size:12px;">😠 مؤشر الغضب</span>
+            <span id="hudAnger" style="color:#ef4444;font-weight:700;font-size:12px;">0%</span>
+          </div>
+          <div class="anger-bar-bg">
+            <div class="anger-bar-fill" id="angerFill" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="canvas-wrap" id="canvasWrap">
+      <canvas id="gameCanvas"></canvas>
+
+      <div class="overlay" id="startScreen">
+        <div style="font-size:56px;margin-bottom:10px;">🏛️</div>
+        <h2>موجّه المستفيدين</h2>
+        <p>
+          مستفيدون يدخلون المكتبة — كل واحد محتاج قسماً مختلفاً.<br>
+          <strong style="color:white">اضغط على الشخص</strong> ثم <strong style="color:white">اضغط على القسم
+            الصح</strong>.<br>
+          لو تأخرت يرتفع <span style="color:#ef4444">مؤشر الغضب</span> وتخسر!
+        </p>
+        <button class="btn-start" onclick="startGame()">▶ ابدأ اللعبة</button>
+      </div>
+
+      <div class="overlay hidden" id="gameOverScreen">
+        <div id="gameOverEmoji" style="font-size:60px;margin-bottom:10px;">😤</div>
+        <h2 id="gameOverTitle">انتهت اللعبة!</h2>
+        <p id="gameOverMsg"></p>
+        <div style="font-size:44px;font-weight:800;color:var(--brand);margin-bottom:22px;" id="gameOverScore">0</div>
+        <button class="btn-start" onclick="resetGame()">🔄 العب مرة أخرى</button>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#8B5E3C"></div> قاعة الاطلاع
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#2d5a8e"></div> قسم المراجع
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#3d2a5e"></div> المعمل الرقمي
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#5e3a1a"></div> إدارة الإعارة
+      </div>
+      <div class="legend-item" style="color:#f59e0b">💡 اقرأ ما يقوله المستفيد وخمّن القسم الصح!</div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <footer>
+    <div class="footer-inner">
+      <div>© 2026 MaktabaPlay – مشروع فردي بالكامل بواسطة محمد طارق عبدالمنعم</div>
+      <div><a href="contact.html">اتصل بنا</a> · <a href="partners.html">شراكات</a></div>
+    </div>
+  </footer>
+
+  <script src="assets/library-terms.js"></script>
+  <script src="assets/learning.js"></script>
+  <script src="assets/js/game-settings.js"></script>
+  <script src="assets/js/game-modal.js"></script>
+  <script src="assets/js/game-header.js"></script>
+  <script src="assets/js/game-shell.js"></script>
+  <script src="assets/auth.js"></script>
+  <script>
+    /* ═══════════════════════════════════════
+       CANVAS & WORLD
+    ═══════════════════════════════════════ */
+    const CW = 960, CH = 620;
+
+    let canvas, ctx;
+    let gameRunning = false;
+    let score = 0, anger = 0, timeLeft = 90, routedCount = 0;
+    let diffLevel = 2;
+    const diffTime = () => diffLevel === 1 ? 120 : diffLevel === 3 ? 70 : 90;
+    let patrons = [], particles = [], floatTexts = [];
+    let selectedPatron = null;
+    let gameTimer, spawnTimer;
+    let patronId = 0;
+    let tick = 0;      // increments each frame for animations
+
+    /* ── Section zones (world coords) ── */
+    const ZONES = [
+      {
+        id: 'reading', label: 'قاعة الاطلاع', emoji: '📖', color: '#8B5E3C', glow: '#f59e0b',
+        x: 30, y: 70, w: 200, h: 210, accepts: ['book'], signIcon: '📚'
+      },
+      {
+        id: 'reference', label: 'قسم المراجع', emoji: '🔍', color: '#2d5a8e', glow: '#06b6d4',
+        x: 30, y: 330, w: 200, h: 210, accepts: ['search'], signIcon: '🗂️'
+      },
+      {
+        id: 'digital', label: 'المعمل الرقمي', emoji: '💻', color: '#3d2a5e', glow: '#a855f7',
+        x: 730, y: 70, w: 200, h: 210, accepts: ['internet'], signIcon: '🖥️'
+      },
+      {
+        id: 'lending', label: 'إدارة الإعارة', emoji: '🔄', color: '#5e3a1a', glow: '#f97316',
+        x: 730, y: 330, w: 200, h: 210, accepts: ['return'], signIcon: '🪪'
+      }
+    ];
+
+    const PATRON_TYPES = [
+      {
+        need: 'book', zone: 'reading', skin: '#f4a261', label: 'يريد كتاباً',
+        phrases: [
+          'فيه كتاب عن التاريخ؟',
+          'أنا بدور على رواية',
+          'عايز أقرأ شوية هنا',
+          'فين قسم الأدب؟',
+          'ممكن مكان أقعد وأقرأ؟'
+        ]
+      },
+      {
+        need: 'search', zone: 'reference', skin: '#74c0fc', label: 'يبحث في مرجع',
+        phrases: [
+          'فيه قاموس عربي إنجليزي؟',
+          'أنا محتاج موسوعة',
+          'فين المراجع العلمية؟',
+          'عندكم معجم اللغة؟',
+          'أبحث عن تعريف مصطلح'
+        ]
+      },
+      {
+        need: 'internet', zone: 'digital', skin: '#b197fc', label: 'يحتاج إنترنت',
+        phrases: [
+          'فيه واي فاي هنا؟',
+          'محتاج كمبيوتر للبحث',
+          'عايز أفتح إيميلي',
+          'فين المعمل الرقمي؟',
+          'محتاج أطبع ورقة'
+        ]
+      },
+      {
+        need: 'return', zone: 'lending', skin: '#ffd43b', label: 'يعيد كتاباً',
+        phrases: [
+          'جيت أرجع الكتاب ده',
+          'الإعارة فين بالظبط؟',
+          'عايز أجدد إعارتي',
+          'الكتاب عندي من أسبوع',
+          'فين أسلّم الكتاب؟'
+        ]
+      }
+    ];
+
+    /* ═══════════════════════════════════════
+       INIT
+    ═══════════════════════════════════════ */
+    function initCanvas() {
+      canvas = document.getElementById('gameCanvas');
+      ctx = canvas.getContext('2d');
+      canvas.width = CW;
+      canvas.height = CH;
+      canvas.addEventListener('click', onCanvasClick);
+      canvas.addEventListener('mousemove', onCanvasHover);
+      requestAnimationFrame(loop);
+    }
+
+    /* ═══════════════════════════════════════
+       MAIN LOOP
+    ═══════════════════════════════════════ */
+    let lastTs = 0;
+    function loop(ts) {
+      const dt = Math.min((ts - lastTs) / 1000, 0.08);
+      lastTs = ts;
+      tick++;
+
+      ctx.clearRect(0, 0, CW, CH);
+
+      drawLibrary();
+      drawZones();
+
+      if (gameRunning) updatePatrons(dt);
+      patrons.forEach(p => { if (p.state !== 'gone') drawPatron(p); });
+
+      drawParticles();
+      drawFloatTexts();
+
+      requestAnimationFrame(loop);
+    }
+
+    /* ═══════════════════════════════════════
+       ══ DRAW LIBRARY ENVIRONMENT ══
+    ═══════════════════════════════════════ */
+    function drawLibrary() {
+
+      /* ── Ceiling / Wall gradient ── */
+      const wall = ctx.createLinearGradient(0, 0, 0, CH * 0.38);
+      wall.addColorStop(0, '#2a1f0e');
+      wall.addColorStop(1, '#1a130a');
+      ctx.fillStyle = wall;
+      ctx.fillRect(0, 0, CW, CH * 0.38);
+
+      /* ── Floor gradient (parquet warm wood) ── */
+      const floor = ctx.createLinearGradient(0, CH * 0.38, 0, CH);
+      floor.addColorStop(0, '#3d2b12');
+      floor.addColorStop(0.4, '#4a3318');
+      floor.addColorStop(1, '#2e1e0a');
+      ctx.fillStyle = floor;
+      ctx.fillRect(0, CH * 0.38, CW, CH * 0.62);
+
+      /* ── Parquet tile lines ── */
+      const tileW = 60, tileH = 24;
+      ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+      ctx.lineWidth = 0.8;
+      for (let row = 0; row < 20; row++) {
+        const y = CH * 0.38 + row * tileH;
+        const offset = (row % 2 === 0) ? 0 : tileW / 2;
+        for (let col = -1; col < CW / tileW + 1; col++) {
+          const x = col * tileW + offset;
+          ctx.beginPath();
+          ctx.rect(x, y, tileW, tileH);
+          ctx.stroke();
+          // wood grain
+          ctx.strokeStyle = 'rgba(255,200,100,0.04)';
+          ctx.beginPath();
+          ctx.moveTo(x + 5, y); ctx.lineTo(x + 5, y + tileH);
+          ctx.moveTo(x + 15, y); ctx.lineTo(x + 15, y + tileH);
+          ctx.stroke();
+          ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+        }
+      }
+
+      /* ── Wall–floor divider trim ── */
+      ctx.fillStyle = '#8B6914';
+      ctx.fillRect(0, CH * 0.38 - 6, CW, 12);
+      ctx.fillStyle = '#b8860b';
+      ctx.fillRect(0, CH * 0.38 - 3, CW, 3);
+
+      /* ── Back wall decorative panels ── */
+      ctx.fillStyle = 'rgba(255,200,80,0.03)';
+      for (let i = 0; i < 6; i++) {
+        const px = 60 + i * 150;
+        ctx.beginPath(); ctx.rect(px, 8, 90, CH * 0.34); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,180,60,0.08)'; ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      /* ══ Windows (3) on back wall ══ */
+      const winY = 18, winH = 110, winW = 72;
+      const winPositions = [200, 440, 680];
+      winPositions.forEach(wx => drawWindow(wx, winY, winW, winH));
+
+      /* ══ Ceiling light fixtures ══ */
+      const lampPositions = [160, 380, 600, 820];
+      lampPositions.forEach(lx => drawCeilingLamp(lx, 0));
+
+      /* ══ Big bookshelves along back wall (between zones) ══ */
+      drawBookshelf(250, 50, 180, 190);
+      drawBookshelf(540, 50, 180, 190);
+
+      /* ══ Decorative plants ══ */
+      drawPlant(260, CH - 30);
+      drawPlant(700, CH - 30);
+      drawPlant(CW / 2 - 20, CH - 30);
+
+      /* ══ Central info desk ══ */
+      drawInfoDesk(CW / 2, CH * 0.52);
+
+      /* ══ Carpet / rug in center ══ */
+      drawCarpet(CW / 2, CH * 0.62, 260, 100);
+
+      /* ══ Entrance door (bottom center) ══ */
+      drawEntrance();
+    }
+
+    function drawWindow(x, y, w, h) {
+      // Window frame
+      ctx.fillStyle = '#5c3d1a';
+      ctx.beginPath(); roundRect(ctx, x - 6, y - 6, w + 12, h + 12, 4); ctx.fill();
+
+      // Sky gradient through glass
+      const sky = ctx.createLinearGradient(x, y, x, y + h);
+      sky.addColorStop(0, 'rgba(135,206,235,0.55)');
+      sky.addColorStop(0.6, 'rgba(255,220,100,0.35)');
+      sky.addColorStop(1, 'rgba(255,160,60,0.25)');
+      ctx.fillStyle = sky;
+      ctx.beginPath(); ctx.rect(x, y, w, h); ctx.fill();
+
+      // Window panes (cross)
+      ctx.strokeStyle = '#5c3d1a'; ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(x + w / 2, y); ctx.lineTo(x + w / 2, y + h);
+      ctx.moveTo(x, y + h / 2); ctx.lineTo(x + w, y + h / 2);
+      ctx.stroke();
+
+      // Glass shine
+      ctx.fillStyle = 'rgba(255,255,255,0.12)';
+      ctx.beginPath(); ctx.rect(x + 4, y + 4, w / 2 - 6, h / 2 - 6); ctx.fill();
+
+      // Light beam from window — animated
+      const beamAlpha = 0.04 + Math.sin(tick * 0.02) * 0.02;
+      const beam = ctx.createLinearGradient(x, y + h, x + 60, CH);
+      beam.addColorStop(0, `rgba(255,220,100,${beamAlpha + 0.04})`);
+      beam.addColorStop(1, 'rgba(255,220,100,0)');
+      ctx.fillStyle = beam;
+      ctx.beginPath();
+      ctx.moveTo(x, y + h);
+      ctx.lineTo(x + w, y + h);
+      ctx.lineTo(x + w + 80, CH);
+      ctx.lineTo(x - 30, CH);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function drawCeilingLamp(x, y) {
+      // Cord
+      ctx.strokeStyle = '#3a2a10';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(x, y + 2); ctx.lineTo(x, y + 28); ctx.stroke();
+
+      // Shade
+      ctx.fillStyle = '#8B6914';
+      ctx.beginPath();
+      ctx.moveTo(x - 18, y + 28); ctx.lineTo(x + 18, y + 28);
+      ctx.lineTo(x + 12, y + 48); ctx.lineTo(x - 12, y + 48);
+      ctx.closePath(); ctx.fill();
+      // Inner shade
+      ctx.fillStyle = '#f5d060';
+      ctx.beginPath();
+      ctx.moveTo(x - 14, y + 30); ctx.lineTo(x + 14, y + 30);
+      ctx.lineTo(x + 10, y + 46); ctx.lineTo(x - 10, y + 46);
+      ctx.closePath(); ctx.fill();
+
+      // Light glow on floor
+      const gAlpha = 0.06 + Math.sin(tick * 0.015 + x) * 0.01;
+      const grd = ctx.createRadialGradient(x, CH * 0.45, 0, x, CH * 0.45, 160);
+      grd.addColorStop(0, `rgba(255,220,100,${gAlpha})`);
+      grd.addColorStop(1, 'rgba(255,220,100,0)');
+      ctx.fillStyle = grd;
+      ctx.beginPath(); ctx.ellipse(x, CH * 0.55, 140, 60, 0, 0, Math.PI * 2); ctx.fill();
+    }
+
+    function drawBookshelf(x, y, w, h) {
+      // Shelf carcass
+      ctx.fillStyle = '#5c3d1a';
+      ctx.beginPath(); roundRect(ctx, x, y, w, h, 4); ctx.fill();
+      ctx.strokeStyle = '#3d2710'; ctx.lineWidth = 1.5; ctx.stroke();
+
+      // 3 shelves
+      const shelves = 3;
+      const shelfH = (h - 20) / shelves;
+      for (let s = 0; s < shelves; s++) {
+        const sy = y + 10 + s * shelfH;
+        // Shelf board
+        ctx.fillStyle = '#6b4520';
+        ctx.fillRect(x + 4, sy + shelfH - 6, w - 8, 6);
+
+        // Books on shelf
+        const bookCount = 7 + Math.floor(Math.random() * 0);  // stable
+        const bookColors = ['#c0392b', '#2980b9', '#27ae60', '#8e44ad', '#e67e22', '#16a085', '#f39c12', '#2c3e50', '#e74c3c', '#1abc9c'];
+        // Use deterministic coloring based on position
+        let bx = x + 6;
+        for (let b = 0; b < bookCount; b++) {
+          const bw = 12 + ((x + s * 7 + b * 13) % 8);
+          const bh = 28 + ((x + s * 5 + b * 11) % 18);
+          const col = bookColors[(x + s * 3 + b) % bookColors.length];
+          // Book body
+          ctx.fillStyle = col;
+          ctx.fillRect(bx, sy + shelfH - 6 - bh, bw, bh);
+          // Spine highlight
+          ctx.fillStyle = 'rgba(255,255,255,0.15)';
+          ctx.fillRect(bx, sy + shelfH - 6 - bh, 2, bh);
+          // Top edge
+          ctx.fillStyle = 'rgba(255,255,255,0.1)';
+          ctx.fillRect(bx, sy + shelfH - 6 - bh, bw, 2);
+          bx += bw + 1;
+          if (bx > x + w - 14) break;
+        }
+      }
+    }
+
+    function drawPlant(x, y) {
+      // Pot
+      ctx.fillStyle = '#8B4513';
+      ctx.beginPath();
+      ctx.moveTo(x - 10, y); ctx.lineTo(x + 10, y);
+      ctx.lineTo(x + 8, y - 22); ctx.lineTo(x - 8, y - 22);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#6B3410';
+      ctx.fillRect(x - 11, y - 26, 22, 5);
+
+      // Soil
+      ctx.fillStyle = '#3d1f05';
+      ctx.beginPath(); ctx.ellipse(x, y - 23, 8, 3, 0, 0, Math.PI * 2); ctx.fill();
+
+      // Leaves (animated sway)
+      const sway = Math.sin(tick * 0.02 + x * 0.1) * 2;
+      const leafData = [
+        { dx: -12, dy: -38, rx: 10, ry: 6, rot: -0.4 + sway * 0.05 },
+        { dx: 14, dy: -42, rx: 11, ry: 5, rot: 0.3 + sway * 0.05 },
+        { dx: -4, dy: -50, rx: 9, ry: 5, rot: -0.1 + sway * 0.04 },
+        { dx: -16, dy: -48, rx: 8, ry: 4, rot: -0.6 + sway * 0.06 },
+        { dx: 18, dy: -35, rx: 8, ry: 4, rot: 0.5 + sway * 0.06 },
+      ];
+      leafData.forEach(l => {
+        ctx.save();
+        ctx.translate(x + l.dx + sway, y + l.dy);
+        ctx.rotate(l.rot);
+        ctx.fillStyle = '#22863a';
+        ctx.beginPath(); ctx.ellipse(0, 0, l.rx, l.ry, 0, 0, Math.PI * 2); ctx.fill();
+        // leaf vein
+        ctx.strokeStyle = 'rgba(100,200,80,0.4)'; ctx.lineWidth = 0.8;
+        ctx.beginPath(); ctx.moveTo(-l.rx, 0); ctx.lineTo(l.rx, 0); ctx.stroke();
+        ctx.restore();
+      });
+    }
+
+    function drawInfoDesk(cx, cy) {
+      const dw = 160, dh = 48;
+      // Desk shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.beginPath(); ctx.ellipse(cx, cy + dh / 2 + 8, dw / 2, 12, 0, 0, Math.PI * 2); ctx.fill();
+
+      // Desk top surface
+      ctx.fillStyle = '#7B4F23';
+      ctx.beginPath(); roundRect(ctx, cx - dw / 2, cy - dh / 2, dw, dh, 8); ctx.fill();
+      ctx.fillStyle = '#9B6035';
+      ctx.beginPath(); roundRect(ctx, cx - dw / 2, cy - dh / 2, dw, 12, 4); ctx.fill();
+
+      // Items on desk
+      // Small monitor
+      ctx.fillStyle = '#1a1a2e';
+      ctx.beginPath(); roundRect(ctx, cx - 40, cy - dh / 2 - 28, 34, 22, 3); ctx.fill();
+      ctx.fillStyle = '#3a6ea5';
+      ctx.beginPath(); roundRect(ctx, cx - 38, cy - dh / 2 - 26, 30, 18, 2); ctx.fill();
+      ctx.fillStyle = '#555';
+      ctx.fillRect(cx - 27, cy - dh / 2 - 6, 12, 4);
+
+      // Books stacked
+      ctx.fillStyle = '#c0392b'; ctx.fillRect(cx + 10, cy - dh / 2 - 18, 28, 12);
+      ctx.fillStyle = '#2980b9'; ctx.fillRect(cx + 10, cy - dh / 2 - 24, 24, 8);
+      ctx.fillStyle = '#27ae60'; ctx.fillRect(cx + 12, cy - dh / 2 - 30, 20, 8);
+
+      // Desk lamp
+      ctx.strokeStyle = '#8B6914'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx + 50, cy - dh / 2 + 2);
+      ctx.lineTo(cx + 52, cy - dh / 2 - 22);
+      ctx.lineTo(cx + 38, cy - dh / 2 - 30);
+      ctx.stroke();
+      // Lamp head
+      ctx.fillStyle = '#f5d060';
+      ctx.beginPath(); ctx.arc(cx + 36, cy - dh / 2 - 32, 7, 0, Math.PI * 2); ctx.fill();
+      // Lamp glow
+      const lg = ctx.createRadialGradient(cx + 36, cy - dh / 2 - 28, 0, cx + 36, cy - dh / 2 - 20, 40);
+      const la = 0.08 + Math.sin(tick * 0.04) * 0.02;
+      lg.addColorStop(0, `rgba(255,240,150,${la})`);
+      lg.addColorStop(1, 'rgba(255,240,150,0)');
+      ctx.fillStyle = lg;
+      ctx.beginPath(); ctx.ellipse(cx + 36, cy - dh / 2 - 10, 38, 20, 0, 0, Math.PI * 2); ctx.fill();
+
+      // "استعلامات" sign
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.font = 'bold 11px Tajawal';
+      ctx.textAlign = 'center';
+      ctx.fillText('ℹ️ الاستعلامات', cx, cy + 6);
+    }
+
+    function drawCarpet(cx, cy, w, h) {
+      ctx.save();
+      ctx.globalAlpha = 0.45;
+      ctx.fillStyle = '#8B1A1A';
+      ctx.beginPath(); ctx.ellipse(cx, cy, w / 2, h / 2, 0, 0, Math.PI * 2); ctx.fill();
+
+      // Carpet border pattern
+      ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.ellipse(cx, cy, w / 2 - 6, h / 2 - 4, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = '#CD853F'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.ellipse(cx, cy, w / 2 - 14, h / 2 - 10, 0, 0, Math.PI * 2); ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawEntrance() {
+      const ex = CW / 2 - 55, ey = CH - 58, ew = 110, eh = 58;
+
+      // Door frame
+      ctx.fillStyle = '#5c3d1a';
+      ctx.fillRect(ex - 8, ey - 8, ew + 16, eh + 16);
+
+      // Left door
+      const doorSwing = Math.abs(Math.sin(tick * 0.04)) * 8;
+      ctx.fillStyle = '#8B6914';
+      ctx.fillRect(ex, ey, ew / 2 - 2, eh);
+      ctx.fillStyle = '#6B4F0A';
+      ctx.fillRect(ex + ew / 2 + 2, ey, ew / 2 - 2, eh);
+
+      // Door panels
+      ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1;
+      ctx.strokeRect(ex + 4, ey + 5, ew / 2 - 10, eh / 2 - 8);
+      ctx.strokeRect(ex + 4, ey + eh / 2, ew / 2 - 10, eh / 2 - 5);
+      ctx.strokeRect(ex + ew / 2 + 6, ey + 5, ew / 2 - 10, eh / 2 - 8);
+      ctx.strokeRect(ex + ew / 2 + 6, ey + eh / 2, ew / 2 - 10, eh / 2 - 5);
+
+      // Door knobs
+      ctx.fillStyle = '#FFD700';
+      ctx.beginPath(); ctx.arc(ex + ew / 2 - 5, ey + eh / 2, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(ex + ew / 2 + 5, ey + eh / 2, 4, 0, Math.PI * 2); ctx.fill();
+
+      // Welcome mat
+      ctx.fillStyle = '#4a2010';
+      ctx.beginPath(); roundRect(ctx, ex - 10, CH - 14, ew + 20, 14, 3); ctx.fill();
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 10px Tajawal';
+      ctx.textAlign = 'center';
+      ctx.fillText('أهلاً وسهلاً', CW / 2, CH - 4);
+
+      // Arrow indicator
+      const arrowBounce = Math.sin(tick * 0.08) * 4;
+      ctx.fillStyle = 'rgba(34,197,94,0.7)';
+      ctx.font = '20px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('⬇', CW / 2, ey - 12 + arrowBounce);
+    }
+
+    /* ═══════════════════════════════════════
+       DRAW ZONES
+    ═══════════════════════════════════════ */
+    function drawZones() {
+      ZONES.forEach(z => {
+        const isTarget = selectedPatron && z.accepts.includes(selectedPatron.type.need);
+        const pulse = Math.sin(tick * 0.07) * 0.5 + 0.5;
+
+        /* ── Zone room ── */
+        ctx.save();
+
+        // Room shadow/depth on floor
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.beginPath(); roundRect(ctx, z.x + 4, z.y + 4, z.w, z.h, 14); ctx.fill();
+
+        // Room floor (wood, slightly lighter)
+        ctx.fillStyle = z.color;
+        ctx.beginPath(); roundRect(ctx, z.x, z.y, z.w, z.h, 14); ctx.fill();
+
+        // Interior wall
+        ctx.fillStyle = 'rgba(255,255,255,0.04)';
+        ctx.beginPath(); roundRect(ctx, z.x + 6, z.y + 6, z.w - 12, z.h * 0.45, 8); ctx.fill();
+
+        // Static border (no hint glow)
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); roundRect(ctx, z.x, z.y, z.w, z.h, 14); ctx.stroke();
+
+        /* ── Zone interior decorations ── */
+        drawZoneDecor(z);
+
+        /* ── Sign board ── */
+        // Wooden sign plate
+        const sx = z.x + z.w / 2, sy = z.y + 20;
+        ctx.fillStyle = '#5c3d1a';
+        ctx.beginPath(); roundRect(ctx, sx - 55, sy - 14, 110, 28, 6); ctx.fill();
+        ctx.strokeStyle = '#8B6914'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); roundRect(ctx, sx - 55, sy - 14, 110, 28, 6); ctx.stroke();
+
+        ctx.fillStyle = '#fff8e7';
+        ctx.font = 'bold 13px Tajawal';
+        ctx.textAlign = 'center';
+        ctx.fillText(z.signIcon + ' ' + z.label, sx, sy + 5);
+
+        // (no hint ring)
+
+        ctx.restore();
+      });
+    }
+
+    function drawZoneDecor(z) {
+      const cx = z.x + z.w / 2;
+      const midY = z.y + z.h * 0.65;
+
+      if (z.id === 'reading') {
+        // Reading tables
+        ctx.fillStyle = '#6b4520';
+        ctx.fillRect(z.x + 20, midY - 10, 70, 18);
+        ctx.fillRect(z.x + 110, midY - 10, 60, 18);
+        // Chairs
+        [z.x + 25, z.x + 55, z.x + 115, z.x + 140].forEach(chx => {
+          ctx.fillStyle = '#3d2710';
+          ctx.fillRect(chx, midY + 8, 18, 16);
+        });
+        // Open book on table
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.ellipse(z.x + 55, midY - 8, 12, 7, 0.1, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#aaa'; ctx.lineWidth = 0.5;
+        ctx.beginPath(); ctx.moveTo(z.x + 55, midY - 15); ctx.lineTo(z.x + 55, midY - 1); ctx.stroke();
+        // Small bookshelf on side
+        ctx.fillStyle = '#5c3d1a';
+        ctx.fillRect(z.x + 155, z.y + 50, 32, 100);
+        const miniBooks = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'];
+        miniBooks.forEach((c, i) => {
+          ctx.fillStyle = c;
+          ctx.fillRect(z.x + 158, z.y + 55 + i * 22, 8, 18);
+          ctx.fillRect(z.x + 168, z.y + 58 + i * 22, 6, 16);
+          ctx.fillRect(z.x + 176, z.y + 56 + i * 22, 8, 17);
+        });
+
+      } else if (z.id === 'reference') {
+        // Big reference shelf
+        ctx.fillStyle = '#1d3a5e';
+        ctx.fillRect(z.x + 10, z.y + 45, 180, 110);
+        // Shelf dividers
+        for (let s = 0; s < 3; s++) {
+          ctx.fillStyle = '#2d5a8e';
+          ctx.fillRect(z.x + 12, z.y + 45 + s * 35, 176, 5);
+          const bks = ['#8e44ad', '#2980b9', '#c0392b', '#27ae60', '#f39c12', '#e74c3c'];
+          let bxr = z.x + 14;
+          for (let b = 0; b < 8; b++) {
+            const bwr = 16 + b % 3;
+            ctx.fillStyle = bks[(s * 3 + b) % bks.length];
+            ctx.fillRect(bxr, z.y + 50 + s * 35, bwr, 28);
+            bxr += bwr + 2;
+          }
+        }
+        // Reading stand
+        ctx.fillStyle = '#3d2a5e';
+        ctx.fillRect(z.x + 145, midY - 8, 38, 22);
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.font = '9px Tajawal';
+        ctx.textAlign = 'center';
+        ctx.fillText('🗂️', z.x + 164, midY + 7);
+
+      } else if (z.id === 'digital') {
+        // Computer desks
+        const compY = midY - 12;
+        [[z.x + 15, compY], [z.x + 90, compY], [z.x + 15, compY + 42], [z.x + 90, compY + 42]].forEach(([cx2, cy2]) => {
+          // Desk
+          ctx.fillStyle = '#2a2a3e';
+          ctx.fillRect(cx2, cy2, 75, 16);
+          // Monitor
+          ctx.fillStyle = '#0d0d1a';
+          ctx.beginPath(); roundRect(ctx, cx2 + 8, cy2 - 26, 50, 28, 3); ctx.fill();
+          // Screen glow
+          const sg = ctx.createLinearGradient(cx2 + 10, cy2 - 24, cx2 + 10, cy2 - 2);
+          sg.addColorStop(0, 'rgba(100,160,255,0.6)');
+          sg.addColorStop(1, 'rgba(60,100,200,0.3)');
+          ctx.fillStyle = sg;
+          ctx.beginPath(); roundRect(ctx, cx2 + 10, cy2 - 24, 46, 24, 2); ctx.fill();
+          // Screen content lines
+          ctx.strokeStyle = 'rgba(150,200,255,0.4)'; ctx.lineWidth = 1;
+          for (let li = 0; li < 3; li++) {
+            ctx.beginPath();
+            ctx.moveTo(cx2 + 14, cy2 - 20 + li * 7); ctx.lineTo(cx2 + 50, cy2 - 20 + li * 7);
+            ctx.stroke();
+          }
+          // Monitor stand
+          ctx.fillStyle = '#1a1a2e';
+          ctx.fillRect(cx2 + 30, cy2 - 2, 6, 4);
+          ctx.fillRect(cx2 + 22, cy2 + 2, 22, 3);
+        });
+        // WiFi sign
+        ctx.fillStyle = 'rgba(100,100,255,0.7)';
+        ctx.font = '18px serif'; ctx.textAlign = 'center';
+        ctx.fillText('📶', z.x + z.w / 2, z.y + 170);
+
+      } else if (z.id === 'lending') {
+        // Counter
+        ctx.fillStyle = '#3d2010';
+        ctx.beginPath(); roundRect(ctx, z.x + 15, midY - 14, 170, 36, 8); ctx.fill();
+        ctx.fillStyle = '#5c3010';
+        ctx.beginPath(); roundRect(ctx, z.x + 15, midY - 14, 170, 12, 6); ctx.fill();
+        // Scanner device
+        ctx.fillStyle = '#222';
+        ctx.beginPath(); roundRect(ctx, z.x + 30, midY - 28, 30, 16, 3); ctx.fill();
+        ctx.fillStyle = '#ff6600';
+        const scanX = z.x + 30 + ((tick * 1.5) % 28);
+        ctx.fillRect(scanX, midY - 26, 2, 12);
+        // Stack of books to return
+        [[z.x + 110, midY - 32], [z.x + 113, midY - 40], [z.x + 116, midY - 48]].forEach(([bx2, by2], i) => {
+          const cols = ['#c0392b', '#2980b9', '#27ae60'];
+          ctx.fillStyle = cols[i];
+          ctx.fillRect(bx2, by2, 30, 10);
+        });
+        // Staff figure (simple)
+        ctx.fillStyle = '#f4a261';
+        ctx.beginPath(); ctx.arc(z.x + 90, midY - 38, 10, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#1d6f42';
+        ctx.fillRect(z.x + 80, midY - 28, 20, 16);
+        // Barcode sign
+        ctx.fillStyle = 'rgba(255,200,100,0.7)';
+        ctx.font = '10px Tajawal'; ctx.textAlign = 'center';
+        ctx.fillText('🪪 فحص الإعارة', z.x + z.w / 2, z.y + 170);
+      }
+    }
+
+    /* ═══════════════════════════════════════
+       DRAW PATRON (animated character)
+    ═══════════════════════════════════════ */
+    function drawPatron(p) {
+      const t = tick;
+      const bob = (p.state === 'waiting') ? Math.sin(t * 0.06 + p.bobOffset) * 2.5 : 0;
+      const walkCycle = Math.sin(t * 0.18 + p.bobOffset) * 3;
+      const px = p.x, py = p.y + bob;
+      const sz = 16;
+
+      const waitRatio = Math.min(p.waitTime / p.maxWait, 1);
+
+      ctx.save();
+      ctx.translate(px, py);
+
+      /* ── Shadow ── */
+      ctx.fillStyle = 'rgba(0,0,0,0.22)';
+      ctx.beginPath();
+      ctx.ellipse(0, sz + 10, sz * 0.7, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      /* ── Selection ring ── */
+      if (p.selected) {
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.shadowBlur = 16; ctx.shadowColor = '#fff';
+        ctx.beginPath(); ctx.arc(0, 0, sz + 10, 0, Math.PI * 2); ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+
+      /* ── Legs (walking animation) ── */
+      const legColor = p.type.skin === '#f4a261' ? '#8B4513' :
+        p.type.skin === '#74c0fc' ? '#1a5276' :
+          p.type.skin === '#b197fc' ? '#4a235a' : '#7d6608';
+      ctx.fillStyle = legColor;
+      if (p.state === 'entering' || p.state === 'routing') {
+        ctx.fillRect(-4, sz + 4, 5, 12 + Math.max(0, walkCycle));
+        ctx.fillRect(1, sz + 4, 5, 12 - Math.max(0, walkCycle));
+      } else {
+        ctx.fillRect(-5, sz + 4, 5, 12);
+        ctx.fillRect(2, sz + 4, 5, 12);
+      }
+      // Feet
+      ctx.fillStyle = '#222';
+      ctx.beginPath(); ctx.ellipse(-3, sz + 16, 6, 3, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(4, sz + 16, 6, 3, 0, 0, Math.PI * 2); ctx.fill();
+
+      /* ── Body (shirt) ── */
+      const bodyColor = lerpColor(p.type.skin, '#ef4444', waitRatio * 0.3);
+      ctx.fillStyle = bodyColor;
+      ctx.beginPath(); roundRect(ctx, -sz * 0.75, -sz * 0.1, sz * 1.5, sz * 1.2, 4); ctx.fill();
+
+      // Shirt details
+      ctx.fillStyle = 'rgba(255,255,255,0.12)';
+      ctx.fillRect(-sz * 0.3, -sz * 0.05, sz * 0.6, sz * 0.5);
+
+      /* ── Arms ── */
+      const armSwing = (p.state === 'entering' || p.state === 'routing') ? walkCycle : 0;
+      ctx.fillStyle = p.type.skin;
+      // Left arm
+      ctx.save(); ctx.translate(-sz * 0.85, sz * 0.2);
+      ctx.rotate(-0.3 + armSwing * 0.05);
+      ctx.fillRect(-4, 0, 7, sz * 0.8);
+      ctx.restore();
+      // Right arm
+      ctx.save(); ctx.translate(sz * 0.85, sz * 0.2);
+      ctx.rotate(0.3 - armSwing * 0.05);
+      ctx.fillRect(-3, 0, 7, sz * 0.8);
+      ctx.restore();
+
+      /* ── Head ── */
+      ctx.fillStyle = p.type.skin;
+      ctx.beginPath(); ctx.arc(0, -sz * 0.6, sz * 0.72, 0, Math.PI * 2); ctx.fill();
+
+      // Hair
+      ctx.fillStyle = p.hairColor || '#3d1f05';
+      ctx.beginPath();
+      ctx.arc(0, -sz * 0.6, sz * 0.72, Math.PI * 0.85, Math.PI * 2.15); ctx.fill();
+      ctx.beginPath(); ctx.arc(0, -sz * 1.25, sz * 0.55, 0, Math.PI); ctx.fill();
+
+      /* ── Face ── */
+      if (waitRatio < 0.4) {
+        // Happy
+        ctx.fillStyle = '#222';
+        ctx.beginPath(); ctx.arc(-sz * 0.26, -sz * 0.65, sz * 0.12, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(sz * 0.26, -sz * 0.65, sz * 0.12, 0, Math.PI * 2); ctx.fill();
+        // Shine in eyes
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(-sz * 0.21, -sz * 0.7, sz * 0.04, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(sz * 0.31, -sz * 0.7, sz * 0.04, 0, Math.PI * 2); ctx.fill();
+        // Smile
+        ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(0, -sz * 0.48, sz * 0.28, 0.15, Math.PI - 0.15); ctx.stroke();
+      } else if (waitRatio < 0.75) {
+        // Neutral/concerned
+        ctx.fillStyle = '#222';
+        ctx.beginPath(); ctx.arc(-sz * 0.26, -sz * 0.65, sz * 0.11, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(sz * 0.26, -sz * 0.65, sz * 0.11, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#555'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(-sz * 0.25, -sz * 0.38); ctx.lineTo(sz * 0.25, -sz * 0.38); ctx.stroke();
+        // Sweat drop
+        ctx.fillStyle = '#74c0fc';
+        ctx.beginPath();
+        ctx.moveTo(sz * 0.5, -sz * 0.85); ctx.lineTo(sz * 0.6, -sz * 0.6);
+        ctx.arc(sz * 0.5, -sz * 0.6, sz * 0.12, 0, Math.PI * 2); ctx.fill();
+      } else {
+        // Angry
+        ctx.fillStyle = '#c0392b';
+        ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(-sz * 0.45, -sz * 0.82); ctx.lineTo(-sz * 0.12, -sz * 0.72); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(sz * 0.45, -sz * 0.82); ctx.lineTo(sz * 0.12, -sz * 0.72); ctx.stroke();
+        ctx.fillStyle = '#222';
+        ctx.beginPath(); ctx.arc(-sz * 0.26, -sz * 0.65, sz * 0.12, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(sz * 0.26, -sz * 0.65, sz * 0.12, 0, Math.PI * 2); ctx.fill();
+        // Frown
+        ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(0, -sz * 0.28, sz * 0.22, Math.PI + 0.3, -0.3); ctx.stroke();
+        // Anger marks
+        ctx.font = `${sz}px serif`; ctx.textAlign = 'center';
+        ctx.fillText('💢', sz, -sz * 1.1);
+      }
+
+      ctx.restore();
+
+      /* ── Speech bubble with Arabic text ── */
+      ctx.font = 'bold 12px Tajawal';
+      const phrase = p.phrase || p.type.label;
+      const textW = ctx.measureText(phrase).width;
+      const bubW = Math.min(Math.max(textW + 22, 80), 200);
+      const bubH = 26;
+      const bubX = px - bubW / 2;
+      const bubY = py - sz - 50;
+
+      // Bubble shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.18)';
+      ctx.beginPath(); roundRect(ctx, bubX + 2, bubY + 2, bubW, bubH, 10); ctx.fill();
+
+      // Bubble background (warm paper white)
+      ctx.fillStyle = '#fffdf0';
+      ctx.strokeStyle = p.type.skin;
+      ctx.lineWidth = 2;
+      ctx.beginPath(); roundRect(ctx, bubX, bubY, bubW, bubH, 10); ctx.fill(); ctx.stroke();
+
+      // Tail pointing down to character
+      ctx.fillStyle = '#fffdf0';
+      ctx.beginPath();
+      ctx.moveTo(px - 7, bubY + bubH - 1);
+      ctx.lineTo(px + 7, bubY + bubH - 1);
+      ctx.lineTo(px, bubY + bubH + 10);
+      ctx.closePath(); ctx.fill();
+      // Tail border
+      ctx.strokeStyle = p.type.skin; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(px - 7, bubY + bubH);
+      ctx.lineTo(px, bubY + bubH + 10);
+      ctx.lineTo(px + 7, bubY + bubH);
+      ctx.stroke();
+
+      // Text inside bubble
+      ctx.fillStyle = '#1a1220';
+      ctx.font = 'bold 12px Tajawal';
+      ctx.textAlign = 'center';
+      ctx.fillText(phrase, px, bubY + 17);
+
+      // Urgency dots (animated) when getting impatient
+      if (p.waitTime > p.maxWait * 0.55) {
+        const dotPhase = Math.floor((tick * 0.05) % 3) + 1;
+        const urgencyRatio = Math.min((p.waitTime - p.maxWait * 0.55) / (p.maxWait * 0.45), 1);
+        ctx.fillStyle = lerpColor('#f59e0b', '#ef4444', urgencyRatio);
+        ctx.font = 'bold 14px Tajawal';
+        ctx.textAlign = 'left';
+        ctx.fillText('.'.repeat(dotPhase), bubX + bubW + 3, bubY + 18);
+      }
+
+      /* ── Wait timer bar ── */
+      const barW = 36, barX = px - barW / 2, barY = py + sz + 18;
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      ctx.beginPath(); roundRect(ctx, barX, barY, barW, 4, 2); ctx.fill();
+      ctx.fillStyle = lerpColor('#22c55e', '#ef4444', waitRatio);
+      ctx.beginPath(); roundRect(ctx, barX, barY, Math.max(0, barW * (1 - waitRatio)), 4, 2); ctx.fill();
+    }
+
+    /* ═══════════════════════════════════════
+       PATRON MANAGEMENT
+    ═══════════════════════════════════════ */
+    const hairColors = ['#3d1f05', '#111', '#8B4513', '#d4a017', '#1a1a1a', '#6b3a2a'];
+
+    function createPatron() {
+      const type = PATRON_TYPES[Math.floor(Math.random() * PATRON_TYPES.length)];
+      const ex = CW / 2 + (Math.random() - 0.5) * 60;
+      const spread = 140;
+      const phrase = type.phrases[Math.floor(Math.random() * type.phrases.length)];
+      return {
+        id: patronId++,
+        type,
+        phrase,
+        x: ex,
+        y: CH + 10,
+        targetX: CW / 2 + (Math.random() - 0.5) * spread,
+        targetY: CH * 0.55 + (Math.random() - 0.5) * 60,
+        state: 'entering',
+        waitTime: 0,
+        maxWait: 12 + Math.random() * 8,
+        selected: false,
+        bobOffset: Math.random() * Math.PI * 2,
+        hairColor: hairColors[Math.floor(Math.random() * hairColors.length)],
+        routingToSection: null,
+        routeProgress: 0,
+        startX: 0, startY: 0, destX: 0, destY: 0
+      };
+    }
+
+    function updatePatrons(dt) {
+      for (let i = patrons.length - 1; i >= 0; i--) {
+        const p = patrons[i];
+
+        if (p.state === 'entering') {
+          const dx = p.targetX - p.x, dy = p.targetY - p.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < 3) { p.x = p.targetX; p.y = p.targetY; p.state = 'waiting'; }
+          else { const sp = 90; p.x += dx / dist * sp * dt; p.y += dy / dist * sp * dt; }
+        }
+
+        else if (p.state === 'waiting') {
+          p.waitTime += dt;
+          if (p.waitTime > p.maxWait * 0.5) {
+            anger = Math.min(100, anger + dt * 0.7);
+            updateAngerUI();
+          }
+          if (p.waitTime >= p.maxWait + 3) {
+            spawnParticles(p.x, p.y, '#ef4444', 10);
+            spawnFloat(p.x, p.y - 30, '-20 😤', '#ef4444');
+            score = Math.max(0, score - 20);
+            anger = Math.min(100, anger + 8);
+            updateHUD();
+            patrons.splice(i, 1);
+            if (anger >= 100) endGame(false);
+            continue;
+          }
+        }
+
+        else if (p.state === 'routing') {
+          p.routeProgress += dt * 2;
+          if (p.routeProgress >= 1) {
+            p.x = p.destX; p.y = p.destY; p.state = 'done';
+            spawnParticles(p.x, p.y, p.type.skin, 18);
+            spawnFloat(p.x, p.y - 40, '+100', p.type.skin);
+            score += 100; routedCount++;
+            anger = Math.max(0, anger - 4);
+            updateHUD();
+            setTimeout(() => { const idx = patrons.indexOf(p); if (idx !== -1) patrons.splice(idx, 1); }, 1000);
+          } else {
+            p.x = lerp(p.startX, p.destX, easeInOut(p.routeProgress));
+            p.y = lerp(p.startY, p.destY, easeInOut(p.routeProgress));
+          }
+        }
+      }
+    }
+
+    /* ═══════════════════════════════════════
+       INTERACTION
+    ═══════════════════════════════════════ */
+    function onCanvasClick(e) {
+      if (!gameRunning) return;
+      const r = canvas.getBoundingClientRect();
+      const mx = (e.clientX - r.left) * (CW / r.width);
+      const my = (e.clientY - r.top) * (CH / r.height);
+
+      if (selectedPatron) {
+        for (const z of ZONES) {
+          if (mx >= z.x && mx <= z.x + z.w && my >= z.y && my <= z.y + z.h) {
+            if (z.accepts.includes(selectedPatron.type.need)) {
+              routePatron(selectedPatron, z);
+              explainRoute(selectedPatron, z, true);
+              showToast('✓ توجيه صحيح! +100');
+            } else {
+              explainRoute(selectedPatron, z, false);
+              showToast('✗ قسم خطأ! -30 😠 الغضب يرتفع!', '#ef4444');
+              spawnFloat(selectedPatron.x, selectedPatron.y - 30, '-30 😤', '#ef4444');
+              score = Math.max(0, score - 30);
+              anger = Math.min(100, anger + 15);
+              updateHUD();
+              if (anger >= 100) { endGame(false); return; }
+            }
+            selectedPatron.selected = false;
+            selectedPatron = null;
+            patrons.forEach(p => p.selected = false);
+            return;
+          }
+        }
+        selectedPatron.selected = false;
+        selectedPatron = null;
+        patrons.forEach(p => p.selected = false);
+        return;
+      }
+
+      let best = null, bestD = 999;
+      patrons.forEach(p => {
+        if (p.state !== 'waiting') return;
+        const d = Math.hypot(mx - p.x, my - p.y);
+        if (d < 30 && d < bestD) { bestD = d; best = p; }
+      });
+      if (best) {
+        patrons.forEach(p => p.selected = false);
+        best.selected = true;
+        selectedPatron = best;
+      }
+    }
+
+    function onCanvasHover(e) {
+      if (!gameRunning) return;
+      const r = canvas.getBoundingClientRect();
+      const mx = (e.clientX - r.left) * (CW / r.width);
+      const my = (e.clientY - r.top) * (CH / r.height);
+      const onP = patrons.some(p => p.state === 'waiting' && Math.hypot(mx - p.x, my - p.y) < 30);
+      const onZ = selectedPatron && ZONES.some(z => mx >= z.x && mx <= z.x + z.w && my >= z.y && my <= z.y + z.h);
+      canvas.style.cursor = (onP || onZ) ? 'pointer' : 'default';
+    }
+
+    /* ══════════════════════════════════════
+       تفسير تعليمي للتوجيه (خدمة مرجعية)
+       ══════════════════════════════════════ */
+    const SERVICE_INFO = {
+      book: {
+        service: 'قاعة الاطلاع / الإعارة',
+        why: 'المستفيد يريد مادة للقراءة أو الاستعارة؛ الخدمة هي الإعارة والاطلاع الداخلي، ويُساعد في تحديد الموقع عبر فهرس OPAC.',
+        term: 'خدمة الإعارة'
+      },
+      search: {
+        service: 'قسم المراجع',
+        why: 'الطلب معلوماتي مباشر (قاموس، موسوعة، تعريف)؛ هنا تبدأ المقابلة المرجعية لتحديد الحاجة الحقيقية ثم اختيار المصدر المرجعي المناسب.',
+        term: 'المقابلة المرجعية'
+      },
+      internet: {
+        service: 'المعمل الرقمي',
+        why: 'الحاجة إلى حاسوب أو إنترنت تخص مصادر المعلومات الإلكترونية والخدمات الرقمية، مع مراعاة تراخيص الوصول.',
+        term: 'المصادر الإلكترونية'
+      },
+      return: {
+        service: 'إدارة الإعارة',
+        why: 'الإرجاع والتجديد والحجز من عمليات خدمات الإعارة (025.6 في ديوي)، وترتبط بسياسة المكتبة والغرامات.',
+        term: 'الإعارة'
+      }
+    };
+
+    function explainRoute(patron, zone, ok) {
+      if (!patron || !patron.type) return;
+      const info = SERVICE_INFO[patron.type.need];
+      if (!info) return;
+      let box = document.getElementById('routeExplain');
+      if (!box) {
+        box = document.createElement('div');
+        box.id = 'routeExplain';
+        box.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:18px;max-width:640px;width:calc(100% - 40px);z-index:9500;background:#101a2c;border:1px solid #1e293b;border-radius:14px;padding:12px 16px;font-family:Tajawal,sans-serif;font-size:13px;line-height:1.85;color:#cbd5e1;text-align:right;box-shadow:0 18px 40px rgba(0,0,0,.5);transition:.3s';
+        document.body.appendChild(box);
+      }
+      box.style.borderColor = ok ? '#22c55e' : '#ef4444';
+      box.style.display = 'block';
+      box.innerHTML = `<b style="color:${ok ? '#4ade80' : '#f87171'}">${ok ? '✅ توجيه صحيح' : '❌ توجيه غير مناسب'}</b> —
+        الخدمة المطلوبة: <b>${info.service}</b>${ok ? '' : ' (لا ' + (zone ? zone.label : '') + ')'}
+        <br>${info.why}
+        <br><span style="font-size:11px;color:#94a3b8">📚 المرجع: ODLIS · الدليل التصنيفي لخدمات المستفيدين (025.5)</span>`;
+      clearTimeout(box._h);
+      box._h = setTimeout(() => { box.style.display = 'none'; }, 7000);
+      if (!ok && window.ML) {
+        ML.review.add('traffic', { key: info.service, concept: info.term + ' — ' + info.service, why: info.why });
+      }
+    }
+
+    function routePatron(p, z) {
+      p.state = 'routing';
+      p.selected = false;
+      p.startX = p.x; p.startY = p.y;
+      p.destX = z.x + z.w / 2 + (Math.random() - 0.5) * 24;
+      p.destY = z.y + z.h * 0.72 + (Math.random() - 0.5) * 16;
+      p.routingToSection = z.id;
+      p.routeProgress = 0;
+    }
+
+    /* ═══════════════════════════════════════
+       GAME CONTROL
+    ═══════════════════════════════════════ */
+    function startGame() {
+      document.getElementById('startScreen').classList.add('hidden');
+      patrons = []; particles = []; floatTexts = [];
+      score = 0; anger = 0; timeLeft = diffTime(); routedCount = 0;
+      selectedPatron = null; gameRunning = true;
+      updateHUD();
+
+      gameTimer = setInterval(() => {
+        timeLeft--;
+        const el = document.getElementById('hudTime');
+        el.innerText = timeLeft;
+        if (timeLeft <= 10) el.style.color = '#ef4444';
+        if (timeLeft <= 0) endGame(true);
+      }, 1000);
+
+      spawnTimer = setInterval(() => {
+        if (!gameRunning) return;
+        const elapsed = 90 - timeLeft;
+        const maxW = 3 + Math.floor(elapsed / 22);
+        if (patrons.filter(p => p.state === 'waiting').length < maxW)
+          patrons.push(createPatron());
+      }, diffLevel === 3 ? 2100 : diffLevel === 1 ? 3100 : 2600);
+
+      patrons.push(createPatron());
+      setTimeout(() => { if (gameRunning) patrons.push(createPatron()); }, 1400);
+    }
+
+    function endGame(timeUp) {
+      gameRunning = false;
+      clearInterval(gameTimer); clearInterval(spawnTimer);
+      document.getElementById('gameOverScreen').classList.add('hidden');
+
+      const accuracy = routedCount ? Math.min(100, Math.round(score / (routedCount * 100) * 100)) : 0;
+      const chaos = !timeUp && anger >= 100;
+      if (window.ML) ML.progress.record('traffic', { score: score, correct: routedCount, total: Math.max(routedCount, 1), level: 2 });
+      if (window.maktabaAuth) window.maktabaAuth.updateScore('traffic', score);
+      MPGame.results({
+        score: score,
+        correct: routedCount,
+        total: Math.max(1, routedCount),
+        accuracy: accuracy,
+        time: diffTime() + ' ث',
+        level: 2,
+        title: chaos ? 'فوضى! المكتبة غاضبة 😤' : score >= 700 ? 'أداء ممتاز — مكتبي محترف! 🏆' : 'انتهى الوقت 👏',
+        note: 'وجّهت ' + routedCount + ' مستفيدًا، ومؤشر الغضب وصل ' + Math.round(anger) + '%.',
+        next: false
+      });
+    }
+
+    function resetGame() {
+      document.getElementById('gameOverScreen').classList.add('hidden');
+      document.getElementById('hudTime').style.color = 'var(--brand-2)';
+      startGame();
+    }
+
+    /* ═══════════════════════════════════════
+       PARTICLES & FLOAT TEXT
+    ═══════════════════════════════════════ */
+    function spawnParticles(x, y, color, n) {
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * Math.PI * 2, sp = 1.5 + Math.random() * 3.5;
+        particles.push({
+          x, y, color,
+          vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 2.5,
+          r: 2 + Math.random() * 3, life: 40 + Math.random() * 20, maxLife: 60
+        });
+      }
+    }
+    function drawParticles() {
+      particles = particles.filter(p => p.life > 0);
+      particles.forEach(p => {
+        ctx.globalAlpha = p.life / p.maxLife;
+        ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+        p.x += p.vx; p.y += p.vy; p.vy += 0.14; p.life--;
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    function spawnFloat(x, y, text, color) {
+      floatTexts.push({ x, y, text, color, life: 55, maxLife: 55 });
+    }
+    function drawFloatTexts() {
+      floatTexts = floatTexts.filter(f => f.life > 0);
+      floatTexts.forEach(f => {
+        ctx.globalAlpha = f.life / f.maxLife;
+        ctx.font = 'bold 17px Tajawal';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = f.color;
+        ctx.shadowBlur = 8; ctx.shadowColor = f.color;
+        ctx.fillText(f.text, f.x, f.y);
+        ctx.shadowBlur = 0;
+        f.y -= 1.1; f.life--;
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    /* ═══════════════════════════════════════
+       HUD
+    ═══════════════════════════════════════ */
+    function updateHUD() {
+      const el = document.getElementById('hudScore');
+      el.innerText = score;
+      el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+      document.getElementById('hudRouted').innerText = routedCount;
+      updateAngerUI();
+    }
+    function updateAngerUI() {
+      document.getElementById('angerFill').style.width = anger + '%';
+      document.getElementById('hudAnger').innerText = Math.round(anger) + '%';
+    }
+    function showToast(msg, color = '#22c55e') {
+      const t = document.getElementById('toast');
+      t.innerText = msg; t.style.color = color;
+      t.style.borderColor = color; t.style.background = color + '22';
+      t.classList.add('show');
+      clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 1600);
+    }
+
+    /* ═══════════════════════════════════════
+       UTILS
+    ═══════════════════════════════════════ */
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function easeInOut(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+    function lerpColor(a, b, t) {
+      const ah = a.replace('#', ''), bh = b.replace('#', '');
+      const r = n => parseInt(n, 16);
+      const rr = Math.round(lerp(r(ah.slice(0, 2)), r(bh.slice(0, 2)), t)).toString(16).padStart(2, '0');
+      const rg = Math.round(lerp(r(ah.slice(2, 4)), r(bh.slice(2, 4)), t)).toString(16).padStart(2, '0');
+      const rb = Math.round(lerp(r(ah.slice(4, 6)), r(bh.slice(4, 6)), t)).toString(16).padStart(2, '0');
+      return '#' + rr + rg + rb;
+    }
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r);
+      ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+      ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
+      ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r);
+    }
+
+    window.onload = initCanvas;
+  </script>
+<script>
+  MPGame.init({
+    id: 'traffic',
+    title: 'موجّه المستفيدين',
+    icon: '🧭',
+    field: 'خدمات المستفيدين',
+    tagline: 'اسمع طلب المستفيد ووجّهه إلى القسم الصحيح قبل أن يغضب.',
+    intro: 'مستفيدون يدخلون المكتبة ولكل واحد حاجة مختلفة. اضغط الشخص ثم القسم المناسب؛ التوجيه الصحيح يزيد نقاطك والخطأ يرفع مؤشر الغضب.',
+    defaultLevel: 2,
+    levels: [
+      { id: 1, label: 'تدريب', desc: 'سرعة أقل ووقت أطول' },
+      { id: 2, label: 'تحدٍّ', desc: '٩٠ ثانية ومؤشر غضب' },
+      { id: 3, label: 'احتراف', desc: 'تدفق مستفيدين أعلى' }
+    ],
+    getStatus: () => [
+      { label: 'النقاط', value: score },
+      { label: 'وُجّهوا', value: routedCount },
+      { label: 'الغضب', value: Math.round(anger) + '%' }
+    ],
+    onPlay: function (opts) { diffLevel = (opts && opts.level) || 2; startGame(); },
+    onRestart: function () { resetGame(); }
+  });
+</script>
+<script>
+  if (window.ML) {
+    ML.tutorial({
+      game: 'traffic',
+      title: '🧭 موجّه المستفيدين — خدمة مرجعية بأسلوب سريع',
+      subtitle: 'استمع لطلب المستفيد ووجهه إلى الخدمة المناسبة',
+      goal: 'فهم حاجة المستفيد وتوجيهه إلى القسم أو الخدمة الصحيحة داخل المكتبة.',
+      rules: [
+        'انقر على المستفيد المنتظر لتسمع طلبه، ثم انقر القسم المناسب.',
+        'التوجيه الصحيح +100، والخطأ -30 ويرفع مؤشر الغضب.',
+        'المستفيدون يتزايدون مع الوقت، وانتهاء الغضب أو الوقت ينهي الجولة.',
+        'بعد كل توجيه يظهر شرح الخدمة ومرجعها.'
+      ],
+      controls: 'الفأرة أو اللمس على الساحة.',
+      concepts: ['المقابلة المرجعية', 'المرجع السريع', 'المصادر الإلكترونية', 'الإعارة', 'خدمات المستفيدين'],
+      onStart: function () { }
+    });
+  }
+</script>
+</body>
+
+</html>

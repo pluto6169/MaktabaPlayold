@@ -1,0 +1,183 @@
+/* ============================================================
+   MaktabaPlay — Game Components
+   HUD · بطاقات · مؤقّت · تنبيهات · ساحة لعب · تأثيرات
+   ============================================================ */
+
+/* ── شريط HUD موحّد (اختياري داخل كل لعبة) ── */
+.mp-hud {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: var(--mp-font);
+}
+.mp-hud-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--mp-line);
+  background: rgba(12, 21, 36, .8);
+  color: var(--mp-muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+.mp-hud-pill b { color: #fff; font-size: 15px; font-weight: 800; }
+.mp-hud-pill--gold { border-color: rgba(232, 192, 106, .35); background: rgba(232, 192, 106, .08); color: #e5c98f; }
+.mp-hud-pill--gold b { color: var(--mp-gold); }
+.mp-hud-pill--green { border-color: rgba(34, 197, 94, .35); background: rgba(34, 197, 94, .08); }
+.mp-hud-pill--green b { color: #4ade80; }
+.mp-hud-pill--red { border-color: rgba(239, 68, 68, .35); background: rgba(239, 68, 68, .08); }
+.mp-hud-pill--red b { color: #fca5a5; }
+.mp-hud-pill.pop b { animation: mp-pop .3s ease; }
+
+/* ── شريط التقدّم ── */
+.mp-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: #16233a;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, .1);
+}
+.mp-progress > i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: var(--mp-grad);
+  transition: width .35s cubic-bezier(.2, .8, .2, 1);
+  box-shadow: 0 0 16px rgba(6, 182, 212, .35);
+}
+
+/* ── المؤقّت ── */
+.mp-timer { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--mp-muted); font-weight: 700; }
+.mp-timer__track { width: 64px; height: 6px; border-radius: 999px; background: #24344c; overflow: hidden; }
+.mp-timer__fill { display: block; height: 100%; width: 100%; background: #4ade80; border-radius: inherit; transition: width .2s linear, background .2s; }
+
+/* ── البطاقات ── */
+.mp-tile {
+  position: relative;
+  border-radius: 16px;
+  border: 1px solid var(--mp-line);
+  background: linear-gradient(160deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .012));
+  padding: 14px;
+  transition: transform .18s, border-color .18s, box-shadow .18s;
+}
+.mp-tile:hover { transform: translateY(-3px); border-color: rgba(6, 182, 212, .35); box-shadow: var(--mp-shadow-sm); }
+.mp-tile--selected { border-color: rgba(34, 197, 94, .6); box-shadow: 0 0 0 1px rgba(34, 197, 94, .3); }
+.mp-tile--correct { border-color: rgba(34, 197, 94, .65); background: linear-gradient(160deg, rgba(34, 197, 94, .16), rgba(34, 197, 94, .04)); }
+.mp-tile--wrong { border-color: rgba(239, 68, 68, .6); background: linear-gradient(160deg, rgba(239, 68, 68, .14), rgba(239, 68, 68, .03)); animation: mp-shake .35s ease; }
+
+/* ── التنبيه العائم ── */
+.mp-toast {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 22px;
+  margin: 0 auto;
+  width: fit-content;
+  max-width: min(92vw, 460px);
+  z-index: 2000;
+  padding: 11px 20px;
+  border-radius: 14px;
+  background: #101d33;
+  border: 1px solid var(--mp-line);
+  color: var(--mp-text);
+  font-family: var(--mp-font);
+  font-size: 13.5px;
+  font-weight: 700;
+  box-shadow: var(--mp-shadow);
+  transform: translateY(90px);
+  opacity: 0;
+  transition: .3s cubic-bezier(.2, .8, .25, 1);
+  pointer-events: none;
+}
+.mp-toast.is-open { transform: translateY(0); opacity: 1; }
+.mp-toast--ok { border-color: rgba(34, 197, 94, .5); }
+.mp-toast--bad { border-color: rgba(239, 68, 68, .5); }
+
+/* ── ساحة اللعب: إطار عام ── */
+.mp-stage {
+  position: relative;
+  border-radius: 22px;
+  border: 1px solid var(--mp-line);
+  background:
+    radial-gradient(900px 300px at 50% -10%, rgba(6, 182, 212, .08), transparent 70%),
+    #0a1220;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04), var(--mp-shadow-sm);
+}
+.mp-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(148, 163, 184, .045) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(148, 163, 184, .045) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none;
+  mask-image: radial-gradient(circle at 50% 40%, #000 35%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at 50% 40%, #000 35%, transparent 80%);
+}
+
+/* ── بطاقة التلميح ── */
+.mp-hint {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(232, 192, 106, .07);
+  border: 1px solid rgba(232, 192, 106, .28);
+  color: #eadcbb;
+  font-size: 12.5px;
+  line-height: 1.85;
+}
+.mp-hint b { color: #fff; }
+
+/* ── شارة المجال ── */
+.mp-field-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(139, 92, 246, .13);
+  border: 1px solid rgba(139, 92, 246, .35);
+  color: #c4b5fd;
+}
+
+/* ── فاصل زخرفي ── */
+.mp-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+  padding: 6px 0;
+}
+.mp-dots i { width: 7px; height: 7px; border-radius: 50%; background: #26374f; }
+.mp-dots i.on { background: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, .5); }
+.mp-dots i.done { background: #1e4a3a; }
+
+/* ── تأثير الكشف/الاكتشاف ── */
+.mp-flash-ok { animation: mp-flash-ok .5s ease; }
+.mp-flash-bad { animation: mp-flash-bad .5s ease; }
+@keyframes mp-flash-ok { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, .5); } 100% { box-shadow: 0 0 0 26px rgba(34, 197, 94, 0); } }
+@keyframes mp-flash-bad { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, .45); } 100% { box-shadow: 0 0 0 26px rgba(239, 68, 68, 0); } }
+
+/* ── شعار/أيقونة دائرية ── */
+.mp-orb {
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  display: grid; place-items: center;
+  background: var(--mp-grad-soft);
+  border: 1px solid rgba(6, 182, 212, .3);
+  font-size: 21px;
+}
+
+/* ── الحد الأدنى للمس ── */
+@media (pointer: coarse) {
+  .mp-btn, .mp-icon-btn, .mp-seg button, .mp-diff { min-height: 44px; }
+  .mp-icon-btn { min-width: 44px; }
+}

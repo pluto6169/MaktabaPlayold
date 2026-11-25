@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaktabaPlay – العب وتعلم مع المكتبات</title>
-    <!-- الرابط لخط Tajawal (كما في التصميم الموحد) -->
+    <!-- الرابط لخط Tajawal -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
@@ -13,6 +13,65 @@
     <link rel="stylesheet" href="assets/style.css">
     <style>
         /* تحسينات إضافية لصفحة الفهرس */
+        .hero {
+            position: relative;
+            padding: 80px 20px;
+            text-align: center;
+            background: radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.15), transparent 60%);
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="%23ffffff" opacity="0.1"/></svg>') repeat;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-kicker {
+            display: inline-block;
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .hero-title {
+            font-size: clamp(36px, 6vw, 56px);
+            font-weight: 800;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff, #a5f3fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: 18px;
+            color: #cbd5e1;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
         .game-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -21,19 +80,40 @@
         }
 
         .game-card {
-            background: linear-gradient(145deg, #0f1a2f, #0b1220);
+            background: linear-gradient(145deg, rgba(15, 26, 47, 0.8), rgba(11, 18, 32, 0.8));
+            backdrop-filter: blur(10px);
             border: 1px solid var(--border);
             border-radius: 24px;
             padding: 24px 20px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            /* لضمان امتداد البطاقات بنفس الارتفاع */
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--brand), var(--brand-2));
+            opacity: 0;
+            transition: 0.3s;
         }
 
         .game-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
-            border-color: var(--brand-2);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
         }
 
         .game-icon {
@@ -47,10 +127,16 @@
             border-radius: 30px;
             margin-bottom: 16px;
             border: 1px solid rgba(6, 182, 212, 0.3);
+            transition: 0.3s;
+        }
+
+        .game-card:hover .game-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: rgba(6, 182, 212, 0.2);
         }
 
         .game-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
             color: white;
             margin-bottom: 8px;
@@ -61,6 +147,7 @@
             line-height: 1.7;
             margin-bottom: 20px;
             flex: 1;
+            font-size: 14px;
         }
 
         .game-meta {
@@ -71,11 +158,11 @@
         }
 
         .badge {
-            background: rgba(34, 197, 94, 0.2);
+            background: rgba(34, 197, 94, 0.15);
             color: #4ade80;
             padding: 4px 12px;
             border-radius: 30px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             border: 1px solid rgba(34, 197, 94, 0.3);
         }
@@ -88,7 +175,7 @@
             text-decoration: none;
             font-weight: 800;
             font-size: 14px;
-            transition: filter 0.2s;
+            transition: filter 0.2s, transform 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -96,6 +183,72 @@
 
         .play-btn:hover {
             filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .leaderboard-section {
+            background: rgba(15, 26, 47, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px;
+            margin-top: 60px;
+        }
+
+        .leaderboard-title {
+            text-align: center;
+            font-size: 28px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .leaderboard-table th {
+            color: var(--brand-2);
+            font-weight: 800;
+        }
+
+        .leaderboard-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #FFD700, #FDB931);
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #C0C0C0, #8A8A8A);
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #CD7F32, #A0522D);
+            color: white;
+        }
+
+        .rank-other {
+            background: var(--border);
+            color: var(--muted);
         }
 
         .library-quote {
@@ -103,8 +256,20 @@
             border: 1px solid var(--border);
             border-radius: 20px;
             padding: 30px;
-            margin: 40px 0 20px;
+            margin: 60px 0 20px;
             text-align: center;
+            position: relative;
+        }
+
+        .library-quote::before {
+            content: '""';
+            font-size: 80px;
+            color: rgba(6, 182, 212, 0.1);
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: serif;
         }
 
         .quote-text {
@@ -114,15 +279,30 @@
             line-height: 1.6;
             max-width: 800px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .quote-author {
             color: var(--brand-2);
             margin-top: 16px;
             font-size: 16px;
+            font-weight: bold;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            color: white;
+            margin: 40px 0 20px;
+            font-weight: 800;
         }
 
         @media (max-width: 640px) {
+            .hero-title {
+                font-size: 32px;
+            }
+
             .game-grid {
                 grid-template-columns: 1fr;
             }
@@ -140,58 +320,56 @@
             </div>
             <div class="nav-links">
                 <a href="index.html" class="active">الرئيسية</a>
-                <a href="hangman.html">هانج مان المخطوط</a>
-                <a href="ladder-classification.html">السلم والتصنيف</a>
-                <a href="book-detective.html">محقق الكتب</a>
                 <a href="about.html">من نحن</a>
                 <a href="contact.html">تواصل</a>
                 <a href="partners.html">شركاء</a>
             </div>
+            <div id="authLinks" style="display: flex; gap: 10px; align-items: center;">
+                <!-- سيتم ملؤه بواسطة auth.js -->
+            </div>
         </div>
     </nav>
 
-    <!-- المحتوى الرئيسي -->
-    <section class="container">
-        <!-- بطاقة تعريفية بالمنصة -->
-        <div class="card" style="text-align: center; padding: 40px 30px;">
-            <div class="kicker">🎮 تعلم – تحدَّ – استكشف</div>
-            <h1 class="h1" style="font-size: 44px; margin: 8px 0;">MaktabaPlay</h1>
-            <p class="lead" style="font-size: 18px; max-width: 700px; margin: 0 auto;">
-                منصة ألعاب تفاعلية تعرّفك بعلم المكتبات والمخطوطات والتصنيف.
-                كل لعبة تمثل جانباً من عالم المكتبات: من حفظ المخطوطات إلى تنظيم المعرفة.
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-kicker">🎮 9 ألعاب تعليمية متخصصة</div>
+            <h1 class="hero-title">تعلم علوم المكتبات بمتعة وتحدي</h1>
+            <p class="hero-desc">
+                أول منصة ألعاب عربية متخصصة في علم المكتبات والمعلومات. نافس زملاءك، اجمع النقاط، واحصل على شارات
+                الإنجاز في رحلتك لاحتراف الفهرسة والتصنيف والمخطوطات.
             </p>
-            <div style="margin-top: 24px;">
-                <span class="badge" style="margin-left: 8px;">🏛️ للمكتبيين</span>
-                <span class="badge" style="margin-left: 8px;">📚 للطلاب</span>
-                <span class="badge">🔍 للمهتمين بالتراث</span>
+            <div>
+                <a href="#games" class="btn btn-primary" style="font-size: 18px; padding: 14px 32px;">ابدأ اللعب الآن
+                    ↓</a>
             </div>
         </div>
+    </section>
 
-        <!-- شبكة الألعاب الثلاث -->
+    <!-- المحتوى الرئيسي -->
+    <section class="container" id="games">
+        <h2 class="section-title">مكتبة الألعاب 📚</h2>
+
         <div class="game-grid">
-            <!-- لعبة هانج مان للمخطوط العربي -->
+            <!-- 1. لعبة هانج مان done-->
             <div class="game-card">
                 <div class="game-icon">📜</div>
                 <div class="game-title">هانج مان المخطوط</div>
                 <div class="game-desc">
-                    اختبر معرفتك بمصطلحات المخطوطات العربية.
-                    احرف الكلمة قبل أن يتحول الأرشيف إلى رماد!
-                    تناسب طلاب المخطوطات وأمناء المكتبات.
+                    اختبر معرفتك بمصطلحات المخطوطات وعلوم المكتبات. احرف الكلمة قبل أن ينتهي الوقت ويحترق المخطوط!
                 </div>
                 <div class="game-meta">
-                    <span class="badge">مفردات تراثية</span>
+                    <span class="badge">مفردات ومصطلحات</span>
                     <a href="hangman.html" class="play-btn">العب الآن ←</a>
                 </div>
             </div>
 
-            <!-- لعبة السلم والتصنيف (Dewey) -->
+            <!-- 2. السلم والتصنيف done-->
             <div class="game-card">
                 <div class="game-icon">🪜</div>
                 <div class="game-title">السلم والتصنيف</div>
                 <div class="game-desc">
-                    تسلَّق سلم المعرفة عبر الإجابة عن أسئلة تصنيف ديوي.
-                    كل إجابة صحيحة تقدّمك، والثعابين تعيدك للخلف.
-                    مثالي لفهم نظام ديوي العشري.
+                    لعبة السلم والثعبان الكلاسيكية مدمجة بأسئلة في تصنيف ديوي العشري. أجب لتصعد السلم وتجنب الثعابين!
                 </div>
                 <div class="game-meta">
                     <span class="badge">تصنيف ديوي</span>
@@ -199,54 +377,176 @@
                 </div>
             </div>
 
-            <!-- لعبة محقق الكتب (ببليوجرافيا) -->
+            <!-- 3. محقق الكتب done-->
             <div class="game-card">
                 <div class="game-icon">🔎</div>
-                <div class="game-title">محقق الكتب</div>
+                <div class="game-title">محقق الكتب (MARC21)</div>
                 <div class="game-desc">
-                    تسجيلات ببليوجرافية بها أخطاء مخفية.
-                    أنت المحقق: اكشف الحقل الخاطئ وصحّحه.
-                    لعبة تنمي الدقة في الفهرسة والتوثيق.
+                    العب دور المحقق واكشف الأخطاء المخفية في تسجيلات الفهرسة الآلية (MARC21) وصححها.
                 </div>
                 <div class="game-meta">
-                    <span class="badge">أخطاء ببليوجرافية</span>
+                    <span class="badge">فهرسة آلية</span>
                     <a href="book-detective.html" class="play-btn">العب الآن ←</a>
                 </div>
             </div>
+
+            <!-- 4. رتب الرف done-->
+            <div class="game-card">
+                <div class="game-icon">📚</div>
+                <div class="game-title">رتّب الرف</div>
+                <div class="game-desc">
+                    أرفف مكتبتك مبعثرة! اسحب وأفلت الكتب لترتيبها تصاعدياً حسب أرقام تصنيف ديوي العشري.
+                </div>
+                <div class="game-meta">
+                    <span class="badge">ترتيب أرفف</span>
+                    <a href="shelf-sorter.html" class="play-btn">العب الآن ←</a>
+                </div>
+            </div>
+
+            <!-- 5. سلسلة الفهرس الشجري -->
+            <div class="game-card">
+                <div class="game-icon">🧠</div>
+                <div class="game-title">سلسلة الفهرس الشجري</div>
+                <div class="game-desc">
+                    قم بتصنيف المحتوي من الأعم للأخص (من العام إلى الخاص) في نظام تصنيف المعرفة.
+                </div>
+                <div class="game-meta">
+                    <span class="badge">تحليل</span>
+                    <a href="silsilat_alfahras_tree.html" class="play-btn">العب الآن ←</a>
+                </div>
+            </div>
+
+            <!-- 6.تدريب سريع-->
+            <div class="game-card">
+                <div class="game-icon">🔗</div>
+                <div class="game-title">تدريب سريع</div>
+                <div class="game-desc">
+                    لعبتين بشكل مبسط وسهل لتنشيط الذاكرة عن بعض المصطلحات الاساسية </div>
+                <div class="game-meta">
+                    <span class="badge">مفاهيم أساسية</span>
+                    <a href="minigames.html" class="play-btn">العب الآن ←</a>
+                </div>
+            </div>
+
+            <!-- 7. مهندس المكتبة  done-->
+            <div class="game-card">
+                <div class="game-icon">🃏</div>
+                <div class="game-title">مهندس المكتبة</div>
+                <div class="game-desc">
+                    قم بادارة المكتبة وتخصيص الميزانية باكثر شكل اقتصادي لادارة المكتبة الخاصه بك </div>
+                <div class="game-meta">
+                    <span class="badge">تدريب اداري</span>
+                    <a href="library_tycoon.html" class="play-btn">العب الآن ←</a>
+                </div>
+            </div>
+
+            <!-- 8. سباق التصنيف done-->
+            <div class="game-card">
+                <div class="game-icon">⏱️</div>
+                <div class="game-title">سباق التصنيف</div>
+                <div class="game-desc">
+                    يظهر لك عنوان كتاب، وعليك اختيار الفئة الرئيسية الصحيحة من تصنيف ديوي بأسرع وقت ممكن!
+                </div>
+                <div class="game-meta">
+                    <span class="badge">سرعة البديهة</span>
+                    <a href="classification-race.html" class="play-btn">العب الآن ←</a>
+                </div>
+            </div>
+
+            <!-- 9. موجه المستفيدين done-->
+            <div class="game-card">
+                <div class="game-icon">🚦</div>
+                <div class="game-title">موجه المستفيدين</div>
+                <div class="game-desc">
+                    قم بتوجيه كل مستفيد وثقاً لما يريد القيام به في المكتبة. زد دقتك وسرعتك لتحصل على أعلى النقاط.
+                </div>
+                <div class="game-meta">
+                    <span class="badge">خدمات معلومات</span>
+                    <a href="traffic-controller.html" class="play-btn">العب الآن ←</a>
+                </div>
+            </div>
         </div>
 
-        <!-- اقتباس عن المكتبات -->
+        <!-- Leaderboard -->
+        <div class="leaderboard-section">
+            <h2 class="leaderboard-title">🏆 لوحة الشرف</h2>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">المركز</th>
+                        <th>اسم اللاعب</th>
+                        <th>النقاط الإجمالية</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: var(--muted);">لا توجد بيانات بعد. كن أول من
+                            يسجل!</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- اقتباس -->
         <div class="library-quote">
-            <div class="quote-text">
-                "When in doubt go to the library"
+            <div class="quote-text" style="font-family: sans-serif;" dir="ltr">
+                "When in doubt, go to the library."
             </div>
-            <div class="quote-author"> J.K. Rowling </div>
+            <div class="quote-author" dir="ltr">- J.K. Rowling</div>
         </div>
 
-        <!-- لمحة سريعة عن المحتوى المكتبي (اختياري) -->
-        <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-top: 20px;">
-            <div style="background: #0b1220; border: 1px solid var(--border); border-radius: 40px; padding: 8px 18px;">
-                <span style="color: #a5f3fc;">📖 مخطوطات</span>
-            </div>
-            <div style="background: #0b1220; border: 1px solid var(--border); border-radius: 40px; padding: 8px 18px;">
-                <span style="color: #a5f3fc;">🔢 ديوي عشري</span>
-            </div>
-            <div style="background: #0b1220; border: 1px solid var(--border); border-radius: 40px; padding: 8px 18px;">
-                <span style="color: #a5f3fc;">📇 فهرسة</span>
-            </div>
-            <div style="background: #0b1220; border: 1px solid var(--border); border-radius: 40px; padding: 8px 18px;">
-                <span style="color: #a5f3fc;">🏺 تراث</span>
-            </div>
-        </div>
     </section>
 
     <!-- الفوتر الموحد -->
     <footer>
         <div class="footer-inner">
-            <div>© 2026 MaktabaPlay – منصة ألعاب مكتبية عربية</div>
+            <div>© 2026 MaktabaPlay – مشروع فردي بالكامل بواسطة محمد طارق عبدالمنعم</div>
             <div><a href="contact.html">اتصل بنا</a> · <a href="partners.html">شراكات</a></div>
         </div>
     </footer>
+
+    <!-- Auth JS -->
+    <script src="assets/auth.js"></script>
+    <script>
+        // تحديث لوحة الشرف
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.maktabaAuth && typeof window.maktabaAuth.getLeaderboard === 'function') {
+                const leaderboard = await window.maktabaAuth.getLeaderboard();
+                const tbody = document.getElementById('leaderboardBody');
+
+                if (leaderboard && leaderboard.length > 0) {
+                    tbody.innerHTML = '';
+                    leaderboard.slice(0, 5).forEach((entry, index) => {
+                        let rankClass = 'rank-other';
+                        if (index === 0) rankClass = 'rank-1';
+                        else if (index === 1) rankClass = 'rank-2';
+                        else if (index === 2) rankClass = 'rank-3';
+
+                        const rankBadge = `<span class="rank-badge ${rankClass}">${index + 1}</span>`;
+
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${rankBadge}</td>
+                                <td style="font-weight: bold; color: white;">${escapeHtml(entry.username)}</td>
+                                <td style="color: var(--accent2); font-weight: 800;">${entry.score} ⭐</td>
+                            </tr>
+                        `;
+                    });
+                }
+            }
+
+            // دالة مساعدة لتفادي أي مشاكل في XSS
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str.replace(/[&<>]/g, function (m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    return m;
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

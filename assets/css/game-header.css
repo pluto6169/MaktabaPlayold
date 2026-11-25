@@ -1,0 +1,246 @@
+/* ============================================================
+   MaktabaPlay — Game Header (هيدر موحّد لكل الألعاب)
+   ============================================================ */
+
+.mp-header {
+  position: sticky;
+  top: 0;
+  z-index: 600;
+  font-family: var(--mp-font);
+  direction: rtl;
+  background: linear-gradient(180deg, rgba(9, 15, 26, .97), rgba(9, 15, 26, .88));
+  border-bottom: 1px solid var(--mp-line);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 10px 30px rgba(2, 6, 16, .35);
+}
+
+.mp-header__bar {
+  max-width: var(--mp-max);
+  margin: 0 auto;
+  min-height: var(--mp-header-h);
+  padding: 9px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* ── الشعار ── */
+.mp-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  color: #fff;
+  flex: 0 0 auto;
+}
+.mp-brand__mark {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  background: var(--mp-grad);
+  color: #04121a;
+  box-shadow: 0 8px 20px rgba(6, 182, 212, .28);
+  flex: 0 0 auto;
+}
+.mp-brand__mark svg { width: 25px; height: 25px; display: block; }
+.mp-brand__text { display: flex; flex-direction: column; line-height: 1.15; }
+.mp-brand__text b { font-size: 17px; font-weight: 800; letter-spacing: .2px; }
+.mp-brand__text small {
+  font-size: 10.5px;
+  color: #7f93ad;
+  font-weight: 600;
+  letter-spacing: .4px;
+  margin-top: 3px;
+}
+
+/* ── مسار التنقّل ── */
+.mp-crumbs {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: #7286a1;
+  padding-inline-start: 16px;
+  border-inline-start: 1px solid var(--mp-line);
+  white-space: nowrap;
+}
+.mp-crumbs a { color: #9fb2ca; text-decoration: none; }
+.mp-crumbs a:hover { color: #67e8f9; }
+.mp-crumbs strong { color: #dbe7f5; font-weight: 700; max-width: 190px; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── روابط التنقّل ── */
+.mp-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-inline-start: auto;
+}
+.mp-nav a {
+  color: #b6c6da;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: var(--mp-r-pill);
+  transition: background .16s, color .16s;
+  white-space: nowrap;
+}
+.mp-nav a:hover { background: rgba(6, 182, 212, .1); color: #7dd3fc; }
+.mp-nav a.is-active { background: rgba(34, 197, 94, .12); color: #86efac; }
+
+/* ── إجراءات الهيدر ── */
+.mp-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.mp-icon-btn {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid var(--mp-line);
+  background: rgba(255, 255, 255, .025);
+  color: #c7d6e8;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: .16s;
+}
+.mp-icon-btn:hover { background: rgba(6, 182, 212, .1); border-color: rgba(6, 182, 212, .4); color: #a5f3fc; }
+.mp-icon-btn:focus-visible { outline: 2px solid #67e8f9; outline-offset: 2px; }
+.mp-icon-btn[data-tooltip] { position: relative; }
+.mp-icon-btn[hidden] { display: none !important; }
+
+#authLinks { display: flex; align-items: center; gap: 8px; }
+#authLinks a, #authLinks button {
+  font-family: var(--mp-font);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.mp-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 15px;
+  border-radius: var(--mp-r-pill);
+  border: 1px solid var(--mp-line);
+  background: rgba(255, 255, 255, .03);
+  color: #d6e2f0;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  transition: .16s;
+}
+.mp-back:hover { border-color: rgba(34, 197, 94, .45); color: #bbf7d0; }
+.mp-back span { font-size: 16px; }
+
+/* ── شريط اللعبة ── */
+.mp-game-strip {
+  max-width: var(--mp-max);
+  margin: 0 auto;
+  padding: 0 20px 12px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex-wrap: wrap;
+}
+.mp-game-strip__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 21px;
+  background: rgba(6, 182, 212, .1);
+  border: 1px solid rgba(6, 182, 212, .28);
+  flex: 0 0 auto;
+}
+.mp-game-strip__text { min-width: 0; }
+.mp-game-strip__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.35;
+}
+.mp-game-strip__tagline {
+  font-size: 12px;
+  color: #8496b0;
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: min(70vw, 620px);
+}
+.mp-game-strip__spacer { flex: 1; }
+.mp-game-strip__meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+
+/* ── زر القائمة للموبايل ── */
+.mp-menu-btn { display: none; }
+
+/* ── حالة الإيقاف المؤقت: شريط سفلي ── */
+.mp-pause-fab {
+  position: fixed;
+  inset-inline-start: 16px;
+  bottom: 16px;
+  z-index: 590;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(6, 182, 212, .35);
+  background: rgba(14, 23, 41, .92);
+  color: #a5f3fc;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  display: none;
+  place-items: center;
+  font-size: 17px;
+  box-shadow: var(--mp-shadow-sm);
+}
+
+@media (max-width: 1080px) {
+  .mp-crumbs { display: none; }
+}
+@media (max-width: 900px) {
+  .mp-nav { display: none; }
+  .mp-menu-btn { display: grid; }
+  .mp-nav.is-open {
+    display: flex;
+    position: absolute;
+    inset-inline: 12px;
+    top: calc(var(--mp-header-h) + 6px);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 10px;
+    background: #0d1728;
+    border: 1px solid var(--mp-line);
+    border-radius: 16px;
+    box-shadow: var(--mp-shadow);
+  }
+  .mp-nav.is-open a { padding: 11px 14px; }
+}
+@media (max-width: 640px) {
+  .mp-header__bar { padding: 8px 12px; gap: 10px; }
+  .mp-brand__text small { display: none; }
+  .mp-brand__mark { width: 38px; height: 38px; border-radius: 11px; }
+  .mp-game-strip { padding: 0 12px 10px; gap: 10px; }
+  .mp-game-strip__icon { width: 34px; height: 34px; font-size: 18px; }
+  .mp-game-strip__title { font-size: 15px; }
+  .mp-game-strip__tagline { display: none; }
+  .mp-game-strip__meta .mp-chip { display: none; }
+  .mp-back { padding: 0 11px; font-size: 12px; height: 35px; }
+  .mp-back b { display: none; }
+  .mp-icon-btn { width: 35px; height: 35px; }
+  #authLinks { display: none !important; }
+}

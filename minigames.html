@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قسم التدريب السريع – MaktabaPlay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/css/design-system.css">
+    <link rel="stylesheet" href="assets/css/game-header.css">
+    <link rel="stylesheet" href="assets/css/game-shell.css">
+    <link rel="stylesheet" href="assets/css/game-components.css">
+    <link rel="stylesheet" href="assets/css/game-polish.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <style>
+
+        /* ── Tab Switcher ── */
+        .minigames-wrapper {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .minigames-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .minigames-header h1 {
+            color: white;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .minigames-header p {
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .tabs-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 32px;
+            color: var(--muted);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--brand-2);
+            color: white;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--brand), var(--brand-2));
+            border-color: transparent;
+            color: #000;
+            box-shadow: 0 4px 20px rgba(34,197,94,0.3);
+        }
+
+        /* Hide inactive panels */
+        .game-panel {
+            display: none;
+        }
+        .game-panel.active {
+            display: block;
+        }
+
+
+        /* ══════════════════════════════════════
+           GAME 1 – ذاكرة الفهرسة  (unchanged)
+        ══════════════════════════════════════ */
+        .memory-container {
+            background: linear-gradient(145deg, #0f1a2f, #0b1220);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.05);
+            padding: 15px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            perspective: 1000px;
+        }
+
+        .memory-card {
+            aspect-ratio: 3/4;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+            cursor: pointer;
+        }
+
+        .memory-card.flipped  { transform: rotateY(180deg); }
+
+        .memory-card.matched {
+            transform: rotateY(180deg) scale(0.95);
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, var(--brand), var(--brand-2));
+            color: #000;
+            font-size: 40px;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .card-front::after { content: '📚'; }
+
+        .card-back {
+            background: #1e293b;
+            transform: rotateY(180deg);
+            border: 2px solid var(--brand-2);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .memory-card.matched .card-back {
+            border-color: var(--success);
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .mem-result-screen { display: none; }
+
+        @media (max-width: 600px) {
+            .cards-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+
+        /* ══════════════════════════════════════
+           GAME 2 – وصّل المفاهيم  (unchanged)
+        ══════════════════════════════════════ */
+        .match-container {
+            background: linear-gradient(145deg, #0f1a2f, #0b1220);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .columns-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 50px;
+            position: relative;
+        }
+
+        .column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 2;
+        }
+
+        .match-item {
+            background: rgba(15, 26, 47, 0.8);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            font-weight: 600;
+            color: white;
+            user-select: none;
+        }
+
+        .match-item:hover         { border-color: var(--brand-2); background: rgba(6, 182, 212, 0.1); }
+        .match-item.selected      { border-color: var(--brand); background: rgba(34,197,94,0.1); box-shadow: 0 0 15px rgba(34,197,94,0.3); }
+        .match-item.matched       { border-color: var(--success); background: rgba(34,197,94,0.2); color: var(--success); pointer-events: none; opacity: 0.7; }
+        .match-item.wrong         { border-color: var(--danger); background: rgba(239,68,68,0.2); animation: shake 0.4s ease; }
+
+        .term-item::after {
+            content: '';
+            position: absolute;
+            left: -8px; top: 50%;
+            transform: translateY(-50%);
+            width: 12px; height: 12px;
+            background: var(--brand-2);
+            border-radius: 50%;
+        }
+
+        .def-item::before {
+            content: '';
+            position: absolute;
+            right: -8px; top: 50%;
+            transform: translateY(-50%);
+            width: 12px; height: 12px;
+            background: var(--brand);
+            border-radius: 50%;
+        }
+
+        .term-item.matched::after, .def-item.matched::before { background: var(--success); }
+
+        #linesCanvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .match-result-screen { text-align: center; display: none; padding: 40px; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25%       { transform: translateX(-5px); }
+            75%       { transform: translateX(5px); }
+        }
+
+        @media (max-width: 768px) {
+            .columns-container { flex-direction: column; }
+            .term-item::after, .def-item::before { display: none; }
+            #linesCanvas { display: none; }
+        }
+
+    </style>
+</head>
+<body>
+
+
+
+    <!-- ══ Wrapper ══ -->
+    <div class="minigames-wrapper">
+
+        <div class="minigames-header">
+            <h1>⚡ قسم التدريب السريع</h1>
+            <p>تسخين سريع بالمصطلحات المكتبية قبل الألعاب الكبيرة</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-row">
+            <button class="tab-btn active" onclick="switchTab('memory', this)">
+                🃏 ذاكرة الفهرسة
+            </button>
+            <button class="tab-btn" onclick="switchTab('match', this)">
+                🔗 وصّل المفاهيم
+            </button>
+        </div>
+
+
+        <!-- ═══════════════════════════
+             PANEL 1 – ذاكرة الفهرسة
+        ═══════════════════════════ -->
+        <div id="panel-memory" class="game-panel active">
+            <div class="memory-container">
+                <div id="memGameScreen">
+                    <h1 style="color: white; margin-bottom: 20px;">🃏 ذاكرة الفهرسة</h1>
+                    <div class="stats-bar">
+                        <div style="color: var(--accent2);">النقاط: <span id="memScoreSpan">0</span></div>
+                        <div style="color: var(--muted);">المحاولات: <span id="memMovesSpan">0</span></div>
+                        <div style="color: var(--brand-2);">المطابقات: <span id="memMatchesSpan">0</span> / <span id="memTotal">10</span></div>
+                    </div>
+                    <div class="cards-grid" id="cardsGrid"></div>
+                </div>
+
+                <div id="memResultScreen" class="mem-result-screen">
+                    <h2 style="color: white; font-size: 36px; margin-bottom: 20px;">أحسنت! أتممت اللعبة 🎉</h2>
+                    <div style="font-size: 24px; color: var(--muted); margin-bottom: 10px;">عدد المحاولات: <span id="memFinalMoves" style="color: white;">0</span></div>
+                    <div style="font-size: 48px; font-weight: bold; color: var(--brand); margin-bottom: 30px;">النقاط: <span id="memFinalScore">0</span></div>
+                    <button class="btn btn-primary" onclick="initMemoryGame()">🔄 العب مرة أخرى</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ═══════════════════════════
+             PANEL 2 – وصّل المفاهيم
+        ═══════════════════════════ -->
+        <div id="panel-match" class="game-panel">
+            <div class="match-container">
+                <div id="matchGameScreen">
+                    <div class="header-info">
+                        <div>المستوى: <span id="matchLevelSpan" style="color: white; font-weight: bold;">1</span> / 3</div>
+                        <div>النقاط: <span id="matchScoreSpan" style="color: var(--accent2); font-weight: bold;">0</span></div>
+                        <div style="font-size: 20px; font-weight: bold; color: var(--brand-2);">⏱️ <span id="matchTimeSpan">60</span></div>
+                    </div>
+
+                    <div class="columns-container" id="columnsContainer">
+                        <canvas id="linesCanvas"></canvas>
+                        <div class="column" id="termsCol"></div>
+                        <div class="column" id="defsCol"></div>
+                    </div>
+                </div>
+
+                <div id="matchResultScreen" class="match-result-screen">
+                    <h2 style="color: white; font-size: 32px; margin-bottom: 20px;" id="matchResultTitle">انتهت اللعبة!</h2>
+                    <div style="font-size: 64px; font-weight: 800; color: var(--brand); margin-bottom: 30px;" id="matchFinalScore">0</div>
+                    <button class="btn btn-primary" onclick="initMatchGame()">🔄 العب مرة أخرى</button>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end .minigames-wrapper -->
+
+
+    <script src="assets/library-terms.js"></script>
+    <script src="assets/learning.js"></script>
+    <script src="assets/js/game-settings.js"></script>
+    <script src="assets/js/game-modal.js"></script>
+    <script src="assets/js/game-header.js"></script>
+    <script src="assets/js/game-shell.js"></script>
+    <script src="assets/auth.js"></script>
+    <script>
+
+        /* ══════════════════════════════════════════
+           TAB SWITCHER
+        ══════════════════════════════════════════ */
+        function switchTab(name, btn) {
+            document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + name).classList.add('active');
+            btn.classList.add('active');
+
+            // Re-init the activated game so it's ready
+            if (name === 'memory') initMemoryGame();
+            if (name === 'match')  initMatchGame();
+        }
+
+
+        /* ══════════════════════════════════════════
+           GAME 1 – ذاكرة الفهرسة
+        ══════════════════════════════════════════ */
+        const PAIRS = [
+            { id: 1,  term: "تصنيف ديوي",      def: "عشر فئات رئيسية 000–900",   termId: 'ddc' },
+            { id: 2,  term: "MARC 21",          def: "فهرسة آلية بحقول مرمّزة",  termId: 'marc21' },
+            { id: 3,  term: "ISBN",             def: "رقم دولي معياري للكتاب",   termId: 'std-isbn' },
+            { id: 4,  term: "الببليوغرافيا",    def: "قائمة موصوفة بالمصادر",    termId: 'bibliography' },
+            { id: 5,  term: "التكشيف",          def: "استخراج المصطلحات الدالة", termId: 'indexing' },
+            { id: 6,  term: "OPAC",             def: "فهرس إلكتروني للجمهور",   termId: 'opac' },
+            { id: 7,  term: "المكنز",           def: "ضبط المصطلحات وعلاقاتها",  termId: 'thesaurus' },
+            { id: 8,  term: "رقم الاستدعاء",   def: "تصنيف + كاتر + سنة",       termId: 'call-number' },
+            { id: 9,  term: "الضبط الاستنادي", def: "توحيد صيغ الأسماء والموضوعات", termId: 'authority-control' },
+            { id: 10, term: "الرقمنة",          def: "تحويل المواد لصيغة رقمية", termId: 'digitization' }
+        ];
+
+        const pairsData = [];
+        PAIRS.forEach(p => {
+            pairsData.push({ id: p.id, type: 'term', text: p.term });
+            pairsData.push({ id: p.id, type: 'def', text: p.def });
+        });
+
+        let memCards = [];
+        let memHasFlipped = false;
+        let memLock = false;
+        let memFirst, memSecond;
+        let memMoves = 0, memMatches = 0, memScore = 0;
+
+        function shuffleArr(arr) { return arr.sort(() => Math.random() - 0.5); }
+
+        function initMemoryGame() {
+            document.getElementById('memGameScreen').style.display   = 'block';
+            document.getElementById('memResultScreen').style.display = 'none';
+
+            memMoves = 0; memMatches = 0; memScore = 0;
+            memHasFlipped = false; memLock = false;
+            memFirst = null; memSecond = null;
+
+            updateMemStats();
+
+            const totalEl = document.getElementById('memTotal');
+            if (totalEl) totalEl.textContent = String(PAIRS.length);
+            memCards = shuffleArr([...pairsData]);
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = '';
+
+            memCards.forEach(card => {
+                const el = document.createElement('div');
+                el.className = 'memory-card';
+                el.dataset.id = card.id;
+                el.innerHTML = `<div class="card-front"></div><div class="card-back">${card.text}</div>`;
+                el.addEventListener('click', memFlipCard);
+                grid.appendChild(el);
+            });
+        }
+
+        function memFlipCard() {
+            if (memLock || this === memFirst) return;
+            this.classList.add('flipped');
+
+            if (!memHasFlipped) {
+                memHasFlipped = true;
+                memFirst = this;
+                return;
+            }
+
+            memSecond = this;
+            memMoves++;
+            updateMemStats();
+            memCheckMatch();
+        }
+
+        function memCheckMatch() {
+            if (memFirst.dataset.id === memSecond.dataset.id) {
+                memDisableCards();
+            } else {
+                memUnflip();
+            }
+        }
+
+        function memDisableCards() {
+            memFirst.classList.add('matched');
+            memSecond.classList.add('matched');
+            memMatches++;
+            memScore += 100;
+            if (memMoves <= memMatches * 1.5) memScore += 50;
+            updateMemStats();
+            explainMemPair(memFirst.dataset.id, true);
+            if (memMatches === PAIRS.length) setTimeout(memEndGame, 1400);
+            memResetBoard();
+        }
+
+        function explainMemPair(id, ok) {
+            const pair = PAIRS.find(p => String(p.id) === String(id));
+            if (!pair || !window.ML) return;
+            let box = document.getElementById('memExplain');
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'memExplain';
+                box.className = 'ml-fb';
+                box.style.maxWidth = '720px';
+                box.style.margin = '14px auto 0';
+                const grid = document.getElementById('cardsGrid');
+                grid.parentNode.insertBefore(box, grid.nextSibling);
+            }
+            box.className = 'ml-fb show ok';
+            box.innerHTML = ML.explainHTML({
+                correct: true,
+                okTitle: 'مطابقة صحيحة: ' + pair.term,
+                why: pair.def + '.',
+                termId: pair.termId
+            });
+        }
+
+        function memUnflip() {
+            memLock = true;
+            memScore = Math.max(0, memScore - 10);
+            updateMemStats();
+            setTimeout(() => {
+                memFirst.classList.remove('flipped');
+                memSecond.classList.remove('flipped');
+                memResetBoard();
+            }, 1000);
+        }
+
+        function memResetBoard() {
+            [memHasFlipped, memLock] = [false, false];
+            [memFirst, memSecond]    = [null, null];
+        }
+
+        function updateMemStats() {
+            document.getElementById('memScoreSpan').innerText   = memScore;
+            document.getElementById('memMovesSpan').innerText   = memMoves;
+            document.getElementById('memMatchesSpan').innerText = memMatches;
+        }
+
+        function memEndGame() {
+            document.getElementById('memGameScreen').style.display   = 'none';
+            document.getElementById('memResultScreen').style.display = 'none';
+            document.getElementById('memFinalMoves').innerText = memMoves;
+            document.getElementById('memFinalScore').innerText = memScore;
+            if (window.maktabaAuth) window.maktabaAuth.updateScore('memory', memScore);
+            MPGame.results({
+                score: memScore,
+                correct: PAIRS.length,
+                total: PAIRS.length,
+                level: 1,
+                title: 'أتممت ذاكرة الفهرسة 🃏',
+                note: 'طابقت ' + PAIRS.length + ' أزواج في ' + memMoves + ' محاولة.',
+                next: false
+            });
+        }
+
+
+        /* ══════════════════════════════════════════
+           GAME 2 – وصّل المفاهيم
+        ══════════════════════════════════════════ */
+        const allConcepts = [
+            // Level 1
+            [
+                { id: 1,  term: "تصنيف ديوي العشري", def: "نظام لترتيب الكتب حسب الموضوع" },
+                { id: 2,  term: "الفهرس",             def: "قائمة بالمواد المكتبية المتوفرة" },
+                { id: 3,  term: "ISBN",               def: "الرقم الدولي المعياري للكتاب" },
+                { id: 4,  term: "الإعارة",            def: "إتاحة الكتب للمستفيدين مؤقتاً" }
+            ],
+            // Level 2
+            [
+                { id: 5,  term: "MARC",               def: "الفهرسة المقروءة آلياً" },
+                { id: 6,  term: "الببليوغرافيا",      def: "قائمة بالمصادر والمراجع حول موضوع" },
+                { id: 7,  term: "التكشيف",            def: "استخراج المصطلحات الدالة من الوثيقة" },
+                { id: 8,  term: "الكشاف",             def: "دليل يرشد للمواضع الواردة في الوثيقة" },
+                { id: 9,  term: "الاستخلاص",          def: "إعداد ملخص موجز للوثيقة" }
+            ],
+            // Level 3
+            [
+                { id: 10, term: "OPAC",               def: "فهرس الاتصال المباشر للجمهور" },
+                { id: 11, term: "الثيسوروس",          def: "أداة ضبط استخدام المصطلحات" },
+                { id: 12, term: "المخطوط",            def: "كتاب مكتوب بخط اليد قبل الطباعة" },
+                { id: 13, term: "الكولوفون",          def: "معلومات في نهاية المخطوط عن الناسخ" },
+                { id: 14, term: "الوراقة",            def: "حرفة النسخ والتصحيح قديماً" },
+                { id: 15, term: "الرقمنة",            def: "تحويل المواد الورقية لصيغة إلكترونية" }
+            ]
+        ];
+
+        let matchLevel = 0, matchScore = 0, matchTimeLeft = 60, matchTimer;
+        let matchSelectedTerm = null, matchSelectedDef = null;
+        let matchMatchedPairs = 0, matchLines = [];
+
+        const termsCol  = document.getElementById('termsCol');
+        const defsCol   = document.getElementById('defsCol');
+        const canvas    = document.getElementById('linesCanvas');
+        const ctx       = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = document.getElementById('columnsContainer');
+            canvas.width  = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            drawMatchLines();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function initMatchGame() {
+            matchLevel = 0; matchScore = 0;
+            document.getElementById('matchScoreSpan').innerText    = 0;
+            document.getElementById('matchGameScreen').style.display   = 'block';
+            document.getElementById('matchResultScreen').style.display = 'none';
+            loadMatchLevel();
+        }
+
+        function loadMatchLevel() {
+            if (matchLevel >= allConcepts.length) { endMatchGame(true); return; }
+
+            document.getElementById('matchLevelSpan').innerText = matchLevel + 1;
+            matchTimeLeft = 60 + (matchLevel * 20);
+            document.getElementById('matchTimeSpan').innerText = matchTimeLeft;
+            clearInterval(matchTimer);
+            startMatchTimer();
+
+            const concepts = allConcepts[matchLevel];
+            matchMatchedPairs = 0;
+            matchSelectedTerm = null;
+            matchSelectedDef  = null;
+            matchLines = [];
+
+            termsCol.innerHTML = '';
+            defsCol.innerHTML  = '';
+
+            let terms = shuffleArr(concepts.map(c => ({ id: c.id, text: c.term })));
+            let defs  = shuffleArr(concepts.map(c => ({ id: c.id, text: c.def  })));
+
+            terms.forEach(t => {
+                const el = document.createElement('div');
+                el.className   = 'match-item term-item';
+                el.innerText   = t.text;
+                el.dataset.id  = t.id;
+                el.onclick = () => handleMatchSelect('term', el);
+                termsCol.appendChild(el);
+            });
+
+            defs.forEach(d => {
+                const el = document.createElement('div');
+                el.className   = 'match-item def-item';
+                el.innerText   = d.text;
+                el.dataset.id  = d.id;
+                el.onclick = () => handleMatchSelect('def', el);
+                defsCol.appendChild(el);
+            });
+
+            setTimeout(resizeCanvas, 100);
+        }
+
+        function handleMatchSelect(type, el) {
+            if (el.classList.contains('matched')) return;
+
+            if (type === 'term') {
+                if (matchSelectedTerm) matchSelectedTerm.classList.remove('selected');
+                matchSelectedTerm = el;
+            } else {
+                if (matchSelectedDef) matchSelectedDef.classList.remove('selected');
+                matchSelectedDef = el;
+            }
+
+            el.classList.add('selected');
+
+            if (matchSelectedTerm && matchSelectedDef) checkMatchPair();
+        }
+
+        function checkMatchPair() {
+            if (matchSelectedTerm.dataset.id === matchSelectedDef.dataset.id) {
+                matchSelectedTerm.classList.remove('selected');
+                matchSelectedDef.classList.remove('selected');
+                matchSelectedTerm.classList.add('matched');
+                matchSelectedDef.classList.add('matched');
+
+                matchLines.push({ termEl: matchSelectedTerm, defEl: matchSelectedDef });
+                drawMatchLines();
+
+                matchScore += 100;
+                document.getElementById('matchScoreSpan').innerText = matchScore;
+                matchMatchedPairs++;
+                explainMatchPair(matchSelectedTerm.dataset.id);
+
+                matchSelectedTerm = null;
+                matchSelectedDef  = null;
+
+                if (matchMatchedPairs === allConcepts[matchLevel].length) {
+                    clearInterval(matchTimer);
+                    matchScore += matchTimeLeft * 5;
+                    matchLevel++;
+                    setTimeout(loadMatchLevel, 1500);
+                }
+            } else {
+                matchSelectedTerm.classList.add('wrong');
+                matchSelectedDef.classList.add('wrong');
+
+                let t = matchSelectedTerm, d = matchSelectedDef;
+                setTimeout(() => {
+                    t.classList.remove('selected', 'wrong');
+                    d.classList.remove('selected', 'wrong');
+                }, 500);
+
+                matchScore = Math.max(0, matchScore - 20);
+                document.getElementById('matchScoreSpan').innerText = matchScore;
+                matchSelectedTerm = null;
+                matchSelectedDef  = null;
+            }
+        }
+
+        function explainMatchPair(id) {
+            if (!window.ML) return;
+            const lvl = allConcepts[matchLevel] || [];
+            const c = lvl.find(x => String(x.id) === String(id));
+            if (!c) return;
+            let box = document.getElementById('matchExplain');
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'matchExplain';
+                box.className = 'ml-fb';
+                box.style.maxWidth = '760px';
+                box.style.margin = '12px auto 0';
+                const cols = document.getElementById('columnsContainer');
+                cols.parentNode.insertBefore(box, cols.nextSibling);
+            }
+            const t = ML.term(TERM_OF[c.term]);
+            box.className = 'ml-fb show ok';
+            box.innerHTML = ML.explainHTML({
+                correct: true,
+                okTitle: 'مطابقة صحيحة: ' + c.term,
+                why: c.def + (t ? ' — ' + t.def : ''),
+                termId: TERM_OF[c.term],
+                source: t ? { label: t.src, url: null } : null
+            });
+        }
+
+        const TERM_OF = {
+            'تصنيف ديوي العشري': 'ddc', 'الفهرس': 'opac', 'ISBN': 'std-isbn', 'الإعارة': 'ill',
+            'MARC': 'marc21', 'الببليوغرافيا': 'bibliography', 'التكشيف': 'indexing',
+            'الكشاف': 'kwic', 'الاستخلاص': 'abstract', 'OPAC': 'opac', 'الثيسوروس': 'thesaurus',
+            'المخطوط': 'manuscript', 'الكولوفون': 'colophon', 'الوراقة': 'wiraqa', 'الرقمنة': 'digitization'
+        };
+
+        function drawMatchLines() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#22c55e';
+            ctx.lineWidth = 3;
+
+            const containerRect = document.getElementById('columnsContainer').getBoundingClientRect();
+
+            matchLines.forEach(line => {
+                const termRect = line.termEl.getBoundingClientRect();
+                const defRect  = line.defEl.getBoundingClientRect();
+
+                const startX = termRect.left  - containerRect.left;
+                const startY = termRect.top   - containerRect.top  + termRect.height / 2;
+                const endX   = defRect.right  - containerRect.left;
+                const endY   = defRect.top    - containerRect.top  + defRect.height  / 2;
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX,   endY);
+                ctx.stroke();
+            });
+        }
+
+        function startMatchTimer() {
+            matchTimer = setInterval(() => {
+                matchTimeLeft--;
+                document.getElementById('matchTimeSpan').innerText = matchTimeLeft;
+                if (matchTimeLeft <= 0) {
+                    clearInterval(matchTimer);
+                    endMatchGame(false);
+                }
+            }, 1000);
+        }
+
+        function endMatchGame(completed) {
+            document.getElementById('matchGameScreen').style.display   = 'none';
+            document.getElementById('matchResultScreen').style.display = 'none';
+            document.getElementById('matchFinalScore').innerText = matchScore;
+
+            if (window.maktabaAuth) window.maktabaAuth.updateScore('match', matchScore);
+            if (window.ML) ML.progress.record('minigames', { score: matchScore, correct: matchMatchedPairs, total: 15, level: Math.min(3, matchLevel + 1) });
+            MPGame.results({
+                score: matchScore,
+                correct: matchMatchedPairs,
+                total: 15,
+                level: Math.min(3, matchLevel + 1),
+                title: completed ? 'أتممت كل مستويات المطابقة 🎉' : 'انتهى وقت المطابقة ⏰',
+                note: completed ? 'صلت كل المصطلحات بتعريفاتها في المستويات الثلاثة.' : 'راجع المصطلحات التي لم تُطابقها ثم حاول مرة أخرى.',
+                next: false
+            });
+        }
+
+
+        /* ── Boot ── */
+        MPGame.init({
+            id: 'minigames',
+            title: 'التدريب السريع',
+            icon: '⚡',
+            field: 'مصطلحات أساسية',
+            tagline: 'ذاكرة الفهرسة ووصل المفاهيم — تسخين سريع قبل الألعاب الكبيرة.',
+            intro: 'لعبتان خفيفتان لتثبيت المصطلحات: اكشف أزواج الذاكرة، وصل كل مصطلح بتعريفه، واقرأ التفسير بعد كل مطابقة.',
+            defaultLevel: 1,
+            levels: [
+                { id: 1, label: 'ذاكرة', desc: 'مطابقة البطاقات المتماثلة' },
+                { id: 2, label: 'وصل المفاهيم', desc: '٣ مستويات متدرجة' }
+            ],
+            onPlay: function (opts) {
+                if (opts && opts.level === 2) {
+                    const tabs = document.querySelectorAll('.tab-btn');
+                    if (tabs[1]) { tabs[1].click(); return; }
+                    initMatchGame();
+                    return;
+                }
+                const tabs = document.querySelectorAll('.tab-btn');
+                if (tabs[0]) tabs[0].click(); else initMemoryGame();
+            },
+            onRestart: function () {
+                const active = document.querySelector('.game-panel.active');
+                if (active && active.id === 'panel-match') initMatchGame();
+                else initMemoryGame();
+            }
+        });
+
+        window.onload = () => {
+            initMemoryGame();   // Default tab is memory
+            if (window.ML) {
+                ML.tutorial({
+                    game: 'minigames',
+                    title: '⚡ التدريب السريع — ذاكرة ومطابقة',
+                    subtitle: 'تسخين سريع بالمصطلحات المكتبية قبل الألعاب الكبيرة',
+                    goal: 'تثبيت المصطلحات المكتبية وتعريفاتها عبر الذاكرة والمطابقة.',
+                    rules: [
+                        'لعبة الذاكرة: اكشف بطاقتين متطابقتين (مصطلح + تعريفه).',
+                        'لعبة وصل المفاهيم: صل كل مصطلح بتعريفه في ثلاثة مستويات.',
+                        'بعد كل مطابقة صحيحة يظهر تعريف المصطلح ومرجعه من ODLIS.',
+                        'الخطأ يخصم نقاطًا، والدقة أهم من السرعة.'
+                    ],
+                    controls: 'النقر أو اللمس على البطاقات.',
+                    concepts: ['DDC', 'MARC 21', 'المكنز', 'رقم الاستدعاء', 'الضبط الاستنادي', 'الرقمنة'],
+                    onStart: function () { }
+                });
+            }
+        };
+
+    </script>
+</body>
+</html>
