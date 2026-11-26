@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>هانج مان المكتبات – MaktabaPlay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<link rel="stylesheet" href="../../assets/css/game-header.css">
+<link rel="stylesheet" href="../../assets/css/game-shell.css">
+<link rel="stylesheet" href="../../assets/css/game-components.css">
+<link rel="stylesheet" href="../../assets/css/game-polish.css">
+<link rel="stylesheet" href="../../assets/css/responsive.css">
+<link rel="stylesheet" href="../../shared/css/end-screen.css">
+<link rel="stylesheet" href="game.css">
+</head>
+<body>
+
+<div class="hangman-container">
+  <div class="hangman-grid">
+    <div class="hangman-sidebar">
+      <div class="hangman-logo"><span class="hangman-logo-icon">📚</span><span class="hangman-logo-text">علم المكتبات</span></div>
+      <ul class="hangman-nav">
+        <li class="hangman-nav-item active" data-page="dashboard"><span>📊</span> لوحة التحكم</li>
+        <li class="hangman-nav-item" data-page="game"><span>🎮</span> لعبة التخمين</li>
+        <li class="hangman-nav-item" data-page="questions"><span>❓</span> بنك الأسئلة</li>
+        <li class="hangman-nav-item" data-page="addquestion"><span>➕</span> إضافة سؤال</li>
+        <li class="hangman-nav-item" data-page="results"><span>📈</span> النتائج</li>
+        <li class="hangman-nav-item" data-page="content"><span>📖</span> محتوى المادة</li>
+      </ul>
+    </div>
+
+    <div class="hangman-main">
+      <div id="dashboard" class="hangman-section active">
+        <h2 style="color:white;margin-bottom:20px;">📊 لوحة التحكم</h2>
+        <div class="hangman-stats-grid">
+          <div class="hangman-stat-card"><div class="hangman-stat-label">إجمالي الأسئلة</div><div class="hangman-stat-value" id="totalQuestions">0</div></div>
+          <div class="hangman-stat-card"><div class="hangman-stat-label">جولات لعبت</div><div class="hangman-stat-value" id="gamesPlayed">0</div></div>
+          <div class="hangman-stat-card"><div class="hangman-stat-label">جولات رابحة</div><div class="hangman-stat-value" id="gamesWon">0</div></div>
+          <div class="hangman-stat-card"><div class="hangman-stat-label">نسبة النجاح</div><div class="hangman-stat-value" id="winRate">0%</div></div>
+        </div>
+        <div class="content-section">
+          <h3>📖 موضوعات اللعبة</h3>
+          <p>تشمل أسئلة اللعبة: <strong style="color:var(--brand-2)">الفهرسة الوصفية (MARC · ISBD)</strong>، تصنيف ديوي العشري والتصنيف العالمي، الببليوغرافيا، الاستخلاص والتكشيف، تحليل الموضوعات، المخطوطات، الحفظ والصون، خدمات المعلومات وغيرها.</p>
+          <button class="hangman-btn" data-page="content" style="margin-top:15px;">عرض المحتوى</button>
+        </div>
+      </div>
+
+      <div id="game" class="hangman-section">
+        <h2 style="color:white;margin-bottom:12px;">🎮 لعبة علم المكتبات</h2>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+          <div class="streak-badge">🔥 سلسلة: <span id="streakCount">0</span></div>
+          <div style="color:var(--muted);font-size:13px;">⏱️ الوقت المتبقي: <span id="timerDisplay" style="color:var(--brand-2);font-weight:700;">60</span> ث</div>
+        </div>
+        <div class="timer-bar-wrap"><div class="timer-bar" id="timerBar" style="width:100%"></div></div>
+
+        <div class="hangman-drawing-area">
+          <svg id="hangmanSVG" width="240" height="220" viewBox="0 0 240 220" xmlns="http://www.w3.org/2000/svg" direction="ltr">
+            <line x1="20" y1="210" x2="220" y2="210" stroke="#1f2937" stroke-width="4" stroke-linecap="round"/>
+            <line x1="60" y1="210" x2="60" y2="20" stroke="#1f2937" stroke-width="4" stroke-linecap="round"/>
+            <line x1="60" y1="20" x2="140" y2="20" stroke="#1f2937" stroke-width="4" stroke-linecap="round"/>
+            <line x1="140" y1="20" x2="140" y2="45" stroke="#1f2937" stroke-width="4" stroke-linecap="round"/>
+            <circle id="svg-head" cx="140" cy="63" r="18" stroke="#06b6d4" stroke-width="3" fill="none" opacity="0"/>
+            <line id="svg-body" x1="140" y1="81" x2="140" y2="140" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" opacity="0"/>
+            <line id="svg-larm" x1="140" y1="100" x2="115" y2="125" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" opacity="0"/>
+            <line id="svg-rarm" x1="140" y1="100" x2="165" y2="125" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" opacity="0"/>
+            <line id="svg-lleg" x1="140" y1="140" x2="115" y2="170" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" opacity="0"/>
+            <line id="svg-rleg" x1="140" y1="140" x2="165" y2="170" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" opacity="0"/>
+          </svg>
+        </div>
+
+        <div class="hangman-word-display" id="word"></div>
+        <div class="content-section" style="margin-bottom:12px;padding:12px 16px;">
+          <strong style="color:var(--brand-2);">الفئة: </strong><span id="gameCategory" style="color:white;"></span>
+          &nbsp;&nbsp;<strong style="color:var(--accent);">الصعوبة: </strong><span id="gameDifficulty"></span>
+        </div>
+        <div id="progressiveHints" class="progressive-hints"></div>
+        <div id="hintBox" class="hint-box"><span class="hint-icon">💡</span><span class="hint-text" id="hintText"></span></div>
+
+        <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+          <div class="hangman-stat-card" style="flex:1;padding:14px;"><div class="hangman-stat-label">محاولات متبقية</div><div class="hangman-stat-value" id="remaining">6</div></div>
+          <div class="hangman-stat-card" style="flex:1;padding:14px;"><div class="hangman-stat-label">الأخطاء</div><div class="hangman-stat-value" id="wrong">0</div></div>
+        </div>
+
+        <div class="hangman-letters-grid" id="letters"></div>
+        <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
+          <button class="hangman-btn" id="hintBtn">💡 تلميح</button>
+          <button class="hangman-btn hangman-btn-secondary" id="resetGameBtn">🔄 لعبة جديدة</button>
+        </div>
+        <div id="gameMessage"></div>
+      </div>
+
+      <div id="questions" class="hangman-section">
+        <h2 style="color:white;margin-bottom:20px;">❓ بنك الأسئلة</h2>
+        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+          <button class="hangman-btn" data-page="addquestion">➕ إضافة سؤال</button>
+          <button class="hangman-btn hangman-btn-secondary" id="exportBtn">📥 تصدير</button>
+        </div>
+        <div style="overflow-x:auto;"><table class="hangman-table"><thead><tr><th>#</th><th>الكلمة</th><th>الفئة</th><th>الصعوبة</th><th>التلميح</th><th>إجراءات</th></tr></thead><tbody id="questionsTable"></tbody></table></div>
+      </div>
+
+      <div id="addquestion" class="hangman-section">
+        <h2 style="color:white;margin-bottom:20px;">➕ إضافة سؤال جديد</h2>
+        <form id="addQuestionForm">
+          <div class="hangman-form-group"><label>الكلمة *</label><input type="text" id="newWord" placeholder="مثال: ديوي" required></div>
+          <div class="hangman-form-row">
+            <div class="hangman-form-group"><label>الفئة</label><select id="newCategory" required><option value="">اختر الفئة</option><option>الفهرسة</option><option>التصنيف</option><option>الببليوغرافيا</option><option>التكشيف</option><option>الاستخلاص</option><option>المخطوطات</option><option>الحفظ والصون</option><option>خدمات المعلومات</option><option>المصطلحات</option><option>الرقمنة</option><option>الأشخاص</option></select></div>
+            <div class="hangman-form-group"><label>الصعوبة</label><select id="newDifficulty" required><option value="">اختر الصعوبة</option><option value="easy">سهل</option><option value="medium">متوسط</option><option value="hard">صعب</option></select></div>
+          </div>
+          <div class="hangman-form-group"><label>التلميح الرئيسي *</label><textarea id="newHint" rows="2" placeholder="تلميح مساعد للكلمة" required></textarea></div>
+          <div class="hangman-form-group"><label>تلميح إضافي (اختياري)</label><textarea id="newHint2" rows="2" placeholder="تلميح ثانٍ يظهر عند الخطأ الثاني"></textarea></div>
+          <div class="hangman-form-group"><label>تلميح ثالث (اختياري)</label><textarea id="newHint3" rows="2" placeholder="تلميح ثالث يظهر عند الخطأ الرابع"></textarea></div>
+          <button type="submit" class="hangman-btn">✅ إضافة السؤال</button>
+        </form>
+      </div>
+
+      <div id="results" class="hangman-section">
+        <h2 style="color:white;margin-bottom:20px;">📈 النتائج والإحصائيات</h2>
+        <div class="hangman-stats-grid"><div class="hangman-stat-card"><div class="hangman-stat-label">إجمالي الجولات</div><div class="hangman-stat-value" id="statsTotal">0</div></div><div class="hangman-stat-card"><div class="hangman-stat-label">الجولات الرابحة</div><div class="hangman-stat-value" id="statsWon">0</div></div><div class="hangman-stat-card"><div class="hangman-stat-label">الجولات الخاسرة</div><div class="hangman-stat-value" id="statsLost">0</div></div></div>
+        <div style="overflow-x:auto;"><table class="hangman-table"><thead><tr><th>#</th><th>الكلمة</th><th>النتيجة</th><th>الأخطاء</th><th>الوقت</th></tr></thead><tbody id="historyTable"></tbody></table></div>
+        <button class="hangman-btn hangman-btn-danger" id="clearHistoryBtn" style="margin-top:20px;">🗑️ مسح السجل</button>
+      </div>
+
+      <div id="content" class="hangman-section"><h2 style="color:white;margin-bottom:20px;">📖 محتوى علم المكتبات</h2><div id="contentContainer"></div></div>
+    </div>
+  </div>
+</div>
+
+<footer><div class="footer-inner"><div>© 2026 MaktabaPlay – منصة ألعاب مكتبية عربية</div><div><a href="../../contact.html">اتصل بنا</a> · <a href="../../partners.html">شراكات</a></div></div></footer>
+
+<div id="confirmModal" class="hangman-modal"><div class="hangman-modal-content"><h3 style="color:white;" id="confirmTitle">تأكيد</h3><p style="color:var(--muted);margin:15px 0;" id="confirmMessage"></p><div style="display:flex;gap:10px;"><button class="hangman-btn" id="confirmBtn">تأكيد</button><button class="hangman-btn hangman-btn-secondary" onclick="closeModal()">إلغاء</button></div></div></div>
+
+<script src="../../data/library-terms.js"></script>
+<script src="../../assets/learning.js"></script>
+<script src="../../assets/js/game-settings.js"></script>
+<script src="../../assets/js/game-modal.js"></script>
+<script src="../../assets/js/game-header.js"></script>
+<script src="../../assets/js/game-shell.js"></script>
+<script src="../../shared/js/utils.js"></script>
+<script src="../../shared/js/storage.js"></script>
+<script src="../../shared/js/sfx.js"></script>
+<script src="../../shared/js/end-screen.js"></script>
+<script src="../../data/howto.js"></script>
+<script src="../../shared/js/howto.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+// Backend is disabled; the frontend is local-first.
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
@@ -34,7 +35,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ limit: '10kb', extended: true }));
-app.use(express.static(path.join(__dirname, '')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Rate Limiting
 const generalLimiter = rateLimit({
@@ -61,7 +62,7 @@ const scoreLimiter = rateLimit({
 app.use(generalLimiter);
 
 // Database Setup
-const db = new sqlite3.Database('./maktaba.db', (err) => {
+const db = new sqlite3.Database(path.join(__dirname, 'maktaba.db'), (err) => {
     if (err) {
         console.error('Error opening database', err.message);
     } else {

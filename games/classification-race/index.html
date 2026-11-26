@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سباق التصنيف – Classification Race | MaktabaPlay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <link rel="stylesheet" href="../../assets/css/design-system.css">
+  <link rel="stylesheet" href="../../assets/css/game-header.css">
+  <link rel="stylesheet" href="../../assets/css/game-shell.css">
+  <link rel="stylesheet" href="../../assets/css/game-components.css">
+  <link rel="stylesheet" href="../../assets/css/game-polish.css">
+  <link rel="stylesheet" href="../../assets/css/responsive.css">
+  <link rel="stylesheet" href="game.css">
+</head>
+<script src="../../data/library-terms.js"></script>
+<script src="../../assets/learning.js"></script>
+<script src="../../assets/js/game-settings.js"></script>
+<script src="../../assets/js/game-modal.js"></script>
+<script src="../../assets/js/game-header.js"></script>
+<script src="../../assets/js/game-shell.js"></script>
+<script src="../../data/howto.js"></script>
+<script src="../../shared/js/howto.js"></script>
+<script src="../../assets/auth.js"></script>
+
+<div id="gr">
+  <div id="ov">
+    <div id="hud">
+      <div class="hb">الموجة <span id="wsp">1</span></div>
+      <div class="hb">⭐ <span id="ssp">0</span></div>
+      <div class="hb">❤️ <span id="lsp">3</span></div>
+    </div>
+    <div id="tbw">
+      <div id="tb"></div>
+    </div>
+    <div id="bb">
+      <div class="bt" id="btit">عنوان الكتاب</div>
+      <div class="bh" id="bhin">تلميح</div>
+    </div>
+    <div id="cp"></div>
+    <div id="fo"></div>
+  </div>
+  <canvas id="rc" width="680" height="200"></canvas>
+  <div id="bg"></div>
+  <div id="rs">
+    <h2>انتهى السباق! 🏁</h2>
+    <div class="rss">وصلت إلى الموجة: <strong id="fw" style="color:#fff">0</strong></div>
+    <div class="rsc" id="fs">0</div>
+    <div class="rss" style="margin-top:-8px">نقطة</div>
+    <div style="margin-top:14px"><button class="bpx" onclick="initGame()">🔄 العب مرة أخرى</button></div>
+  </div>
+</div>
+
+<script src="game.js"></script>

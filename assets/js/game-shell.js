@@ -423,7 +423,7 @@
         title: 'الخروج من اللعبة؟',
         text: 'سيُفقد تقدم الجولة الحالية، لكن أفضل نتيجة محفوظة تبقى.',
         ok: 'خروج'
-      }).then(ok => { if (ok) location.href = 'index.html'; });
+      }).then(ok => { if (ok) location.href = location.pathname.includes('/games/') ? '../../index.html' : 'index.html'; });
     });
 
     if (typeof cfg.onPause === 'function') { try { cfg.onPause(); } catch (e) { } }
@@ -565,7 +565,7 @@
         if (!items.length) window.ML.toast('لا توجد أخطاء مسجلة — أداء رائع!');
       }
     });
-    resultsEl.querySelector('[data-home]').addEventListener('click', () => { location.href = 'index.html'; });
+    resultsEl.querySelector('[data-home]').addEventListener('click', () => { location.href = location.pathname.includes('/games/') ? '../../index.html' : 'index.html'; });
 
     if (typeof cfg.onResults === 'function') { try { cfg.onResults(opts); } catch (e) { } }
     return resultsEl;

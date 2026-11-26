@@ -19,6 +19,9 @@
 
   function render(config) {
     const cfg = config || {};
+    const root = location.pathname.includes('/games/') ? '../../' : '';
+    const home = `${root}index.html`;
+    const profile = `${root}profile.html`;
     let host = document.getElementById('mpHeader');
     if (!host) {
       host = document.createElement('header');
@@ -37,28 +40,28 @@
 
     host.innerHTML = `
       <div class="mp-header__bar">
-        <a class="mp-brand" href="index.html" aria-label="MaktabaPlay — الصفحة الرئيسية">
+        <a class="mp-brand" href="${home}" aria-label="MaktabaPlay — الصفحة الرئيسية">
           <span class="mp-brand__mark">${LOGO}</span>
           <span class="mp-brand__text"><b>MaktabaPlay</b><small>العب • اتعلم • اتطور</small></span>
         </a>
 
         <div class="mp-crumbs" aria-label="مسار التنقّل">
-          <a href="index.html">مكتبة الألعاب</a>
+          <a href="${home}">مكتبة الألعاب</a>
           <span>›</span>
           <strong>${title}</strong>
         </div>
 
         <nav class="mp-nav" id="mpNav" aria-label="التنقّل الرئيسي">
-          <a href="index.html" class="${active === 'home' ? 'is-active' : ''}">الرئيسية</a>
-          <a href="index.html#games" class="${active === 'games' ? 'is-active' : ''}">الألعاب</a>
-          <a href="profile.html" class="${active === 'achievements' ? 'is-active' : ''}">الإنجازات</a>
-          <a href="profile.html" class="${active === 'profile' ? 'is-active' : ''}">الملف الشخصي</a>
+          <a href="${home}" class="${active === 'home' ? 'is-active' : ''}">الرئيسية</a>
+          <a href="${home}#games" class="${active === 'games' ? 'is-active' : ''}">الألعاب</a>
+          <a href="${profile}" class="${active === 'achievements' ? 'is-active' : ''}">الإنجازات</a>
+          <a href="${profile}" class="${active === 'profile' ? 'is-active' : ''}">الملف الشخصي</a>
         </nav>
 
         <div class="mp-header__actions">
           <div id="authLinks"></div>
           <button class="mp-icon-btn mp-menu-btn" id="mpMenuBtn" aria-label="فتح القائمة" aria-expanded="false">☰</button>
-          <a class="mp-back" href="index.html" title="العودة إلى مكتبة الألعاب">
+          <a class="mp-back" href="${home}" title="العودة إلى مكتبة الألعاب">
             <span>→</span><b>رجوع</b>
           </a>
         </div>

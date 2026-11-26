@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مهندس المكتبة v3 | MaktabaPlay</title>
+  <link rel="stylesheet" href="../../assets/style.css">
+  <link rel="stylesheet" href="../../assets/css/design-system.css">
+  <link rel="stylesheet" href="../../assets/css/game-header.css">
+  <link rel="stylesheet" href="../../assets/css/game-shell.css">
+  <link rel="stylesheet" href="../../assets/css/game-components.css">
+  <link rel="stylesheet" href="../../assets/css/game-polish.css">
+  <link rel="stylesheet" href="../../assets/css/responsive.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="game.css">
+</head>
+
+<body>
+<script src="../../data/library-terms.js"></script>
+<script src="../../assets/learning.js"></script>
+<script src="../../assets/js/game-settings.js"></script>
+<script src="../../assets/js/game-modal.js"></script>
+<script src="../../assets/js/game-header.js"></script>
+<script src="../../assets/js/game-shell.js"></script>
+<script src="../../data/howto.js"></script>
+<script src="../../shared/js/howto.js"></script>
+  <!-- HEADER -->
+  <header id="site-header">
+    <div class="header-brand">
+      <span class="header-logo">📖 <span id="hdr-libname">مهندس المكتبة</span></span>
+      <span class="hdr-badge hdr-level" id="hdr-level">مكتبة مدرسية</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="hdr-badge hdr-score">⭐ <span id="hdr-score">0</span></span>
+      <div class="speed-controls">
+        <span style="font-size:.6rem;color:var(--muted)">سرعة:</span>
+        <button class="speed-btn active-speed" data-speed="1">×1</button>
+        <button class="speed-btn" data-speed="2">×2</button>
+        <button class="speed-btn" data-speed="3">×3</button>
+      </div>
+      <button id="save-btn"
+        style="padding:4px 10px;font-size:0.7rem;font-weight:700;font-family:'Tajawal',sans-serif;border-radius:7px;border:1px solid rgba(34,197,94,.3);background:rgba(34,197,94,.1);color:var(--brand);cursor:pointer">💾
+        حفظ</button>
+      <button id="load-btn"
+        style="padding:4px 10px;font-size:0.7rem;font-weight:700;font-family:'Tajawal',sans-serif;border-radius:7px;border:1px solid rgba(6,182,212,.3);background:rgba(6,182,212,.1);color:var(--accent);cursor:pointer">📂
+        تحميل</button>
+      <button class="pause-btn" id="pause-btn">⏸ إيقاف</button>
+    </div>
+  </header>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-stat green" id="hud-budget-stat">
+      <div class="hud-label">الميزانية</div>
+      <div class="hud-value green" id="hud-budget">10,000 ج</div>
+      <div class="hud-bar" style="position:relative">
+        <div class="hud-bar-fill" id="hb-budget"
+          style="background:var(--brand);width:100%;transition:width .6s,background .4s"></div>
+        <div
+          style="position:absolute;top:-1px;right:70%;width:1px;height:5px;background:rgba(245,158,11,.5);pointer-events:none"
+          title="تحذير 30%"></div>
+      </div>
+    </div>
+    <div class="hud-stat cyan">
+      <div class="hud-label">رضا المستفيدين</div>
+      <div class="hud-value cyan" id="hud-satisfaction">70%</div>
+      <div class="hud-bar">
+        <div class="hud-bar-fill" id="hb-satisfaction" style="background:var(--accent);width:70%"></div>
+      </div>
+    </div>
+    <div class="hud-stat green">
+      <div class="hud-label">جودة الفهرسة</div>
+      <div class="hud-value green" id="hud-quality">40%</div>
+      <div class="hud-bar">
+        <div class="hud-bar-fill" id="hb-quality" style="background:var(--brand);width:40%"></div>
+      </div>
+    </div>
+    <div class="hud-stat gold">
+      <div class="hud-label">الأوعية</div>
+      <div class="hud-value gold" id="hud-collections">500</div>
+    </div>
+    <div class="hud-stat purple">
+      <div class="hud-label">التاريخ</div>
+      <div class="hud-value purple" id="hud-date">1/1/2026</div>
+    </div>
+    <div class="hud-stat red">
+      <div class="hud-label">الزوار اليوم</div>
+      <div class="hud-value red" id="hud-visitors">0</div>
+    </div>
+    <div class="hud-stat" id="hud-net-stat" style="border-color:var(--border2)">
+      <div class="hud-label">صافي الشهر</div>
+      <div class="hud-value" id="hud-net" style="color:var(--muted)">0 ج</div>
+    </div>
+  </div>
+
+  <!-- GAME BODY -->
+  <div id="game-body">
+    <div id="main-area">
+      <!-- TABS -->
+      <nav id="tabs-nav">
+        <button class="tab-btn active" data-tab="map">🗺️ خريطة المكتبة</button>
+        <button class="tab-btn" data-tab="hr">👥 الموارد البشرية</button>
+        <button class="tab-btn" data-tab="acquisition">📦 التزويد والاقتناء</button>
+        <button class="tab-btn" data-tab="analytics">📊 التحليلات</button>
+        <button class="tab-btn" data-tab="guide" style="color:#f59e0b;border-bottom-color:transparent">📖 دليل
+          اللعبة</button>
+      </nav>
+
+      <div id="tabs-content">
+
+        <!-- ══════════ MAP TAB ══════════ -->
+        <div class="tab-panel active" id="tab-map">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div class="section-title" style="margin-bottom:0"><span class="dot"></span> الخريطة التفاعلية للمكتبة</div>
+            <div style="display:flex;gap:5px;margin-right:auto">
+              <span
+                style="font-size:.6rem;padding:2px 7px;border-radius:2px;background:#3d1f0a;border:1px solid #6b3818;color:#d4a574;font-weight:700;letter-spacing:.5px">🏛️
+                TOP-DOWN VIEW</span>
+              <span
+                style="font-size:.6rem;padding:2px 7px;border-radius:2px;background:#1a3060;border:1px solid #2a5090;color:#67c3f3;font-weight:700"
+                id="map-time-badge">📅 يوم 1</span>
+            </div>
+          </div>
+          <div class="section-desc" style="border-right-color:#8b5a2b;background:rgba(61,31,10,.4)">🗺️ انقر على قسم من
+            الشريط الجانبي، ثم اختر موقعاً في الخريطة لتركيبه. الزوار يتجولون تلقائياً، والموظفون يظهرون في مواقعهم.
+          </div>
+
+          <!-- NOW TASK BANNER -->
+          <div id="now-task-banner"
+            style="margin-bottom:10px;padding:10px 14px;border-radius:9px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-right:4px solid var(--brand);display:flex;align-items:center;gap:10px">
+            <span style="font-size:1.1rem;flex-shrink:0">🎯</span>
+            <div style="flex:1;min-width:0">
+              <div
+                style="font-size:.6rem;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">
+                مهمتك الآن</div>
+              <div id="now-task-text"
+                style="font-size:.8rem;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                جاري التحميل...</div>
+              <div id="now-task-reward" style="font-size:.62rem;color:var(--warn);margin-top:2px"></div>
+            </div>
+            <div id="now-task-badge"
+              style="font-size:.62rem;color:var(--muted);text-align:left;flex-shrink:0;background:var(--card2);border:1px solid var(--border2);border-radius:6px;padding:3px 8px">
+            </div>
+          </div>
+
+          <div id="map-tab-layout">
+            <!-- THE MAP -->
+            <div>
+              <div id="lib-map-wrap">
+                <div id="lib-map-canvas"></div>
+                <div id="visitor-layer"></div>
+                <!-- Pixel art ambient light overlay -->
+                <div
+                  style="position:absolute;inset:0;pointer-events:none;z-index:5;background:radial-gradient(ellipse 60% 50% at 35% 60%, rgba(255,200,80,.07) 0%, transparent 70%), radial-gradient(ellipse 40% 40% at 75% 30%, rgba(255,160,40,.05) 0%, transparent 60%);border-radius:2px">
+                </div>
+              </div>
+              <div id="map-legend"></div>
+              <div id="map-infobar">
+                <div class="mib-item">
+                  <div class="mib-label">مشغولة</div>
+                  <div class="mib-val" id="mib-occ" style="color:var(--brand)">0/36</div>
+                </div>
+                <div class="mib-item">
+                  <div class="mib-label">الأقسام</div>
+                  <div class="mib-val" id="mib-sec" style="color:var(--accent)">0</div>
+                </div>
+                <div class="mib-item">
+                  <div class="mib-label">الموظفون</div>
+                  <div class="mib-val" id="mib-staff" style="color:var(--purple)">0</div>
+                </div>
+                <div class="mib-item">
+                  <div class="mib-label">المخطوطات</div>
+                  <div class="mib-val" id="mib-manu" style="color:var(--warn)">–</div>
+                </div>
+              </div>
+              <div id="penalty-box"></div>
+            </div>
+
+            <!-- MAP SIDEBAR -->
+            <div id="map-sidebar">
+              <div class="msb-title">🏗️ إضافة قسم جديد</div>
+              <div id="msb-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════ HR TAB ══════════ -->
+        <div class="tab-panel" id="tab-hr">
+          <div class="section-title"><span class="dot"></span> الموارد البشرية والكوادر</div>
+          <span class="alert-tag" id="hr-alert">⚠️ قاعة المخطوطات تحتاج أمين مخطوطات!</span>
+          <div id="staff-productivity" style="margin-bottom:14px"></div>
+          <div class="hr-grid" id="hr-grid"></div>
+        </div>
+
+        <!-- ══════════ ACQUISITION TAB ══════════ -->
+        <div class="tab-panel" id="tab-acquisition">
+          <div class="section-title"><span class="dot"></span> التزويد واقتناء المصادر</div>
+          <div class="acq-grid" id="acq-grid"></div>
+        </div>
+
+        <!-- ══════════ ANALYTICS TAB ══════════ -->
+        <div class="tab-panel" id="tab-analytics">
+          <div class="section-title"><span class="dot"></span> لوحة التحليلات</div>
+          <div class="ana-grid" id="analytics-grid"></div>
+          <div id="analytics-rating"
+            style="background:var(--card);border:1px solid var(--border2);border-radius:var(--radius);padding:14px;text-align:center;margin-bottom:14px">
+          </div>
+          <div class="chart-container">
+            <div class="chart-title">📈 إيرادات ومصروفات الأشهر الماضية</div>
+            <div id="monthly-chart" class="chart-bars"></div>
+          </div>
+          <div
+            style="background:var(--card);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden">
+            <table class="expense-tbl">
+              <thead>
+                <tr>
+                  <th>البيان</th>
+                  <th>النوع</th>
+                  <th>المبلغ</th>
+                  <th>التاريخ</th>
+                </tr>
+              </thead>
+              <tbody id="expense-log"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══════════ GUIDE TAB ══════════ -->
+      <div class="tab-panel" id="tab-guide">
+        <div class="guide-hero">
+          <div class="guide-hero-icon">📖</div>
+          <div class="guide-hero-title">دليل مهندس المكتبة</div>
+          <div class="guide-hero-sub">كل حاجة محتاج تعرفها عشان تبني مكتبة الأحلام</div>
+        </div>
+
+        <!-- Quick stats strip -->
+        <div class="guide-stats-strip">
+          <div class="gss-item"><span class="gss-num">7</span><span class="gss-lbl">أقسام</span></div>
+          <div class="gss-item"><span class="gss-num">4</span><span class="gss-lbl">موظفين</span></div>
+          <div class="gss-item"><span class="gss-num">4</span><span class="gss-lbl">مستويات</span></div>
+          <div class="gss-item"><span class="gss-num">10+</span><span class="gss-lbl">أزمات</span></div>
+          <div class="gss-item"><span class="gss-num">7</span><span class="gss-lbl">مقتنيات</span></div>
+        </div>
+
+        <div class="guide-cols">
+          <!-- LEFT COL -->
+          <div class="guide-col">
+
+            <!-- HOW TO PLAY -->
+            <div class="guide-card">
+              <div class="guide-card-hd"><span class="guide-card-icon">🎮</span> كيف تلعب</div>
+              <div class="guide-steps">
+                <div class="gs-step">
+                  <div class="gs-num">١</div>
+                  <div class="gs-text"><b>ابدأ ببناء قسم الإعارة</b> – هو أول مصدر دخل. من تاب الخريطة، اختر القسم من
+                    الشريط الجانبي ثم انقر على خلية فارغة.</div>
+                </div>
+                <div class="gs-step">
+                  <div class="gs-num">٢</div>
+                  <div class="gs-text"><b>وظّف مفهرس</b> من تاب الموارد البشرية – بدونه الخدمة هتبقى رديئة والرضا
+                    هينخفض.</div>
+                </div>
+                <div class="gs-step">
+                  <div class="gs-num">٣</div>
+                  <div class="gs-text"><b>اقتنِ كتب ودوريات</b> من تاب التزويد عشان ترفع جودة الفهرسة والمجموعات.</div>
+                </div>
+                <div class="gs-step">
+                  <div class="gs-num">٤</div>
+                  <div class="gs-text"><b>راقب الأزمات</b> – هتظهر كل فترة وتضطر تاخد قرار فوري. غلط فيها ممكن يخسّرك
+                    كتير.</div>
+                </div>
+                <div class="gs-step">
+                  <div class="gs-num">٥</div>
+                  <div class="gs-text"><b>وصّل للمستوى التالي</b> بزيادة الميزانية والرضا والجودة للحدود المطلوبة.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTIONS -->
+            <div class="guide-card">
+              <div class="guide-card-hd"><span class="guide-card-icon">🏗️</span> أقسام المكتبة</div>
+              <div class="guide-table-wrap">
+                <table class="guide-tbl">
+                  <thead>
+                    <tr>
+                      <th>القسم</th>
+                      <th>التكلفة</th>
+                      <th>الفايدة</th>
+                      <th>شرط</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>📤 إعارة</td>
+                      <td class="gt-cost">١٫٥٠٠ج</td>
+                      <td><span class="gt-up">↑ دخل أساسي</span></td>
+                      <td>–</td>
+                    </tr>
+                    <tr>
+                      <td>📚 مراجع</td>
+                      <td class="gt-cost">٢٫٢٠٠ج</td>
+                      <td><span class="gt-up">↑ رضا +6%</span></td>
+                      <td>–</td>
+                    </tr>
+                    <tr>
+                      <td>📜 مخطوطات</td>
+                      <td class="gt-cost">٤٫٥٠٠ج</td>
+                      <td><span class="gt-up">↑ دخل +110ج</span> <span class="gt-up">↑ جودة +1%</span></td>
+                      <td>🔒 أمين</td>
+                    </tr>
+                    <tr>
+                      <td>💻 رقمي</td>
+                      <td class="gt-cost">٣٫٨٠٠ج</td>
+                      <td><span class="gt-up">↑ دخل رقمي</span></td>
+                      <td>–</td>
+                    </tr>
+                    <tr>
+                      <td>🤫 استذكار</td>
+                      <td class="gt-cost">١٫٣٠٠ج</td>
+                      <td><span class="gt-up">↑ رضا +0.5%</span></td>
+                      <td>–</td>
+                    </tr>
+                    <tr>
+                      <td>🗄️ أرشيف</td>
+                      <td class="gt-cost">٩٠٠ج</td>
+                      <td><span class="gt-up">↑ جودة لو جنب مخطوطات</span></td>
+                      <td>–</td>
+                    </tr>
+                    <tr>
+                      <td>🏢 إدارة</td>
+                      <td class="gt-cost">١٫٨٠٠ج</td>
+                      <td><span class="gt-up">↑ كفاءة إدارية</span></td>
+                      <td>–</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- METERS EXPLAINED -->
+            <div class="guide-card">
+              <div class="guide-card-hd"><span class="guide-card-icon">📊</span> المقاييس – بتزيد وبتنقص إزاي؟</div>
+              <div class="guide-meters">
+                <div class="gm-row">
+                  <div class="gm-label green">💰 الميزانية</div>
+                  <div class="gm-detail">
+                    <div class="gm-up">↑ ترتفع: كل عملية إعارة ناجحة · خدمات رقمية · مخطوطات · أزمات ذكية</div>
+                    <div class="gm-down">↓ تنزل: رواتب شهرية · تركيب أقسام · اقتناء مواد · قرارات أزمات خاطئة</div>
+                  </div>
+                </div>
+                <div class="gm-row">
+                  <div class="gm-label cyan">😊 رضا المستفيدين</div>
+                  <div class="gm-detail">
+                    <div class="gm-up">↑ ترتفع: موظفين في أماكنهم · أقسام مجهزة · حل أزمات صح · مجموعات متنوعة</div>
+                    <div class="gm-down">↓ تنزل: غياب قسم الإعارة (-5%) · مخطوطات بدون أمين (-6%) · زوار مرفوضين</div>
+                  </div>
+                </div>
+                <div class="gm-row">
+                  <div class="gm-label brand">📋 جودة الفهرسة</div>
+                  <div class="gm-detail">
+                    <div class="gm-up">↑ ترتفع: مفهرس MARC21 (+8%/شهر) · قواعد بيانات (+22%) · DSpace (+28%)</div>
+                    <div class="gm-down">↓ تنزل: هجوم فيروس فدية (-22%) · فيضان بدون إصلاح (-10%)</div>
+                  </div>
+                </div>
+                <div class="gm-row">
+                  <div class="gm-label gold">📚 الأوعية</div>
+                  <div class="gm-detail">
+                    <div class="gm-up">↑ ترتفع: كتب ورقية (+200) · موسوعات نادرة (+300) · تبرع أكاديمي (+320)</div>
+                    <div class="gm-down">↓ تنزل: فيضان مع تأجيل الإصلاح (-30 وعاء)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /left col -->
+
+          <!-- RIGHT COL -->
+          <div class="guide-col">
+
+            <!-- STAFF -->
+            <div class="guide-card">
+              <div class="guide-card-hd"><span class="guide-card-icon">👥</span> الموظفون والكوادر</div>
+              <div class="guide-staff-grid">
+                <div class="gstaff-card">
+                  <div class="gstaff-icon">🗂️</div>
+                  <div class="gstaff-name">مفهرس MARC21</div>
+                  <div class="gstaff-salary">راتب: ٨٠٠ج/شهر</div>
+                  <div class="gstaff-effect"><span class="gt-up">↑ جودة +8%/شهر</span></div>
+                  <div class="gstaff-desk">مكتبه: قاعة المراجع</div>
+                </div>
+                <div class="gstaff-card">
+                  <div class="gstaff-icon">🔍</div>
+                  <div class="gstaff-name">أخصائي مرجعي</div>
+                  <div class="gstaff-salary">راتب: ٧٥٠ج/شهر</div>
+                  <div class="gstaff-effect"><span class="gt-up">↑ رضا +6%/شهر</span></div>
+                  <div class="gstaff-desk">مكتبه: قاعة المراجع</div>
+                </div>
+                <div class="gstaff-card">
+                  <div class="gstaff-icon">📜</div>
+                  <div class="gstaff-name">أمين مخطوطات</div>
+                  <div class="gstaff-salary">راتب: ٩٥٠ج/شهر</div>
+                  <div class="gstaff-effect"><span class="gt-up">↑ يفعّل قسم المخطوطات</span></div>
+                  <div class="gstaff-desk">مكتبه: قاعة المخطوطات</div>
+                </div>
+                <div class="gstaff-card">
+                  <div class="gstaff-icon">🎓</div>
+                  <div class="gstaff-name">متطوع أكاديمي</div>
+                  <div class="gstaff-salary">راتب: ٢٠٠ج/شهر</div>
+                  <div class="gstaff-effect"><span class="gt-up">↑ رضا +1% · يخفف الضغط</span></div>
+                  <div class="gstaff-desk">مكتبه: قسم الإعارة</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ACQUISITIONS -->
+            <div class="guide-card">
+              <div class="guide-card-hd"><span class="guide-card-icon">📦</span> التزويد والاقتناء</div>
+              <div class="guide-table-wrap">
+                <table class="guide-tbl">
+                  <thead>
+                    <tr>
+                      <th>المادة</th>
+                      <th>التكلفة</th>
+                      <th>التأثير</th>
+                      <th>الشرط</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>📖 كتب ورقية</td>
+                      <td class="gt-cost">٢٫٠٠٠ج</td>
+                      <td><span class="gt-up">↑ أوعية+200 · جودة+5% · رضا+3%</span></td>
+                      <td>–</td>
+                    </tr>
+                    <tr>
+                      <td>🖥️ قواعد بيانات</td>
+                      <td class="gt-cost">٥٫٠٠٠ج</td>
+                      <td><span class="gt-up">↑ جودة+22% · رضا+12%</span></td>
+                      <td>قسم رقمي</td>
+                    </tr>
+                    <tr>
+                      <td>📜 مخطوطات</td>
+                      <td class="gt-cost">٨٫٠٠٠ج</td>
+                      <td><span class="gt-up">↑ جودة+10% · أوعية+50</span></td>
+                      <td>أمين + مستوى2</td>
+                    </tr>
+                    <tr>
+                      <td>📰 دوريات</td>
+                      <td class="gt-cost">١٫٥٠٠ج</td>
+                      <td><span class="gt-up">↑ جودة+10% · رضا+6%</span></td>
+                      <td>–</td>
+                    </tr>
+                    <tr>
+                      <td>☁️ DSpace</td>
+                      <td class="gt-cost">٦٫٥٠٠ج</td>
+                      <td><span class="gt-up">↑ جودة+28% · رضا+9%</span></td>
+                      <td>مستوى2</td>
+                    </tr>
+                    <tr>
+                      <td>🖨️ مسح ضوئي</td>
+                      <td class="gt-cost">٣٫٥٠٠ج</td>
+                      <td><span class="gt-up">↑ جودة+8%</span></td>
+                      <td>–</td>
+                    </tr>
+                    <tr>
+                      <td>📔 موسوعات نادرة</td>
+                      <td class="gt-cost">١٢٫٠٠٠ج</td>
+                      <td><span class="gt-up">↑ جودة+15% · أوعية+300</span></td>
+                      <td>مستوى3</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- LEVELS -->
+            <div class="guide-card">
+              <div class="guide-card-hd"><span class="guide-card-icon">🏆</span> المستويات الأربعة</div>
+              <div class="guide-levels">
+                <div class="gl-item gl-1">
+                  <div class="gl-num">١</div>
+                  <div class="gl-info">
+                    <div class="gl-name">مكتبة مدرسية صغيرة</div>
+                    <div class="gl-reqs">الميزانية ٤٠٠٠٠ج · رضا ٨٠% · جودة ٧٠%</div>
+                  </div>
+                </div>
+                <div class="gl-item gl-2">
+                  <div class="gl-num">٢</div>
+                  <div class="gl-info">
+                    <div class="gl-name">مكتبة كلية أكاديمية</div>
+                    <div class="gl-reqs">الميزانية ١٢٠٠٠٠ج · رضا ٨٥% · جودة ٨٠%</div>
+                  </div>
+                </div>
+                <div class="gl-item gl-3">
+                  <div class="gl-num">٣</div>
+                  <div class="gl-info">
+                    <div class="gl-name">مكتبة عامة إقليمية</div>
+                    <div class="gl-reqs">الميزانية ٣٠٠٠٠٠ج · رضا ٩٠% · جودة ٨٨%</div>
+                  </div>
+                </div>
+                <div class="gl-item gl-4">
+                  <div class="gl-num">٤</div>
+                  <div class="gl-info">
+                    <div class="gl-name">المكتبة الوطنية الضخمة</div>
+                    <div class="gl-reqs">🏅 المستوى النهائي – أعلى هرم علم المكتبات</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TIPS -->
+            <div class="guide-card guide-card-tips">
+              <div class="guide-card-hd"><span class="guide-card-icon">💡</span> نصائح احترافية</div>
+              <div class="guide-tips-list">
+                <div class="gtip">🎯 <b>الأولوية الأولى:</b> إعارة + مفهرس قبل أي حاجة تانية</div>
+                <div class="gtip">📍 <b>مجاورة ذكية:</b> الأرشيف جنب المخطوطات = +4% جودة شهرياً</div>
+                <div class="gtip">💻 <b>كومبو رقمي:</b> معمل رقمي + قواعد بيانات = خدمة بحثية متكاملة +3% رضا</div>
+                <div class="gtip">👮 <b>المخطوطات محتاجة أمين:</b> بدونه بتخسر -6% رضا كل tick</div>
+                <div class="gtip">⚡ <b>الأزمات:</b> القرار السريع غالباً أغلى بس أفضل على المدى الطويل</div>
+                <div class="gtip">🌡️ <b>لو الرضا وصل 40% أو أقل</b> – جهز نفسك للنهاية</div>
+                <div class="gtip">⌨️ <b>اختصارات:</b> 1-4 للتبويبات | P وقف | Esc إلغاء التحديد</div>
+              </div>
+            </div>
+
+          </div><!-- /right col -->
+        </div><!-- /guide-cols -->
+
+        <!-- MAP LAYOUT DIAGRAM -->
+        <div class="guide-card guide-map-diagram">
+          <div class="guide-card-hd"><span class="guide-card-icon">🗺️</span> تخطيط الخريطة – كيف تُبني المكتبة</div>
+          <div class="guide-map-legend-grid">
+            <div class="gml-item">
+              <div class="gml-cell" style="background:#8b4513"></div><span>جدار خارجي</span>
+            </div>
+            <div class="gml-item">
+              <div class="gml-cell" style="background:#5a3010"></div><span>ممر داخلي</span>
+            </div>
+            <div class="gml-item">
+              <div class="gml-cell" style="background:#2d6a1f"></div><span>🚪 مدخل رئيسي</span>
+            </div>
+            <div class="gml-item">
+              <div class="gml-cell" style="background:#7a4a20"></div><span>خلية فارغة قابلة للبناء</span>
+            </div>
+            <div class="gml-item">
+              <div class="gml-cell gml-pulse" style="background:#1a5f6e"></div><span>📤 قسم مُركّب</span>
+            </div>
+            <div class="gml-item">
+              <div class="gml-cell gml-gold"></div><span>✨ موقع مختار للبناء</span>
+            </div>
+          </div>
+          <div
+            style="margin-top:14px;font-size:.72rem;color:var(--muted);line-height:1.8;background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:12px">
+            <b style="color:var(--accent)">📐 بنية الشبكة:</b> الخريطة ١٠ أعمدة × ٨ صفوف = ٨٠ خلية. الجدران بتحيط
+            الحواف. في الوسط ممر أفقي (صف ٦) وممر رابط عامودي (عمود ٥). المدخل في الأسفل الوسط. البناء ممكن في الجناح
+            الأيمن (أعمدة ١-٤) والجناح الأيسر (أعمدة ٦-٨).
+          </div>
+        </div>
+
+        <!-- CRISES quick ref -->
+        <div class="guide-card">
+          <div class="guide-card-hd"><span class="guide-card-icon">⚠️</span> الأزمات السريعة – ماذا تفعل؟</div>
+          <div class="guide-crisis-grid">
+            <div class="gcr-item gcr-high">
+              <div class="gcr-icon">🛡️</div>
+              <div><b>فيروس فدية</b><br><span>ادفع -3500ج للإنقاذ الفوري أو اخسر -22% جودة</span></div>
+            </div>
+            <div class="gcr-item gcr-med">
+              <div class="gcr-icon">💧</div>
+              <div><b>تسريب مياه</b><br><span>رمّم فوراً -2800ج أو خسر -10% جودة و-30 وعاء</span></div>
+            </div>
+            <div class="gcr-item gcr-med">
+              <div class="gcr-icon">🏛️</div>
+              <div><b>تفتيش جودة</b><br><span>تقرير شفاف -900ج = +12% جودة +18% رضا ✅ الأفضل</span></div>
+            </div>
+            <div class="gcr-item gcr-low">
+              <div class="gcr-icon">🎁</div>
+              <div><b>تبرع أكاديمي</b><br><span>اقبل -600ج = +320 وعاء +14% جودة 🌟 صفقة ممتازة</span></div>
+            </div>
+            <div class="gcr-item gcr-high">
+              <div class="gcr-icon">⚡</div>
+              <div><b>انقطاع كهربائي</b><br><span>فني طوارئ -1500ج = إصلاح فوري · الانتظار = -18% رضا</span></div>
+            </div>
+            <div class="gcr-item gcr-low">
+              <div class="gcr-icon">🎓</div>
+              <div><b>مؤتمر أكاديمي</b><br><span>استضافة -3000ج = +22% رضا +200 نقطة 🏆 الأفضل للنقاط</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /tab-guide -->
+
+    </div><!-- /main-area -->
+
+    <!-- SIDEBAR -->
+    <aside id="live-log-panel">
+
+      <!-- TAB BAR -->
+      <div id="sidebar-tabs">
+        <button class="stab-btn stab-active" data-stab="log">
+          <span class="stab-icon">📋 <span class="live-dot"
+              style="display:inline-block;vertical-align:middle;margin-right:2px"></span></span>
+          <span>سجل الأحداث</span>
+          <span class="stab-badge" id="stab-log-badge">0</span>
+        </button>
+        <button class="stab-btn" data-stab="quests">
+          <span class="stab-icon">🎯</span>
+          <span>المهام</span>
+          <span class="stab-badge" id="stab-quests-badge">0</span>
+        </button>
+        <button class="stab-btn" data-stab="lb">
+          <span class="stab-icon">🏆</span>
+          <span>المتصدرون</span>
+        </button>
+      </div>
+
+      <!-- PANEL 1: LOG -->
+      <div class="sidebar-panel sp-active" id="sp-log">
+        <div id="log-filter">
+          <button class="log-filter-btn active-filter" data-filter="all">الكل</button>
+          <button class="log-filter-btn" data-filter="success" style="color:#86efac">✅ نجاح</button>
+          <button class="log-filter-btn" data-filter="danger" style="color:#fca5a5">🚨 خطر</button>
+          <button class="log-filter-btn" data-filter="info" style="color:#67e8f9">💡 معلومة</button>
+        </div>
+        <div id="live-log"></div>
+        <div id="tip-widget">
+          <div style="font-size:.6rem;color:var(--accent);font-weight:700;margin-bottom:3px">💡 نصيحة اليوم</div>
+          <div id="tip-text" style="font-size:.65rem;color:var(--muted);line-height:1.65;transition:opacity .3s"></div>
+        </div>
+      </div>
+
+      <!-- PANEL 2: QUESTS -->
+      <div class="sidebar-panel" id="sp-quests">
+        <div
+          style="padding:10px 12px;border-bottom:1px solid var(--border2);font-size:.72rem;font-weight:800;color:var(--text);display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+          <span>🎯 المهام الجارية</span>
+          <span id="quests-done-count"
+            style="font-size:.62rem;color:var(--brand);background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:1px 8px">0/8</span>
+        </div>
+        <div id="quests-widget" style="flex:1;overflow-y:auto;padding:10px 12px;max-height:unset"></div>
+        <div id="achievements-bar"
+          style="padding:8px 12px;border-top:1px solid var(--border2);display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0">
+        </div>
+      </div>
+
+      <!-- PANEL 3: LEADERBOARD -->
+      <div class="sidebar-panel" id="sp-lb">
+        <div
+          style="padding:10px 12px;border-bottom:1px solid var(--border2);font-size:.72rem;font-weight:800;color:var(--text);flex-shrink:0">
+          🏆 لوحة المتصدرين
+        </div>
+        <div id="leaderboard-widget" style="flex:1;overflow-y:auto;padding:10px 12px"></div>
+      </div>
+
+      <!-- LEVEL PROGRESS — always visible at bottom -->
+      <div id="level-progress">
+        <div class="level-info">
+          <span id="lp-label">التقدم للمستوى التالي</span>
+          <span id="lp-pct">0%</span>
+        </div>
+        <div class="level-bar-wrap">
+          <div class="level-bar-fill" id="level-bar-fill" style="width:0%"></div>
+        </div>
+        <div class="level-info" style="margin-top:3px">
+          <span id="lp-current">المستوى 1</span>
+          <span id="lp-next">المستوى 2</span>
+        </div>
+      </div>
+
+      <!-- hidden counter for JS compat -->
+      <span id="live-event-count" style="display:none">0</span>
+
+    </aside>
+  </div>
+
+  <!-- FOOTER -->
+  <footer id="site-footer">
+    <span id="footer-ticker" style="color:var(--accent);font-weight:600"></span>
+    &nbsp;|&nbsp; MaktabaPlay © 2026 – منصة الألعاب التعليمية الأولى لعلم المكتبات والمعلومات
+  </footer>
+
+  <!-- MONTHLY REPORT -->
+  <div id="monthly-report-overlay"
+    style="position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s">
+    <div
+      style="background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:22px 24px;max-width:420px;width:92%;box-shadow:0 0 50px rgba(0,0,0,.5)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-size:.95rem;font-weight:800;color:var(--text)" id="mr-title">📅 تقرير الشهر</div>
+        <button id="mr-close-btn"
+          style="background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;font-family:'Tajawal',sans-serif;padding:2px 8px;border-radius:6px">✕</button>
+      </div>
+      <div id="mr-body"></div>
+      <button id="mr-continue-btn"
+        style="width:100%;margin-top:16px;padding:10px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--brand),#16a34a);color:#fff;font-family:'Tajawal',sans-serif;font-size:.88rem;font-weight:800;cursor:pointer">▶
+        متابعة البناء</button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- LIBRARY NAME MODAL -->
+  <div id="naming-overlay"
+    style="position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center">
+    <div
+      style="background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:32px 28px;max-width:400px;width:92%;text-align:center;box-shadow:0 0 60px rgba(34,197,94,.15)">
+      <div style="font-size:2.2rem;margin-bottom:10px">📖</div>
+      <div style="font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:6px">مرحباً بك في مهندس المكتبة</div>
+      <div style="font-size:.76rem;color:var(--muted);margin-bottom:22px;line-height:1.7">ابدأ بإعطاء مكتبتك اسماً
+        يميّزها.<br>ستكون المسؤول عن تطويرها من مكتبة مدرسية صغيرة إلى مكتبة وطنية ضخمة.</div>
+      <input id="naming-input" type="text" placeholder="مثال: مكتبة المستقبل العلمية..." maxlength="30"
+        style="width:100%;padding:11px 14px;border-radius:9px;border:1px solid var(--border2);background:var(--card2);color:var(--text);font-family:'Tajawal',sans-serif;font-size:.88rem;text-align:right;outline:none;margin-bottom:14px;transition:border-color .2s"
+        onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='var(--border2)'">
+      <button id="naming-start-btn"
+        style="width:100%;padding:12px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--brand),#16a34a);color:#fff;font-family:'Tajawal',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;transition:opacity .2s"
+        onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+        🚀 ابدأ البناء
+      </button>
+      <div style="font-size:.62rem;color:var(--muted);margin-top:10px">يمكنك تركه فارغاً لاختيار اسم افتراضي</div>
+    </div>
+  </div>
+
+  <!-- WIN SCREEN -->
+  <div id="win-overlay"
+    style="position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.93);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s">
+    <div style="text-align:center;max-width:500px;width:92%;padding:20px">
+      <div id="win-fireworks" style="font-size:3rem;margin-bottom:8px;animation:hudPop .6s ease">🏆</div>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--warn);margin-bottom:6px" id="win-title">مبروك! أتممت بناء
+        مكتبتك الوطنية!</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:20px;line-height:1.8" id="win-subtitle">وصلت لأعلى
+        مستوى — المكتبة الوطنية الضخمة</div>
+      <div id="win-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px"></div>
+      <div id="win-rating"
+        style="background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-bottom:18px;font-size:.82rem;color:var(--muted);line-height:1.8">
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button id="win-restart-btn"
+          style="padding:11px 24px;border-radius:9px;border:1px solid var(--border2);background:var(--card2);color:var(--text);font-family:'Tajawal',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer">🔄
+          ابنِ مكتبة جديدة</button>
+        <button id="win-continue-btn"
+          style="padding:11px 24px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--warn),#d97706);color:#000;font-family:'Tajawal',sans-serif;font-size:.88rem;font-weight:800;cursor:pointer">🕹️
+          تابع اللعب</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRISIS MODAL -->
+  <div id="modal-overlay">
+    <div id="modal-box">
+      <div class="modal-crisis-timer" id="crisis-timer" style="display:none">⏱ <span id="crisis-countdown">30</span>ث
+      </div>
+      <div class="modal-icon" id="modal-icon">⚠️</div>
+      <div class="modal-severity sev-high" id="modal-severity">أزمة</div>
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-desc" id="modal-desc"></div>
+      <div class="modal-choices" id="modal-choices"></div>
+    </div>
+  </div>
+
+  <!-- LEVEL UP -->
+  <div id="levelup-overlay">
+    <div id="levelup-box">
+      <div class="lu-icon">🎓</div>
+      <div class="lu-title" id="lu-title">ترقية!</div>
+      <div class="lu-sub" id="lu-sub"></div>
+      <div class="lu-perks" id="lu-perks"></div>
+      <button class="btn-lu" id="levelup-btn">🚀 متابعة البناء</button>
+    </div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="gameover-overlay">
+    <div id="gameover-box">
+      <div class="go-icon">💔</div>
+      <div class="go-title" id="go-title">انهيار!</div>
+      <div class="go-sub" id="go-sub"></div>
+      <div class="go-stats" id="go-stats"></div>
+      <div id="go-postmortem" style="display:none;margin-bottom:16px;text-align:right"></div>
+      <button class="btn-go" id="restart-btn">🔄 إعادة من الصفر</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+  <script src="../../assets/auth.js"></script>
+
+
+
+</body>
+
+</html>

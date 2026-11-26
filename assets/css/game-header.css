@@ -244,3 +244,13 @@
   .mp-icon-btn { width: 35px; height: 35px; }
   #authLinks { display: none !important; }
 }
+@media (max-width: 380px) {
+  .mp-header__bar { flex-wrap: wrap; row-gap: 6px; }
+  .mp-header__actions {
+    flex: 1 1 100%;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+  .mp-nav.is-open { top: calc(100% + 6px); }
+}

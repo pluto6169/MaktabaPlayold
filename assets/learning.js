@@ -7,7 +7,7 @@
    - مستويات موحّدة: مبتدئ / متوسط / متقدم
    - حفظ التقدم محليًا (localStorage) وتسجيل الأخطاء للمراجعة
    - وضع تدريب بلا مؤقت
-   الاستخدام: <script src="assets/library-terms.js"></script>
+   الاستخدام: <script src="data/library-terms.js"></script>
               <script src="assets/learning.js"></script>
    ============================================================ */
 (function () {
