@@ -1125,6 +1125,13 @@
       clearInterval(gameLoop);
       if (crisisTimer) clearInterval(crisisTimer);
 
+      // الطبقة المشتركة: تُحتسب المحاكاة بالنقاط لا بعدد الإجابات
+      try {
+        if (window.MPProgress) {
+          window.MPProgress.recordResult({ game: 'tycoon', score: G.score, level: G.level });
+        }
+      } catch (e) { }
+
       // Build post-mortem: what led to this loss
       const postMortem = [];
       if (reason === 'bankrupt') {

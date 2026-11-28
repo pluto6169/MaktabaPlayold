@@ -488,6 +488,38 @@
     writeBests(all);
     if (window.MPHeader) window.MPHeader.setBest(next.best);
 
+    /* ── الطبقة المشتركة: XP والمهارات ومراجعة الأخطاء ── */
+    let xpInfo = null;
+    try {
+      if (window.MPProgress) {
+        if (window.ML && window.ML.review) {
+          window.MPProgress.addMistakes(cfg.id, window.ML.review.list(cfg.id));
+        }
+        xpInfo = window.MPProgress.recordResult({
+          game: cfg.id,
+          score: score,
+          correct: correct,
+          total: total,
+          accuracy: accuracy,
+          level: opts.level || lastLevel(),
+          time: opts.time
+        });
+        if (window.MPHeader && xpInfo && xpInfo.level) window.MPHeader.setXP(xpInfo.level);
+      }
+    } catch (e) { console.warn('MPProgress: تعذّر تسجيل الجولة', e); }
+
+    const earnedBadges = xpInfo && xpInfo.newBadges ? xpInfo.newBadges : [];
+    const progressHTML = (xpInfo && (xpInfo.xp || earnedBadges.length)) ? `
+      <div class="mp-results__progress">
+        <div class="mp-results__xp" title="تُحتسب XP من الدقة وإتمام الجولة، لا من عدد الضغطات">
+          <span class="mp-results__xp-ic">⚡</span>
+          <b>+${fmt(xpInfo.xp)} XP</b>
+          <span>${xpInfo.level ? xpInfo.level.name + ' · المستوى ' + fmt(xpInfo.level.level) : ''}</span>
+          ${xpInfo.capped ? '<em title="سقف المكافأة اليومية يحمي التقدم من التكرار">مخفّضة (سقف يومي)</em>' : ''}
+        </div>
+        ${earnedBadges.length ? `<div class="mp-results__badges">${earnedBadges.map(b => `<span class="mp-results__badge">${b.icon} ${b.name}</span>`).join('')}</div>` : ''}
+      </div>` : '';
+
     const ringPct = Math.max(0, Math.min(100, accuracy));
     const offset = 377 - (377 * ringPct / 100);
 
@@ -525,12 +557,15 @@
           <div class="mp-rstat mp-rstat--gold"><b>${fmt(next.best)}</b><span>أفضل نتيجة</span></div>
         </div>
 
+        ${progressHTML}
+
         <div class="mp-results__body" id="mpResultsBody">${opts.extraHTML || ''}</div>
 
         <div class="mp-results__actions">
           <button class="mp-btn" data-again>🔄 العب مرة أخرى</button>
           ${(opts.next !== false && typeof cfg.onNext === 'function') ? `<button class="mp-btn mp-btn--gold" data-next>⬆️ ${opts.nextLabel || 'المستوى التالي'}</button>` : ''}
           <button class="mp-btn mp-btn--ghost" data-review>📌 راجع الأخطاء</button>
+          <a class="mp-btn mp-btn--ghost" href="${location.pathname.includes('/games/') ? '../../' : ''}my-learning.html">📊 تعلّمي</a>
           <button class="mp-btn mp-btn--ghost" data-home>🏠 كل الألعاب</button>
         </div>
       </div>`;

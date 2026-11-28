@@ -211,6 +211,12 @@
       const s = readStore();
       if (s[game]) s[game].review = [];
       writeStore(s);
+    },
+    remove(game, key) {
+      const s = readStore();
+      if (!s[game] || !Array.isArray(s[game].review)) return;
+      s[game].review = s[game].review.filter(x => x.key !== key);
+      writeStore(s);
     }
   };
 

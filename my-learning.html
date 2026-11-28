@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تعلّمي — MaktabaPlay</title>
+  <meta name="description" content="لوحة تقدمك في MaktabaPlay: نقاط الخبرة، المهارات، الشارات، مراجعة الأخطاء، والمهام اليومية — محليًا وبلا حساب.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/design-system.css">
+  <link rel="stylesheet" href="assets/css/game-header.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/learning-dashboard.css">
+</head>
+<body class="mpl-body">
+  <header id="mpHeader"></header>
+
+  <main class="mpl-wrap mpl-main" id="mplMain" aria-live="polite">
+    <div class="mpl-card"><div class="mpl-empty"><b>جارٍ تحميل تقدمك…</b>كل الحساب يتم في متصفحك.</div></div>
+  </main>
+
+  <input type="file" id="mplImportFile" accept="application/json,.json" hidden>
+
+  <script src="data/library-terms.js"></script>
+  <script src="assets/learning.js"></script>
+  <script src="assets/js/game-settings.js"></script>
+  <script src="assets/js/game-modal.js"></script>
+  <script src="assets/js/game-progress.js"></script>
+  <script src="assets/js/game-header.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      const main = document.getElementById('mplMain');
+      const fileInput = document.getElementById('mplImportFile');
+      const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+      const n = v => Number(v || 0).toLocaleString('ar-EG');
+
+      function bar(pct) {
+        return '<div class="mpl-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><i style="width:' + Math.max(0, Math.min(100, pct)) + '%"></i></div>';
+      }
+
+      function toast(msg) {
+        if (window.ML && window.ML.toast) window.ML.toast(msg, 3200);
+      }
+
+      function render() {
+        let S;
+        try { S = window.MPProgress.summary(); }
+        catch (e) {
+          main.innerHTML = '<div class="mpl-card"><div class="mpl-empty"><b>تعذّر قراءة التخزين المحلي</b>قد يكون التخزين معطّلًا في هذا المتصفح. تُحفظ الجولات في الجلسة الحالية فقط.</div></div>';
+          return;
+        }
+
+        const lv = S.level;
+        const noData = !S.plays && !S.xp;
+
+        main.innerHTML = `
+          <section class="mpl-hero" aria-label="مستواك الحالي">
+            <div class="mpl-ring" style="--p:${lv.pct}" role="img" aria-label="التقدم إلى المستوى التالي ${lv.pct}%">
+              <div class="mpl-ring__in"><b>${n(lv.level)}</b><span>المستوى</span></div>
+            </div>
+            <div>
+              <h1 class="mpl-hero__title">${esc(lv.name)}</h1>
+              <p class="mpl-hero__sub">
+                ${lv.nextAt ? `تبقّى <b style="color:#f0d69a">${n(lv.toNext)} XP</b> للوصول إلى «${esc(lv.nextName)}».` : 'وصلت إلى أعلى مستوى حالي — واصل رفع الدقة في كل مجال.'}
+              </p>
+              ${bar(lv.pct)}
+              <div class="mpl-bar__meta"><span>${n(lv.xp)} XP</span><span>${lv.nextAt ? n(lv.nextAt) + ' XP' : 'الحد الأقصى'}</span></div>
+              <div class="mpl-hero__xp">
+                <span class="mp-chip mp-chip--gold">⚡ ${n(S.xp)} XP</span>
+                <span class="mp-chip mp-chip--brand">🎖️ ${n(S.badges)} / ${n(S.badgesTotal)} شارة</span>
+                ${S.streak ? `<span class="mp-chip mp-chip--violet">🔥 سلسلة ${n(S.streak)} أيام</span>` : ''}
+              </div>
+            </div>
+          </section>
+
+          <section class="mpl-stats" aria-label="ملخص التقدم">
+            <div class="mpl-stat mpl-stat--cyan"><b>${n(S.rounds)}</b><span>جولة مكتملة</span></div>
+            <div class="mpl-stat"><b>${n(S.total)}</b><span>سؤالًا أجبت عنه</span></div>
+            <div class="mpl-stat mpl-stat--green"><b>${S.total ? n(S.accuracy) + '%' : '—'}</b><span>دقة تراكمية</span></div>
+            <div class="mpl-stat mpl-stat--gold"><b>${n(S.badges)}</b><span>شارة مكتسبة</span></div>
+            <div class="mpl-stat"><b>${n(S.paths.filter(p => p.complete).length)} / ${n(S.paths.length)}</b><span>مسارات مكتملة</span></div>
+          </section>
+
+          ${S.recommend ? `
+          <section class="mpl-card" aria-label="ما الذي أتعلمه بعد ذلك">
+            <div class="mpl-card__head"><h2>🧭 ما الذي أتعلمه بعد ذلك؟</h2><small>توصية حسب تقدمك</small></div>
+            <div class="mpl-next">
+              <div class="mpl-next__ic">${S.recommend.type === 'done' ? '🏅' : esc(S.recommend.icon || '🎮')}</div>
+              <div>
+                <b>${esc(S.recommend.title)}</b>
+                <small>${esc(S.recommend.desc || '')}</small>
+              </div>
+              <a class="mpl-btn mpl-btn--primary" href="${esc(S.recommend.url || 'index.html')}">${S.recommend.type === 'done' ? 'كل الألعاب' : 'ابدأ الخطوة'}</a>
+            </div>
+          </section>` : ''}
+
+          <div class="mpl-grid">
+            <section class="mpl-card" aria-label="المهارات">
+              <div class="mpl-card__head"><h2>🎯 المهارات</h2><small>تُعرض الدقة بعد ١٥ سؤالًا على الأقل</small></div>
+              <div class="mpl-skills">
+                ${S.skills.map(sk => `
+                  <div class="mpl-skill">
+                    <div class="mpl-skill__ic">${sk.icon}</div>
+                    <div>
+                      <div class="mpl-skill__name">${esc(sk.name)}</div>
+                      <div class="mpl-skill__sub">${sk.enough ? n(sk.total) + ' سؤالًا · ' + esc(sk.level) : (sk.total ? n(sk.total) + ' سؤالًا — أكمل ' + n(Math.max(0, 15 - sk.total)) + ' للمزيد' : 'لم تُجرّب هذا المجال بعد')}</div>
+                      ${bar(sk.enough ? sk.accuracy : Math.min(100, Math.round(sk.total / 15 * 100)))}
+                    </div>
+                    <div class="mpl-skill__val">${sk.enough ? n(sk.accuracy) + '%' : '—'}</div>
+                  </div>`).join('')}
+              </div>
+            </section>
+
+            <section class="mpl-card" aria-label="مهام اليوم">
+              <div class="mpl-card__head"><h2>📅 مهام اليوم</h2><small>تتجدّد كل يوم بتوقيت جهازك</small></div>
+              <div class="mpl-missions">
+                ${S.missions.map(m => `
+                  <div class="mpl-mission ${m.done ? 'is-done' : ''}">
+                    <div>
+                      <b>${esc(m.title)}</b>
+                      <small>${esc(m.hint)} · ${n(m.value)}/${n(m.target)} · +${n(m.xp)} XP</small>
+                      ${bar(Math.round(m.value / m.target * 100))}
+                    </div>
+                    <button class="mpl-claim ${m.done && !m.claimed ? 'is-ready' : ''}" data-claim="${m.id}"
+                      ${(!m.done || m.claimed) ? 'disabled' : ''}>
+                      ${m.claimed ? '✓ استُلمت' : m.done ? 'استلم' : 'قيد التنفيذ'}
+                    </button>
+                  </div>`).join('')}
+              </div>
+            </section>
+          </div>
+
+          <section class="mpl-card" aria-label="مسارات التعلم">
+            <div class="mpl-card__head"><h2>🗺️ مسارات التعلم</h2><small>رتّب الألعاب في رحلة مترابطة</small></div>
+            <div class="mpl-paths">
+              ${S.paths.map(p => `
+                <div class="mpl-path">
+                  <div class="mpl-path__top">
+                    <b>${p.icon} ${esc(p.title)} ${p.complete ? '<span class="mp-chip mp-chip--brand">مكتمل</span>' : ''}</b>
+                    <span>${n(p.done)}/${n(p.total)} · ${n(p.pct)}%</span>
+                  </div>
+                  <p>${esc(p.desc)}</p>
+                  ${bar(p.pct)}
+                  <div class="mpl-steps" style="margin-top:8px">
+                    ${p.steps.map(st => `
+                      <a class="mpl-step ${st.done ? 'is-done' : (p.next && p.next.id === st.id ? 'is-next' : '')}" href="${esc(st.url)}">
+                        ${st.icon} ${esc(st.title)}
+                      </a>`).join('')}
+                  </div>
+                </div>`).join('')}
+            </div>
+          </section>
+
+          <section class="mpl-card" aria-label="الشارات">
+            <div class="mpl-card__head"><h2>🎖️ الشارات</h2><small>${n(S.badges)} من ${n(S.badgesTotal)} — تُمنح على الأداء لا على عدد الضغطات</small></div>
+            <div class="mpl-badges">
+              ${window.MPProgress.badges().map(b => `
+                <div class="mpl-badge ${b.earned ? 'is-earned' : 'is-locked'}">
+                  <div class="mpl-badge__top">${b.icon} ${esc(b.name)}${b.earned ? '' : '<span class="mpl-badge__lock">🔒</span>'}</div>
+                  <small>${esc(b.desc)}</small>
+                </div>`).join('')}
+            </div>
+          </section>
+
+          <div class="mpl-grid">
+            <section class="mpl-card" aria-label="مراجعة الأخطاء">
+              <div class="mpl-card__head">
+                <h2>📌 راجع أخطاءك</h2>
+                <small>${n(window.MPProgress.mistakes().length)} مفهومًا للمراجعة</small>
+              </div>
+              <div class="mpl-mistakes">
+                ${renderMistakes()}
+              </div>
+            </section>
+
+            <section class="mpl-card" aria-label="بيانات التقدم">
+              <div class="mpl-card__head"><h2>💾 بياناتك</h2><small>محلية على هذا الجهاز</small></div>
+              <p class="mpl-muted" style="margin-top:0">تقدمك محفوظ في متصفح هذا الجهاز فقط، ولا يُرسل إلى أي خادم. صدّر نسخة احتياطية قبل تغيير المتصفح أو مسح بياناته.</p>
+              <div class="mpl-data">
+                <button class="mpl-btn" id="mplExport">⬇️ تصدير التقدم</button>
+                <button class="mpl-btn" id="mplImport">⬆️ استيراد نسخة</button>
+                <button class="mpl-btn mpl-btn--danger" id="mplReset">🗑️ مسح تقدمي</button>
+              </div>
+              <p class="mpl-note">تُحتسب XP من دقة الإجابات وإتمام الجولة، مع سقف يومي يمنع تكرار الجولات من تضخيم التقدم. النقاط الخاصة بكل لعبة تبقى منفصلة عن XP المنصة.</p>
+            </section>
+          </div>
+
+          ${noData ? `
+          <section class="mpl-card">
+            <div class="mpl-empty">
+              <b>لم تُسجّل أي جولة بعد</b>
+              ابدأ بأي لعبة — ستظهر هنا مهاراتك وشاراتك وأخطاؤك تلقائيًا.
+              <div class="mpl-data" style="justify-content:center;margin-top:12px">
+                <a class="mpl-btn mpl-btn--primary" href="index.html#games">اختر لعبة</a>
+              </div>
+            </div>
+          </section>` : ''}
+        `;
+
+        bind();
+      }
+
+      function renderMistakes() {
+        const list = window.MPProgress.mistakes();
+        if (!list.length) {
+          return '<div class="mpl-empty"><b>لا أخطاء مسجلة</b>كل إجابة خاطئة تُضاف هنا تلقائيًا مع تفسيرها، أو ابدأ جولة جديدة.</div>';
+        }
+        return list.slice(0, 30).map(m => `
+          <div class="mpl-mistake">
+            <div>
+              <b>${esc(m.concept || m.key)}</b>
+              ${m.why ? `<p>${esc(m.why)}</p>` : ''}
+              <div class="mpl-mistake__meta">
+                <span>${m.gameIcon} ${esc(m.gameTitle)}</span>
+                ${m.count > 1 ? `<span>تكرر ${n(m.count)}×</span>` : ''}
+                <a href="${esc((window.MPProgress.GAMES[m.game] || {}).url || 'index.html')}">أعد المحاولة ←</a>
+              </div>
+            </div>
+            <button class="mpl-iconbtn" data-review="${esc(m.id)}" title="أخفِ هذا الخطأ بعد مراجعته" aria-label="أخفِ ${esc(m.key)} من قائمة المراجعة">✓</button>
+          </div>`).join('');
+      }
+
+      function bind() {
+        main.querySelectorAll('[data-claim]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const r = window.MPProgress.claimMission(btn.dataset.claim);
+            if (r.ok) {
+              toast('✅ +' + r.xp + ' XP — مكافأة المهمة');
+              render();
+            }
+          });
+        });
+        main.querySelectorAll('[data-review]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            window.MPProgress.removeMistake(btn.dataset.review);
+            toast('📌 أُزيل من قائمة المراجعة');
+            render();
+          });
+        });
+
+        document.getElementById('mplExport').addEventListener('click', () => {
+          const data = window.MPProgress.exportData();
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'maktabaplay-progress-' + window.MPProgress.todayKey() + '.json';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+          toast('⬇️ صُدّرت نسخة التقدم');
+        });
+
+        document.getElementById('mplImport').addEventListener('click', () => fileInput.click());
+        document.getElementById('mplReset').addEventListener('click', () => {
+          const run = () => {
+            window.MPProgress.reset();
+            toast('🗑️ مُسح التقدم المحلي');
+            render();
+          };
+          if (window.MPModal && window.MPModal.confirm) {
+            window.MPModal.confirm({
+              title: 'مسح كل تقدمك؟',
+              text: 'سيُحذف XP والشارات والمسارات وسجل المراجعة وأفضل النتائج من هذا المتصفح. لا يمكن التراجع.',
+              ok: 'نعم، امسح'
+            }).then(ok => { if (ok) run(); });
+          } else if (window.confirm('سيُحذف كل تقدمك المحلي. هل تريد المتابعة؟')) {
+            run();
+          }
+        });
+      }
+
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files && fileInput.files[0];
+        fileInput.value = '';
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) { toast('❌ الملف كبير جدًا (الحد ٢ ميجابايت)'); return; }
+        const reader = new FileReader();
+        reader.onload = () => {
+          const apply = () => {
+            try {
+              const obj = JSON.parse(String(reader.result || ''));
+              window.MPProgress.importData(obj);
+              toast('✅ استُعيد التقدم من النسخة الاحتياطية');
+              render();
+            } catch (err) {
+              toast('❌ ' + (err && err.message ? err.message : 'ملف غير صالح'));
+            }
+          };
+          if (window.MPModal && window.MPModal.confirm) {
+            window.MPModal.confirm({
+              title: 'استبدال التقدم الحالي؟',
+              text: 'ستُستبدل بيانات هذا المتصفح بمحتوى الملف. صدّر نسخة من تقدمك الحالي أولًا إن أردت الاحتفاظ به.',
+              ok: 'استورد'
+            }).then(ok => { if (ok) apply(); });
+          } else if (window.confirm('سيُستبدل تقدمك الحالي بمحتوى الملف. هل تريد المتابعة؟')) {
+            apply();
+          }
+        };
+        reader.onerror = () => toast('❌ تعذّرت قراءة الملف');
+        reader.readAsText(file);
+      });
+
+      window.MPHeader.render({
+        title: 'تعلّمي',
+        icon: '📊',
+        tagline: 'نقاط الخبرة والمهارات والشارات ومراجعة الأخطاء',
+        field: 'لوحة التقدم',
+        active: 'achievements',
+        levels: [{ id: 1, label: 'مستوى المنصة' }],
+        level: 1
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

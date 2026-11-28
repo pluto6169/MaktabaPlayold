@@ -1,0 +1,184 @@
+/* ============================================================
+   MaktabaPlay — My Learning dashboard
+   صفحة تعلّمي: XP، المهارات، الشارات، مراجعة الأخطاء، المهام،
+   المسارات، وإدارة بيانات التقدم المحلية.
+   ============================================================ */
+.mpl-body {
+  min-height: 100vh;
+  background:
+    radial-gradient(900px 480px at 85% -10%, rgba(6, 182, 212, .10), transparent 60%),
+    radial-gradient(760px 420px at 5% 8%, rgba(139, 92, 246, .08), transparent 60%),
+    #070d18;
+  color: #e2e8f0;
+  padding-bottom: 56px;
+}
+.mpl-wrap { width: min(1120px, calc(100% - 36px)); margin: 0 auto; }
+.mpl-main { padding-top: 22px; display: grid; gap: 18px; }
+
+/* ── بطاقة المستوى ── */
+.mpl-hero {
+  display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center;
+  background: linear-gradient(160deg, rgba(18, 31, 52, .96), rgba(9, 17, 30, .96));
+  border: 1px solid #21324a; border-radius: 24px; padding: 22px 24px;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, .35);
+}
+.mpl-ring {
+  --p: 0;
+  width: 124px; height: 124px; border-radius: 50%; display: grid; place-items: center;
+  background: conic-gradient(#22c55e calc(var(--p) * 1%), #1b2a40 0);
+  position: relative; flex: none;
+}
+.mpl-ring::before { content: ''; position: absolute; inset: 9px; border-radius: 50%; background: #0b1424; }
+.mpl-ring__in { position: relative; text-align: center; line-height: 1.15; }
+.mpl-ring__in b { display: block; font-size: 27px; font-weight: 800; color: #fff; letter-spacing: -.5px; }
+.mpl-ring__in span { font-size: 10px; color: #7f93ab; font-weight: 700; }
+.mpl-hero__title { margin: 0 0 4px; font-size: clamp(21px, 2.6vw, 27px); font-weight: 800; color: #fff; }
+.mpl-hero__sub { color: #93a7bd; font-size: 13px; margin: 0 0 12px; }
+.mpl-bar { height: 9px; background: #16233a; border-radius: 999px; overflow: hidden; border: 1px solid #24344c; }
+.mpl-bar > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #22c55e, #06b6d4); transition: width .6s cubic-bezier(.2, .8, .2, 1); }
+.mpl-bar__meta { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; font-size: 11px; color: #7f93ab; }
+.mpl-hero__xp { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 7px; }
+
+/* ── إحصاءات ── */
+.mpl-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.mpl-stat {
+  background: rgba(13, 23, 39, .82); border: 1px solid #1e2d44; border-radius: 16px;
+  padding: 13px 14px; text-align: center;
+}
+.mpl-stat b { display: block; font-size: 23px; color: #fff; font-weight: 800; line-height: 1.25; }
+.mpl-stat span { font-size: 11px; color: #8296ad; }
+.mpl-stat--gold b { color: #f0d69a; }
+.mpl-stat--cyan b { color: #67e8f9; }
+.mpl-stat--green b { color: #86efac; }
+
+/* ── أقسام ── */
+.mpl-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 18px; align-items: start; }
+.mpl-card {
+  background: rgba(13, 23, 39, .82); border: 1px solid #1e2d44; border-radius: 20px;
+  padding: 18px 18px 16px;
+}
+.mpl-card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.mpl-card__head h2 { margin: 0; font-size: 15px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 7px; }
+.mpl-card__head small { color: #7f93ab; font-size: 11px; }
+.mpl-muted { color: #7f93ab; font-size: 12px; line-height: 1.8; }
+
+/* توصية */
+.mpl-next {
+  display: flex; align-items: center; gap: 13px;
+  background: linear-gradient(135deg, rgba(34, 197, 94, .12), rgba(6, 182, 212, .1));
+  border: 1px solid rgba(34, 197, 94, .3); border-radius: 16px; padding: 13px 15px;
+}
+.mpl-next__ic { font-size: 26px; width: 46px; height: 46px; display: grid; place-items: center; background: rgba(6, 182, 212, .1); border-radius: 13px; flex: none; }
+.mpl-next b { display: block; color: #fff; font-size: 14px; }
+.mpl-next small { color: #9fb3c8; font-size: 11px; }
+.mpl-next .mpl-btn { margin-inline-start: auto; }
+
+/* مهارات */
+.mpl-skills { display: grid; gap: 9px; }
+.mpl-skill { display: grid; grid-template-columns: 32px 1fr auto; gap: 10px; align-items: center; }
+.mpl-skill__ic { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: rgba(255, 255, 255, .04); border: 1px solid #22314a; }
+.mpl-skill__name { font-size: 12.5px; color: #dbe6f3; font-weight: 700; }
+.mpl-skill__sub { font-size: 10.5px; color: #7f93ab; }
+.mpl-skill .mpl-bar { margin-top: 5px; height: 6px; }
+.mpl-skill__val { font-size: 11px; color: #93a7bd; font-weight: 700; min-width: 76px; text-align: left; }
+
+/* مهام */
+.mpl-missions { display: grid; gap: 9px; }
+.mpl-mission {
+  display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
+  border: 1px solid #22314a; background: rgba(255, 255, 255, .025); border-radius: 14px; padding: 10px 12px;
+}
+.mpl-mission.is-done { border-color: rgba(34, 197, 94, .32); background: rgba(34, 197, 94, .06); }
+.mpl-mission b { display: block; font-size: 12.5px; color: #e6eef8; font-weight: 700; }
+.mpl-mission small { font-size: 10.5px; color: #7f93ab; }
+.mpl-mission .mpl-bar { margin-top: 6px; height: 5px; }
+.mpl-claim {
+  border: 1px solid #31445f; background: #16243a; color: #cfe0f0; border-radius: 999px;
+  padding: 6px 12px; font-size: 11px; font-weight: 800; font-family: inherit; cursor: pointer; white-space: nowrap;
+}
+.mpl-claim:disabled { opacity: .55; cursor: default; }
+.mpl-claim.is-ready { background: linear-gradient(135deg, #22c55e, #06b6d4); color: #04121a; border: none; }
+
+/* مسارات */
+.mpl-paths { display: grid; gap: 12px; }
+.mpl-path { border: 1px solid #22314a; border-radius: 16px; padding: 13px 14px; background: rgba(255, 255, 255, .02); }
+.mpl-path__top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.mpl-path__top b { color: #fff; font-size: 13.5px; }
+.mpl-path__top span { font-size: 11px; color: #93a7bd; font-weight: 700; }
+.mpl-path p { margin: 0 0 9px; font-size: 11px; color: #7f93ab; line-height: 1.7; }
+.mpl-steps { display: flex; flex-wrap: wrap; gap: 6px; }
+.mpl-step {
+  display: inline-flex; align-items: center; gap: 5px; text-decoration: none;
+  font-size: 11px; font-weight: 700; color: #a9bcd0; background: #142238;
+  border: 1px solid #26364f; border-radius: 999px; padding: 4px 10px;
+}
+.mpl-step.is-next { border-color: rgba(6, 182, 212, .55); color: #67e8f9; background: rgba(6, 182, 212, .1); }
+.mpl-step.is-done { border-color: rgba(34, 197, 94, .45); color: #86efac; background: rgba(34, 197, 94, .09); }
+.mpl-step.is-done::after { content: '✓'; font-size: 10px; }
+
+/* شارات */
+.mpl-badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 9px; }
+.mpl-badge {
+  border: 1px solid #22314a; border-radius: 14px; padding: 11px 12px; background: rgba(255, 255, 255, .025);
+  display: grid; gap: 3px;
+}
+.mpl-badge.is-earned { border-color: rgba(232, 192, 106, .4); background: linear-gradient(135deg, rgba(232, 192, 106, .1), rgba(6, 182, 212, .05)); }
+.mpl-badge.is-locked { opacity: .52; }
+.mpl-badge__top { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 12px; color: #e9f1fa; }
+.mpl-badge small { font-size: 10.5px; color: #8296ad; line-height: 1.65; }
+.mpl-badge__lock { margin-inline-start: auto; font-size: 10px; color: #64748b; }
+
+/* أخطاء */
+.mpl-mistakes { display: grid; gap: 8px; }
+.mpl-mistake {
+  display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start;
+  border: 1px solid #2a2334; border-inline-start: 3px solid rgba(245, 158, 11, .55);
+  border-radius: 12px; padding: 10px 12px; background: rgba(245, 158, 11, .045);
+}
+.mpl-mistake b { color: #fbd38d; font-size: 12.5px; display: block; margin-bottom: 2px; }
+.mpl-mistake p { margin: 0; font-size: 11.5px; color: #b9c8da; line-height: 1.75; }
+.mpl-mistake__meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; font-size: 10.5px; color: #8296ad; }
+.mpl-mistake__meta a { color: #67e8f9; }
+.mpl-iconbtn {
+  border: 1px solid #31445f; background: transparent; color: #9fb3c8; border-radius: 8px;
+  width: 28px; height: 28px; cursor: pointer; font-family: inherit;
+}
+.mpl-iconbtn:hover { color: #fff; border-color: #4a6285; }
+.mpl-empty { text-align: center; padding: 22px 10px; color: #7f93ab; font-size: 12px; }
+.mpl-empty b { display: block; color: #cbd9ea; margin-bottom: 4px; font-size: 13px; }
+
+/* بيانات */
+.mpl-data { display: flex; flex-wrap: wrap; gap: 8px; }
+.mpl-note { margin-top: 10px; font-size: 11px; color: #6f8398; line-height: 1.8; }
+
+/* أزرار */
+.mpl-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid #31445f; background: #16243a; color: #dbe7f5;
+  border-radius: 999px; padding: 9px 16px; font-family: inherit; font-size: 12px; font-weight: 800;
+  cursor: pointer; text-decoration: none;
+}
+.mpl-btn:hover { border-color: #4a6285; color: #fff; }
+.mpl-btn--primary { background: linear-gradient(135deg, #22c55e, #06b6d4); color: #04121a; border: none; }
+.mpl-btn--danger { color: #fca5a5; border-color: rgba(239, 68, 68, .35); background: rgba(239, 68, 68, .08); }
+.mpl-btn--sm { padding: 6px 12px; font-size: 11px; }
+
+@media (max-width: 900px) {
+  .mpl-grid { grid-template-columns: 1fr; }
+  .mpl-stats { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  .mpl-wrap { width: calc(100% - 24px); }
+  .mpl-hero { grid-template-columns: 1fr; text-align: center; justify-items: center; gap: 14px; padding: 18px 16px; }
+  .mpl-stats { grid-template-columns: repeat(2, 1fr); }
+  .mpl-stat:last-child { grid-column: 1 / -1; }
+  .mpl-card { padding: 15px 14px; }
+  .mpl-badges { grid-template-columns: 1fr 1fr; }
+  .mpl-next { flex-wrap: wrap; }
+  .mpl-next .mpl-btn { margin-inline-start: 0; width: 100%; }
+  .mpl-skill { grid-template-columns: 30px 1fr; }
+  .mpl-skill__val { grid-column: 2; text-align: start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mpl-bar > i { transition: none; }
+}

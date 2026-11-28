@@ -22,6 +22,7 @@
     const root = location.pathname.includes('/games/') ? '../../' : '';
     const home = `${root}index.html`;
     const profile = `${root}profile.html`;
+    const learning = `${root}my-learning.html`;
     let host = document.getElementById('mpHeader');
     if (!host) {
       host = document.createElement('header');
@@ -54,7 +55,7 @@
         <nav class="mp-nav" id="mpNav" aria-label="التنقّل الرئيسي">
           <a href="${home}" class="${active === 'home' ? 'is-active' : ''}">الرئيسية</a>
           <a href="${home}#games" class="${active === 'games' ? 'is-active' : ''}">الألعاب</a>
-          <a href="${profile}" class="${active === 'achievements' ? 'is-active' : ''}">الإنجازات</a>
+          <a href="${learning}" class="${active === 'achievements' ? 'is-active' : ''}">تعلّمي</a>
           <a href="${profile}" class="${active === 'profile' ? 'is-active' : ''}">الملف الشخصي</a>
         </nav>
 
@@ -78,6 +79,9 @@
         <div class="mp-game-strip__spacer"></div>
         <div class="mp-game-strip__meta">
           ${cfg.field ? `<span class="mp-chip mp-chip--violet">🏷️ ${esc(cfg.field)}</span>` : ''}
+          <a class="mp-chip mp-chip--gold mp-xp-chip" id="mpXpChip" href="${learning}" hidden title="نقاط الخبرة على المنصة — تعلّمي">
+            ⚡ <b id="mpXpValue">0</b> XP · <span id="mpXpLevel">مستكشف مبتدئ</span>
+          </a>
           <span class="mp-chip mp-chip--cyan" id="mpBestChip" hidden>🏆 أفضل نتيجة: <b id="mpBestValue">0</b></span>
         </div>
       </div>`;
@@ -94,6 +98,7 @@
 
     document.body.classList.add('mp-has-header');
     window.MPHeader.current = cfg;
+    if (window.MPProgress) { try { setXP(window.MPProgress.summary().level); } catch (e) { } }
     return host;
   }
 
@@ -113,5 +118,16 @@
     chip.hidden = false;
   }
 
-  window.MPHeader = { render, setLevel, setBest };
+  function setXP(level) {
+    const chip = document.getElementById('mpXpChip');
+    const value = document.getElementById('mpXpValue');
+    const name = document.getElementById('mpXpLevel');
+    if (!chip || !value || !level) return;
+    if (!level.xp) { chip.hidden = true; return; }
+    value.textContent = Number(level.xp).toLocaleString('ar-EG');
+    if (name) name.textContent = level.name + ' · م' + Number(level.level).toLocaleString('ar-EG');
+    chip.hidden = false;
+  }
+
+  window.MPHeader = { render, setLevel, setBest, setXP };
 })();
